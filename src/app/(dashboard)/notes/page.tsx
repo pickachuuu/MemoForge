@@ -218,7 +218,7 @@ export default function NotesPage() {
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
             {filteredNotes.map((note) => (
-              <Link href={`/notes/${note.slug || note.id}`} key={note.id} className="block group">
+              <Link href={`/editor/${note.slug || note.id}`} key={note.id} className="block group">
                 <ClayCard
                   variant="default"
                   padding="none"

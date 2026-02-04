@@ -1,14 +1,21 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
-import Markdown from "react-markdown";
-import remarkGfm from "remark-gfm";
-import { ClayCard, ClayBadge } from '@/component/ui/Clay';
-import Button from '@/component/ui/Button';
+import { useEffect, useState } from 'react';
+import { ClayBadge } from '@/component/ui/Clay';
 import { useParams, useRouter } from 'next/navigation';
 import { useNoteActions } from '@/hook/useNoteActions';
-import { File01Icon, Edit02Icon, ViewIcon } from 'hugeicons-react';
 import { createClient } from '@/utils/supabase/client';
+import RichTextEditor from '@/component/ui/RichTextEditor';
+import {
+  Tag01Icon,
+  Add01Icon,
+  Cancel01Icon,
+  Tick01Icon,
+  Loading01Icon,
+  AlertCircleIcon,
+  ArrowLeft01Icon
+} from 'hugeicons-react';
+import Link from 'next/link';
 
 const supabase = createClient();
 
@@ -24,11 +31,10 @@ export default function NotePage() {
   const [content, setContent] = useState('');
   const [tags, setTags] = useState<string[]>([]);
   const [tagInput, setTagInput] = useState('');
+  const [showTagInput, setShowTagInput] = useState(false);
   const [saveStatus, setSaveStatus] = useState<'saved' | 'saving' | 'error'>('saved');
   const [loading, setLoading] = useState(!!noteIdOrSlug);
   const [lastSaved, setLastSaved] = useState({ title: '', content: '', tags: [] as string[] });
-  const [editing, setEditing] = useState(true);
-  const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   // Fetch note by slug or ID
   useEffect(() => {
@@ -38,7 +44,6 @@ export default function NotePage() {
       setLoading(true);
 
       try {
-        // Try to fetch by slug first, then by ID
         const note = await getNoteBySlug(noteIdOrSlug);
 
         if (note) {
@@ -53,7 +58,6 @@ export default function NotePage() {
             tags: note.tags || []
           });
 
-          // If we accessed by ID but have a slug, redirect to slug URL
           if (note.slug && noteIdOrSlug === note.id) {
             router.replace(`/notes/${note.slug}`, { scroll: false });
           }
@@ -92,7 +96,6 @@ export default function NotePage() {
   useEffect(() => {
     if (!id || !title.trim()) return;
 
-    // Only save if something changed
     if (
       lastSaved.title === title &&
       lastSaved.content === content &&
@@ -108,8 +111,6 @@ export default function NotePage() {
         setSaveStatus('saved');
         setLastSaved({ title, content, tags });
 
-        // Update slug in URL if title changed and we have a new slug
-        // The slug is regenerated on save, so fetch the updated note
         const { data: updatedNote } = await supabase
           .from('notes')
           .select('slug')
@@ -140,237 +141,207 @@ export default function NotePage() {
     setTags(tags.filter(tag => tag !== tagToRemove));
   };
 
-  const handleKeyPress = (e: React.KeyboardEvent) => {
+  const handleTagKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter' || e.key === ',') {
       e.preventDefault();
       handleAddTag();
+    } else if (e.key === 'Escape') {
+      setShowTagInput(false);
+      setTagInput('');
     }
   };
 
-  // Markdown list continuation handler
-  const handleMarkdownListKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
-    if (e.key === 'Enter') {
-      const textarea = e.currentTarget;
-      const { selectionStart, selectionEnd, value } = textarea;
-      const before = value.slice(0, selectionStart);
-      const after = value.slice(selectionEnd);
-      const lineStart = before.lastIndexOf('\n') + 1;
-      const currentLine = before.slice(lineStart);
-
-      const unorderedMatch = currentLine.match(/^(\s*[-*+] )/);
-      const orderedMatch = currentLine.match(/^(\s*)(\d+)\. /);
-
-      if (unorderedMatch) {
-        e.preventDefault();
-        const insert = '\n' + unorderedMatch[1];
-        const newValue = value.slice(0, selectionStart) + insert + after;
-        setContent(newValue);
-        setTimeout(() => {
-          textarea.selectionStart = textarea.selectionEnd = selectionStart + insert.length;
-        }, 0);
-      } else if (orderedMatch) {
-        e.preventDefault();
-        const spaces = orderedMatch[1] || '';
-        const number = parseInt(orderedMatch[2], 10) + 1;
-        const insert = `\n${spaces}${number}. `;
-        const newValue = value.slice(0, selectionStart) + insert + after;
-        setContent(newValue);
-        setTimeout(() => {
-          textarea.selectionStart = textarea.selectionEnd = selectionStart + insert.length;
-        }, 0);
-      }
-    }
-  };
-
-  // Focus textarea when switching to edit mode
-  useEffect(() => {
-    if (editing && textareaRef.current) {
-      textareaRef.current.focus();
-    }
-  }, [editing]);
-
-  useEffect(() => {
-    if (textareaRef.current) {
-      const textarea = textareaRef.current;
-      if (textarea.selectionStart === textarea.value.length) {
-        textarea.scrollTop = textarea.scrollHeight;
-      }
-    }
-  }, [content, editing]);
-
+  // Loading skeleton
   if (loading) {
     return (
-      <div className="space-y-6">
-        <div className="grid grid-cols-1 lg:grid-cols-[300px_1fr] gap-6">
-          <ClayCard variant="default" padding="lg" className="rounded-2xl animate-pulse">
-            <div className="space-y-4">
-              <div className="h-8 w-2/3 bg-background-muted rounded-lg" />
-              <div className="h-4 w-1/2 bg-background-muted rounded-lg" />
-              <div className="flex gap-2">
-                <div className="h-6 w-16 bg-background-muted rounded-full" />
-                <div className="h-6 w-12 bg-background-muted rounded-full" />
+      <div className="min-h-[calc(100vh-120px)] flex flex-col -mx-4 sm:-mx-6 lg:-mx-8 -mt-6">
+        {/* Header skeleton */}
+        <div className="clay-card border-b border-border px-6 py-4">
+          <div className="max-w-4xl mx-auto flex items-center justify-between">
+            <div className="h-6 w-32 bg-background-muted rounded animate-pulse" />
+            <div className="h-6 w-20 bg-background-muted rounded-full animate-pulse" />
+          </div>
+        </div>
+        {/* Document skeleton */}
+        <div className="flex-1 bg-background-muted/50 py-8">
+          <div className="max-w-4xl mx-auto">
+            <div className="clay-card-elevated rounded-2xl p-12 min-h-[700px] animate-pulse">
+              <div className="h-10 w-2/3 bg-background-muted rounded-lg mb-8" />
+              <div className="space-y-4">
+                <div className="h-4 w-full bg-background-muted rounded" />
+                <div className="h-4 w-5/6 bg-background-muted rounded" />
+                <div className="h-4 w-4/6 bg-background-muted rounded" />
               </div>
             </div>
-          </ClayCard>
-          <ClayCard variant="default" padding="none" className="rounded-2xl animate-pulse">
-            <div className="p-4 border-b border-border">
-              <div className="h-6 w-24 bg-background-muted rounded-lg" />
-            </div>
-            <div className="h-[600px] bg-background-muted/50" />
-          </ClayCard>
+          </div>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="space-y-6">
-      <div className="grid grid-cols-1 lg:grid-cols-[300px_1fr] gap-6">
-        {/* Metadata Card */}
-        <ClayCard variant="default" padding="lg" className="rounded-2xl h-fit">
-          <div className="space-y-5">
-            {/* Title Input */}
-            <div className="space-y-2">
-              <div className="flex items-center justify-between">
-                <label className="text-sm font-medium text-foreground-muted">Title</label>
-                <ClayBadge
-                  variant={saveStatus === 'saved' ? 'success' : saveStatus === 'saving' ? 'warning' : 'default'}
-                  className="text-xs px-2 py-0.5"
-                >
-                  {saveStatus === 'saved' ? 'Saved' : saveStatus === 'saving' ? 'Saving...' : 'Error'}
-                </ClayBadge>
+    <div className="min-h-[calc(100vh-120px)] flex flex-col -mx-4 sm:-mx-6 lg:-mx-8 -mt-6">
+      {/* Top Header Bar */}
+      <div className="clay-card sticky top-0 z-20 border-b border-border">
+        <div className="max-w-5xl mx-auto px-6 py-3 flex items-center justify-between gap-4">
+          {/* Left: Back button */}
+          <Link
+            href="/notes"
+            className="flex items-center gap-2 text-foreground-muted hover:text-foreground transition-colors"
+          >
+            <ArrowLeft01Icon className="w-5 h-5" />
+            <span className="text-sm font-medium hidden sm:inline">Notes</span>
+          </Link>
+
+          {/* Center: Save Status */}
+          <div className="flex items-center gap-2">
+            {saveStatus === 'saving' && (
+              <div className="flex items-center gap-2 text-foreground-muted">
+                <Loading01Icon className="w-4 h-4 animate-spin" />
+                <span className="text-sm">Saving...</span>
               </div>
-              <input
-                className="w-full text-xl font-semibold bg-transparent border-b-2 border-transparent focus:border-accent focus:outline-none transition-colors placeholder:text-foreground-muted py-1"
-                placeholder="Enter note title..."
-                value={title}
-                onChange={(e) => setTitle(e.target.value)}
-                aria-label="Note title"
-                maxLength={100}
-                autoFocus
-              />
+            )}
+            {saveStatus === 'saved' && (
+              <div className="flex items-center gap-2 text-green-600 dark:text-green-400">
+                <Tick01Icon className="w-4 h-4" />
+                <span className="text-sm">Saved</span>
+              </div>
+            )}
+            {saveStatus === 'error' && (
+              <div className="flex items-center gap-2 text-red-500">
+                <AlertCircleIcon className="w-4 h-4" />
+                <span className="text-sm">Error saving</span>
+              </div>
+            )}
+          </div>
+
+          {/* Right: Tags */}
+          <div className="flex items-center gap-2">
+            {/* Tag badges */}
+            <div className="hidden sm:flex items-center gap-1.5">
+              {tags.slice(0, 3).map((tag) => (
+                <span
+                  key={tag}
+                  className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium bg-accent-muted text-accent"
+                >
+                  {tag}
+                  <button
+                    type="button"
+                    onClick={() => handleRemoveTag(tag)}
+                    className="hover:bg-accent hover:text-white rounded-full w-3.5 h-3.5 flex items-center justify-center transition-colors"
+                  >
+                    <Cancel01Icon className="w-2.5 h-2.5" />
+                  </button>
+                </span>
+              ))}
+              {tags.length > 3 && (
+                <span className="text-xs text-foreground-muted">+{tags.length - 3}</span>
+              )}
             </div>
 
-            {/* Tags Section */}
-            <div className="space-y-3">
-              <label className="block text-sm font-medium text-foreground-muted">
-                Tags
-              </label>
-              <div className="flex flex-wrap gap-2 min-h-[32px]">
+            {/* Add tag button/input */}
+            {showTagInput ? (
+              <div className="flex items-center gap-1">
+                <input
+                  type="text"
+                  value={tagInput}
+                  onChange={(e) => setTagInput(e.target.value)}
+                  onKeyDown={handleTagKeyDown}
+                  onBlur={() => {
+                    if (tagInput.trim()) handleAddTag();
+                    setShowTagInput(false);
+                  }}
+                  placeholder="Add tag..."
+                  className="w-24 px-2 py-1 text-xs bg-background-muted border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-accent/50"
+                  autoFocus
+                />
+              </div>
+            ) : (
+              <button
+                type="button"
+                onClick={() => setShowTagInput(true)}
+                className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl text-xs font-medium text-foreground-muted hover:bg-background-muted transition-colors"
+              >
+                <Tag01Icon className="w-4 h-4" />
+                <Add01Icon className="w-3 h-3" />
+              </button>
+            )}
+          </div>
+        </div>
+      </div>
+
+      {/* Document Area - Paper-like centered layout */}
+      <div className="flex-1 bg-gradient-to-b from-background-muted/30 to-background-muted/60 overflow-auto">
+        <div className="max-w-4xl mx-auto py-8 px-4">
+          {/* The Document "Paper" */}
+          <div className="clay-card-elevated rounded-2xl overflow-hidden min-h-[800px] flex flex-col">
+            {/* Document Header with Title */}
+            <div className="px-8 sm:px-12 pt-10 pb-6 border-b border-border/50">
+              <input
+                type="text"
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+                placeholder="Untitled Document"
+                className="w-full text-3xl sm:text-4xl font-bold bg-transparent border-none focus:outline-none placeholder:text-foreground-muted/40 text-foreground"
+                aria-label="Document title"
+                maxLength={100}
+                autoFocus={!noteIdOrSlug}
+              />
+
+              {/* Mobile tags display */}
+              <div className="flex sm:hidden flex-wrap items-center gap-1.5 mt-4">
                 {tags.map((tag) => (
-                  <ClayBadge
+                  <span
                     key={tag}
-                    variant="accent"
-                    className="text-sm px-3 py-1 gap-1"
+                    className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium bg-accent-muted text-accent"
                   >
                     {tag}
                     <button
                       type="button"
                       onClick={() => handleRemoveTag(tag)}
-                      className="ml-1 hover:bg-accent hover:text-white rounded-full w-4 h-4 flex items-center justify-center transition-colors text-xs"
-                      aria-label={`Remove tag ${tag}`}
+                      className="hover:bg-accent hover:text-white rounded-full w-3.5 h-3.5 flex items-center justify-center transition-colors"
                     >
-                      ×
+                      <Cancel01Icon className="w-2.5 h-2.5" />
                     </button>
-                  </ClayBadge>
+                  </span>
                 ))}
                 {tags.length === 0 && (
-                  <span className="text-sm text-foreground-muted">No tags yet</span>
+                  <button
+                    type="button"
+                    onClick={() => setShowTagInput(true)}
+                    className="text-xs text-foreground-muted hover:text-accent transition-colors"
+                  >
+                    + Add tags
+                  </button>
                 )}
               </div>
+            </div>
 
-              <div className="flex gap-2">
-                <input
-                  type="text"
-                  value={tagInput}
-                  onChange={(e) => setTagInput(e.target.value)}
-                  onKeyPress={handleKeyPress}
-                  placeholder="Add tag..."
-                  className="flex-1 px-3 py-2 text-sm bg-background-muted border border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-accent/50 transition-all placeholder:text-foreground-muted"
-                  maxLength={50}
-                />
-                <Button
-                  onClick={handleAddTag}
-                  variant="outline"
-                  size="sm"
-                  disabled={!tagInput.trim()}
-                  type="button"
-                  className="shrink-0 rounded-xl"
-                >
-                  Add
-                </Button>
-              </div>
+            {/* Editor Area */}
+            <div className="flex-1 flex flex-col">
+              <RichTextEditor
+                content={content}
+                onChange={setContent}
+                placeholder="Start writing your notes..."
+                className="flex-1"
+                editorClassName="px-8 sm:px-12 py-6"
+                autoFocus={false}
+              />
+            </div>
+          </div>
+
+          {/* Document Footer */}
+          {slug && (
+            <div className="mt-4 text-center">
               <p className="text-xs text-foreground-muted">
-                Press Enter or comma to add
+                Shareable URL:{' '}
+                <code className="bg-background-muted px-2 py-1 rounded-lg text-accent">
+                  /notes/{slug}
+                </code>
               </p>
             </div>
-
-            {/* Slug Display */}
-            {slug && (
-              <div className="pt-3 border-t border-border">
-                <p className="text-xs text-foreground-muted">
-                  <span className="font-medium">URL:</span>{' '}
-                  <code className="bg-background-muted px-1.5 py-0.5 rounded text-accent">
-                    /notes/{slug}
-                  </code>
-                </p>
-              </div>
-            )}
-          </div>
-        </ClayCard>
-
-        {/* Editor Card */}
-        <ClayCard variant="default" padding="none" className="rounded-2xl overflow-hidden">
-          <div className="flex items-center justify-between p-4 border-b border-border bg-background-muted/30">
-            <div className="flex items-center gap-2">
-              <File01Icon className="w-5 h-5 text-accent" />
-              <h3 className="font-medium text-foreground">Editor</h3>
-            </div>
-
-            <button
-              onClick={() => setEditing(!editing)}
-              className={`
-                inline-flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium transition-all duration-200
-                ${editing
-                  ? 'bg-accent text-white hover:bg-accent/90'
-                  : 'bg-background-muted text-foreground hover:bg-background-muted/80'
-                }
-              `}
-            >
-              {editing ? (
-                <>
-                  <ViewIcon className="w-4 h-4" />
-                  Preview
-                </>
-              ) : (
-                <>
-                  <Edit02Icon className="w-4 h-4" />
-                  Edit
-                </>
-              )}
-            </button>
-          </div>
-
-          <div className="w-full h-[600px]">
-            {editing ? (
-              <textarea
-                ref={textareaRef}
-                className="w-full h-full p-5 resize-none font-mono text-base bg-surface text-foreground focus:outline-none"
-                value={content}
-                onChange={e => setContent(e.target.value)}
-                onKeyDown={handleMarkdownListKeyDown}
-                placeholder="Write your markdown here..."
-                spellCheck={true}
-              />
-            ) : (
-              <div className="w-full h-full p-5 overflow-auto prose prose-sm sm:prose lg:prose-lg dark:prose-invert max-w-none">
-                <Markdown remarkPlugins={[remarkGfm]}>
-                  {content || '*Start writing to see preview...*'}
-                </Markdown>
-              </div>
-            )}
-          </div>
-        </ClayCard>
+          )}
+        </div>
       </div>
     </div>
   );
