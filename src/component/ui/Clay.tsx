@@ -184,12 +184,14 @@ interface ClaySectionProps {
   children: ReactNode;
   className?: string;
   variant?: 'default' | 'muted';
+  id?: string;
 }
 
 export function ClaySection({
   children,
   className,
   variant = 'default',
+  id,
 }: ClaySectionProps) {
   const variantClasses = {
     default: 'bg-background',
@@ -197,11 +199,14 @@ export function ClaySection({
   };
 
   return (
-    <section className={clsx(
-      'py-20 px-4 sm:px-6 lg:px-8',
-      variantClasses[variant],
-      className
-    )}>
+    <section
+      id={id}
+      className={clsx(
+        'py-20 px-4 sm:px-6 lg:px-8',
+        variantClasses[variant],
+        className
+      )}
+    >
       <div className="max-w-7xl mx-auto">
         {children}
       </div>
