@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useRef, ReactNode } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { useNoteActions } from '@/hook/useNoteActions';
 import { createClient } from '@/utils/supabase/client';
@@ -63,6 +63,9 @@ export default function EditorPage() {
   const [pages, setPages] = useState<NotePage[]>([]);
   const [currentPageContent, setCurrentPageContent] = useState('');
   const [lastSavedContent, setLastSavedContent] = useState('');
+
+  // Store the actual previous content component for flip animation
+  const previousContentRef = useRef<ReactNode>(null);
 
   // Determine if this is a new note
   const isNewNote = !noteIdOrSlug || noteIdOrSlug === 'new';
@@ -165,9 +168,45 @@ export default function EditorPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [noteIdOrSlug]);
 
+  // Capture current content before navigation - creates a snapshot
+  const captureCurrentState = () => {
+    if (currentView === 'cover') {
+      previousContentRef.current = (
+        <NotebookCover
+          title={title}
+          onTitleChange={() => {}}
+          onOpen={() => {}}
+          theme={theme}
+        />
+      );
+    } else if (currentView === 'toc') {
+      previousContentRef.current = (
+        <TableOfContents
+          notebookTitle={title}
+          pages={pages}
+          onPageClick={() => {}}
+          onAddPage={() => {}}
+          onDeletePage={() => {}}
+          theme={theme}
+        />
+      );
+    } else if (currentView === 'page' && currentPageIndex !== null) {
+      previousContentRef.current = (
+        <NotebookPage
+          content={currentPageContent}
+          onChange={() => {}}
+          theme={theme}
+        />
+      );
+    }
+  };
+
   // Handle opening the notebook (from cover)
   const handleOpenNotebook = async () => {
     if (!title.trim()) return;
+
+    // Capture current state (cover)
+    captureCurrentState();
 
     // Create the note when opening
     if (!id && isNewNote) {
@@ -196,6 +235,9 @@ export default function EditorPage() {
   const handleAddPage = async () => {
     if (!id) return;
 
+    // Capture current state (TOC)
+    captureCurrentState();
+
     try {
       const pageId = await createPage(id);
       if (pageId) {
@@ -218,6 +260,9 @@ export default function EditorPage() {
   const handlePageClick = (pageIndex: number) => {
     const page = pages[pageIndex];
     if (page) {
+      // Capture current state (TOC)
+      captureCurrentState();
+
       setCurrentPageIndex(pageIndex);
       setCurrentPageContent(page.content || '');
       setLastSavedContent(page.content || '');
@@ -227,6 +272,9 @@ export default function EditorPage() {
 
   // Handle going back to TOC
   const handleBackToContents = async () => {
+    // Capture current state before navigation
+    captureCurrentState();
+
     // Save current page content before going back
     if (currentPageIndex !== null && pages[currentPageIndex]) {
       const page = pages[currentPageIndex];
@@ -268,6 +316,9 @@ export default function EditorPage() {
 
   // Save current page and navigate to another
   const saveAndNavigate = async (targetIndex: number) => {
+    // Capture current state before navigation
+    captureCurrentState();
+
     if (currentPageIndex !== null && pages[currentPageIndex]) {
       const page = pages[currentPageIndex];
       if (currentPageContent !== lastSavedContent) {
@@ -495,6 +546,11 @@ export default function EditorPage() {
       />
     ) : null;
 
+  // Previous content - just return what was captured
+  const getPreviousContentComponent = (): ReactNode => {
+    return previousContentRef.current;
+  };
+
   const showHeader = currentView !== 'cover';
 
   return (
@@ -718,15 +774,16 @@ export default function EditorPage() {
 
             {/* Main notebook */}
             <div className="relative h-full rounded-lg shadow-xl">
-            <PageFlipContainer
-              currentView={currentView}
-              currentPageIndex={currentPageIndex}
-              totalPages={pages.length}
-              cover={coverComponent}
-              toc={tocComponent}
-              pageContent={pageComponent}
-              theme={theme}
-            />
+              <PageFlipContainer
+                currentView={currentView}
+                currentPageIndex={currentPageIndex}
+                totalPages={pages.length}
+                cover={coverComponent}
+                toc={tocComponent}
+                pageContent={pageComponent}
+                previousContent={getPreviousContentComponent()}
+                theme={theme}
+              />
             </div>
           </div>
         </div>
