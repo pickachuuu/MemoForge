@@ -17,6 +17,7 @@ import {
   Idea01Icon,
 } from 'hugeicons-react';
 import { ClayCard, ClayButton, ClayBadge, ClayIconBox, ClaySection } from '@/component/ui/Clay';
+import { MultipleChoicePreview, EssayPreview } from '@/component/ui/ExamPreviewCards';
 import {
   fadeIn,
   fadeInUp,
@@ -361,41 +362,7 @@ export default function LandingPage() {
                 className="absolute top-0 left-0 w-[75%] -rotate-3 z-10"
                 variants={fadeInUp}
               >
-                <ClayCard variant="elevated" padding="md">
-                  <div className="flex items-center justify-between mb-4">
-                    <div className="flex items-center gap-2">
-                      <ClayIconBox size="sm" variant="accent">
-                        <CheckmarkCircle02Icon className="w-4 h-4 text-accent" />
-                      </ClayIconBox>
-                      <span className="font-semibold text-foreground text-sm">Multiple Choice</span>
-                    </div>
-                    <span className="text-[10px] px-2 py-1 rounded-full bg-green-100 text-green-700 font-medium">15 questions</span>
-                  </div>
-
-                  <ClayCard variant="pressed" padding="sm" className="mb-4">
-                    <p className="text-[10px] text-foreground-muted mb-2">Question 1 of 15</p>
-                    <p className="text-xs font-medium text-foreground mb-4">What organelle is responsible for producing ATP in eukaryotic cells?</p>
-                    <div className="space-y-2">
-                      <div className="p-2 rounded-lg border border-border">
-                        <span className="text-xs text-foreground">A. Nucleus</span>
-                      </div>
-                      <div className="p-2 rounded-lg border-2 border-accent bg-accent-muted">
-                        <span className="text-xs text-foreground font-medium">B. Mitochondria</span>
-                      </div>
-                      <div className="p-2 rounded-lg border border-border">
-                        <span className="text-xs text-foreground">C. Ribosome</span>
-                      </div>
-                      <div className="p-2 rounded-lg border border-border">
-                        <span className="text-xs text-foreground">D. Golgi apparatus</span>
-                      </div>
-                    </div>
-                  </ClayCard>
-
-                  <div className="flex items-center justify-between">
-                    <span className="text-xs text-foreground-muted">Time: 12:34</span>
-                    <ClayButton variant="primary" size="sm">Next</ClayButton>
-                  </div>
-                </ClayCard>
+                <MultipleChoicePreview />
               </m.div>
 
               {/* Essay Card - On top, offset to the right */}
@@ -403,35 +370,7 @@ export default function LandingPage() {
                 className="absolute top-8 right-0 w-[75%] rotate-2 z-20"
                 variants={scaleIn}
               >
-                <ClayCard variant="elevated" padding="md">
-                  <div className="flex items-center justify-between mb-4">
-                    <div className="flex items-center gap-2">
-                      <ClayIconBox size="sm" variant="accent">
-                        <BookOpen01Icon className="w-4 h-4 text-accent" />
-                      </ClayIconBox>
-                      <span className="font-semibold text-foreground text-sm">Essay</span>
-                    </div>
-                    <span className="text-[10px] px-2 py-1 rounded-full bg-blue-100 text-blue-700 font-medium">5 questions</span>
-                  </div>
-
-                  <ClayCard variant="pressed" padding="sm" className="mb-4">
-                    <p className="text-[10px] text-foreground-muted mb-2">Question 1 of 5</p>
-                    <p className="text-xs font-medium text-foreground mb-4">Explain the process of cellular respiration and its importance in living organisms.</p>
-                    <div className="bg-background-muted rounded-lg p-4 min-h-[120px] border border-border">
-                      <p className="text-xs text-foreground-muted italic">Type your answer here...</p>
-                      <div className="mt-3 space-y-2">
-                        <div className="h-2 bg-border/50 rounded w-full"></div>
-                        <div className="h-2 bg-border/50 rounded w-4/5"></div>
-                        <div className="h-2 bg-border/50 rounded w-3/5"></div>
-                      </div>
-                    </div>
-                  </ClayCard>
-
-                  <div className="flex items-center justify-between">
-                    <span className="text-xs text-foreground-muted">Time: 25:00</span>
-                    <ClayButton variant="primary" size="sm">Submit</ClayButton>
-                  </div>
-                </ClayCard>
+                <EssayPreview />
               </m.div>
             </m.div>
 
