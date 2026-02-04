@@ -1559,3 +1559,1557 @@ body {
 .tiptap-editor-wrapper::-webkit-scrollbar-thumb:hover {
   background-color: var(--foreground-muted);
 }
+
+/* ==========================================
+   📔 Notebook Cover & Flip Styles
+   ==========================================
+   Leather-bound journal aesthetic with 3D flip
+*/
+
+/* Leather Cover - Light Mode */
+.notebook-leather-light {
+  background: linear-gradient(
+    145deg,
+    #8b6914 0%,
+    #6d4c41 20%,
+    #5d4037 40%,
+    #4e342e 60%,
+    #5d4037 80%,
+    #6d4c41 100%
+  );
+  position: relative;
+  box-shadow:
+    inset 0 0 100px rgba(0, 0, 0, 0.3),
+    inset 0 0 20px rgba(0, 0, 0, 0.2),
+    0 20px 60px rgba(0, 0, 0, 0.4),
+    0 10px 20px rgba(0, 0, 0, 0.3);
+}
+
+/* Leather Cover - Dark Mode */
+.notebook-leather-dark {
+  background: linear-gradient(
+    145deg,
+    #2d261f 0%,
+    #1f1a15 20%,
+    #1a1512 40%,
+    #15120e 60%,
+    #1a1512 80%,
+    #1f1a15 100%
+  );
+  position: relative;
+  box-shadow:
+    inset 0 0 100px rgba(0, 0, 0, 0.5),
+    inset 0 0 20px rgba(0, 0, 0, 0.4),
+    0 20px 60px rgba(0, 0, 0, 0.6),
+    0 10px 20px rgba(0, 0, 0, 0.5);
+}
+
+/* Leather grain texture overlay */
+.notebook-leather-grain {
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='leather'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='6' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23leather)'/%3E%3C/svg%3E");
+  opacity: 0.15;
+  mix-blend-mode: overlay;
+}
+
+.notebook-leather-dark .notebook-leather-grain {
+  opacity: 0.2;
+  mix-blend-mode: soft-light;
+}
+
+/* Stitching border effect */
+.notebook-stitching {
+  border: 2px dashed rgba(139, 105, 20, 0.3);
+  border-radius: 8px;
+  box-shadow:
+    inset 0 0 20px rgba(0, 0, 0, 0.1),
+    0 0 1px rgba(255, 255, 255, 0.1);
+}
+
+.notebook-leather-dark .notebook-stitching {
+  border-color: rgba(212, 165, 116, 0.2);
+}
+
+/* Spine styling */
+.notebook-spine {
+  box-shadow:
+    inset -4px 0 8px rgba(0, 0, 0, 0.3),
+    inset 2px 0 4px rgba(255, 255, 255, 0.05);
+}
+
+/* Title plate - embossed brass/gold effect */
+.notebook-title-plate {
+  background: linear-gradient(
+    145deg,
+    #d4a574 0%,
+    #c9a067 20%,
+    #b8935a 40%,
+    #a7864d 60%,
+    #b8935a 80%,
+    #c9a067 100%
+  );
+  padding: 1.5rem 3rem;
+  border-radius: 4px;
+  box-shadow:
+    inset 2px 2px 4px rgba(255, 255, 255, 0.3),
+    inset -2px -2px 4px rgba(0, 0, 0, 0.2),
+    0 4px 12px rgba(0, 0, 0, 0.4),
+    0 2px 4px rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(139, 105, 20, 0.5);
+  min-width: 320px;
+  transition: all 0.3s ease;
+}
+
+.notebook-title-plate-focused {
+  box-shadow:
+    inset 2px 2px 4px rgba(255, 255, 255, 0.4),
+    inset -2px -2px 4px rgba(0, 0, 0, 0.15),
+    0 6px 20px rgba(0, 0, 0, 0.5),
+    0 4px 8px rgba(0, 0, 0, 0.4),
+    0 0 0 3px rgba(212, 165, 116, 0.3);
+}
+
+.dark .notebook-title-plate {
+  background: linear-gradient(
+    145deg,
+    #a67c52 0%,
+    #8b6914 20%,
+    #7a5c12 40%,
+    #695010 60%,
+    #7a5c12 80%,
+    #8b6914 100%
+  );
+  border-color: rgba(166, 124, 82, 0.4);
+}
+
+/* Title input styling */
+.notebook-title-input {
+  background: transparent;
+  border: none;
+  outline: none;
+  font-family: 'Georgia', 'Times New Roman', serif;
+  font-size: 1.5rem;
+  font-weight: 500;
+  text-align: center;
+  color: #3d2b1f;
+  text-shadow: 1px 1px 1px rgba(255, 255, 255, 0.2);
+  width: 100%;
+  letter-spacing: 0.05em;
+}
+
+.notebook-title-input::placeholder {
+  color: #5d4037;
+  opacity: 0.6;
+}
+
+.dark .notebook-title-input {
+  color: #1a1512;
+  text-shadow: 1px 1px 1px rgba(255, 255, 255, 0.1);
+}
+
+.dark .notebook-title-input::placeholder {
+  color: #2d261f;
+  opacity: 0.7;
+}
+
+/* Open button styling */
+.notebook-open-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.75rem 2rem;
+  font-family: 'Georgia', 'Times New Roman', serif;
+  font-size: 1rem;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  border-radius: 4px;
+  transition: all 0.3s ease;
+}
+
+.notebook-open-button-active {
+  background: linear-gradient(
+    145deg,
+    #d4a574 0%,
+    #c9a067 50%,
+    #b8935a 100%
+  );
+  color: #3d2b1f;
+  box-shadow:
+    0 4px 12px rgba(0, 0, 0, 0.3),
+    inset 1px 1px 2px rgba(255, 255, 255, 0.3),
+    inset -1px -1px 2px rgba(0, 0, 0, 0.1);
+  border: 1px solid rgba(139, 105, 20, 0.4);
+  cursor: pointer;
+}
+
+.notebook-open-button-active:hover {
+  background: linear-gradient(
+    145deg,
+    #e0b584 0%,
+    #d4a574 50%,
+    #c9a067 100%
+  );
+}
+
+.notebook-open-button-disabled {
+  background: rgba(100, 80, 60, 0.3);
+  color: rgba(212, 165, 116, 0.4);
+  cursor: not-allowed;
+  border: 1px solid rgba(139, 105, 20, 0.2);
+}
+
+.dark .notebook-open-button-active {
+  background: linear-gradient(
+    145deg,
+    #a67c52 0%,
+    #8b6914 50%,
+    #7a5c12 100%
+  );
+  color: #f5f0e8;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+.dark .notebook-open-button-disabled {
+  background: rgba(60, 50, 40, 0.4);
+  color: rgba(166, 124, 82, 0.3);
+}
+
+/* Page texture for the back of the cover during flip */
+.notebook-page-texture {
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='paper'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23paper)'/%3E%3C/svg%3E");
+  opacity: 0.03;
+  mix-blend-mode: multiply;
+}
+
+/* 3D Flip Animation Keyframes */
+@keyframes notebook-flip-open {
+  0% {
+    transform: rotateY(0deg);
+  }
+  100% {
+    transform: rotateY(-180deg);
+  }
+}
+
+@keyframes notebook-flip-close {
+  0% {
+    transform: rotateY(-180deg);
+  }
+  100% {
+    transform: rotateY(0deg);
+  }
+}
+
+/* Notebook perspective container */
+.notebook-perspective {
+  transform-style: preserve-3d;
+}
+
+.notebook-container {
+  transform-style: preserve-3d;
+}
+
+/* Subtle hover effect on cover */
+.notebook-leather-cover:hover .notebook-leather-grain {
+  opacity: 0.18;
+}
+
+.notebook-leather-dark:hover .notebook-leather-grain {
+  opacity: 0.22;
+}
+
+/* ==========================================
+   📔 Premium Notebook Cover (Moleskine Style)
+   ==========================================
+   Clean, elegant journal design
+*/
+
+/* Base notebook cover */
+.notebook-cover {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  border-radius: 4px 12px 12px 4px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Light mode cover */
+.notebook-cover--light {
+  background: linear-gradient(
+    165deg,
+    #1a1a1a 0%,
+    #2d2d2d 50%,
+    #1f1f1f 100%
+  );
+  box-shadow:
+    0 25px 50px -12px rgba(0, 0, 0, 0.4),
+    0 12px 24px -8px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.2);
+}
+
+/* Dark mode cover */
+.notebook-cover--dark {
+  background: linear-gradient(
+    165deg,
+    #0a0a0a 0%,
+    #1a1a1a 50%,
+    #0f0f0f 100%
+  );
+  box-shadow:
+    0 25px 50px -12px rgba(0, 0, 0, 0.6),
+    0 12px 24px -8px rgba(0, 0, 0, 0.5),
+    inset 0 1px 0 rgba(255, 255, 255, 0.03),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.3);
+}
+
+/* Subtle leather texture */
+.notebook-cover__texture {
+  position: absolute;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+  opacity: 0.03;
+  mix-blend-mode: overlay;
+  pointer-events: none;
+}
+
+/* Rounded edge effect */
+.notebook-cover__edge {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 8px;
+  pointer-events: none;
+}
+
+.notebook-cover__edge--top {
+  top: 0;
+  background: linear-gradient(180deg, rgba(255,255,255,0.03) 0%, transparent 100%);
+}
+
+.notebook-cover__edge--bottom {
+  bottom: 0;
+  background: linear-gradient(0deg, rgba(0,0,0,0.15) 0%, transparent 100%);
+}
+
+/* Spine binding */
+.notebook-cover__spine {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 24px;
+  background: linear-gradient(
+    90deg,
+    #0d0d0d 0%,
+    #1a1a1a 30%,
+    #252525 50%,
+    #1a1a1a 70%,
+    #151515 100%
+  );
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 40px 0;
+  box-shadow:
+    inset -2px 0 4px rgba(0, 0, 0, 0.3),
+    2px 0 8px rgba(0, 0, 0, 0.2);
+}
+
+.notebook-cover__spine--dark {
+  background: linear-gradient(
+    90deg,
+    #050505 0%,
+    #0d0d0d 30%,
+    #151515 50%,
+    #0d0d0d 70%,
+    #080808 100%
+  );
+}
+
+.notebook-cover__spine-line {
+  width: 100%;
+  height: 2px;
+  background: linear-gradient(90deg, transparent 20%, rgba(255,255,255,0.06) 50%, transparent 80%);
+}
+
+/* Elastic band */
+.notebook-cover__band {
+  position: absolute;
+  right: 32px;
+  top: 0;
+  bottom: 0;
+  width: 3px;
+  background: linear-gradient(
+    180deg,
+    transparent 0%,
+    #c41e3a 3%,
+    #9e1a30 50%,
+    #c41e3a 97%,
+    transparent 100%
+  );
+  box-shadow:
+    0 0 8px rgba(196, 30, 58, 0.3),
+    inset 0 0 2px rgba(255, 255, 255, 0.2);
+}
+
+.notebook-cover__band--dark {
+  background: linear-gradient(
+    180deg,
+    transparent 0%,
+    #8b1428 3%,
+    #6b1020 50%,
+    #8b1428 97%,
+    transparent 100%
+  );
+  box-shadow:
+    0 0 6px rgba(139, 20, 40, 0.4),
+    inset 0 0 2px rgba(255, 255, 255, 0.1);
+}
+
+/* Main content area */
+.notebook-cover__content {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 48px 56px 48px 48px;
+  position: relative;
+  z-index: 1;
+}
+
+.notebook-cover__inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
+  width: 100%;
+  max-width: 280px;
+}
+
+/* Title label */
+.notebook-cover__label {
+  position: relative;
+  width: 100%;
+  padding: 16px 20px;
+  background: linear-gradient(
+    145deg,
+    rgba(255, 255, 255, 0.08) 0%,
+    rgba(255, 255, 255, 0.04) 100%
+  );
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 4px;
+  transition: all 0.2s ease;
+}
+
+.notebook-cover__label--focused {
+  background: linear-gradient(
+    145deg,
+    rgba(255, 255, 255, 0.12) 0%,
+    rgba(255, 255, 255, 0.06) 100%
+  );
+  border-color: rgba(255, 255, 255, 0.15);
+  box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.05);
+}
+
+.notebook-cover__label--dark {
+  background: linear-gradient(
+    145deg,
+    rgba(255, 255, 255, 0.05) 0%,
+    rgba(255, 255, 255, 0.02) 100%
+  );
+  border-color: rgba(255, 255, 255, 0.05);
+}
+
+.notebook-cover__label--dark.notebook-cover__label--focused {
+  background: linear-gradient(
+    145deg,
+    rgba(255, 255, 255, 0.08) 0%,
+    rgba(255, 255, 255, 0.04) 100%
+  );
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+.notebook-cover__label-texture {
+  position: absolute;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='paper'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='1.2' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23paper)'/%3E%3C/svg%3E");
+  opacity: 0.02;
+  border-radius: 3px;
+  pointer-events: none;
+}
+
+/* Title input */
+.notebook-cover__input {
+  width: 100%;
+  background: transparent;
+  border: none;
+  outline: none;
+  font-family: var(--font-handwritten), 'Just Another Hand', cursive;
+  font-size: 2rem;
+  font-weight: 400;
+  text-align: center;
+  color: rgba(255, 255, 255, 0.9);
+  letter-spacing: 0.02em;
+}
+
+.notebook-cover__input::placeholder {
+  color: rgba(255, 255, 255, 0.35);
+  font-style: italic;
+}
+
+.notebook-cover__input--dark {
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.notebook-cover__input--dark::placeholder {
+  color: rgba(255, 255, 255, 0.25);
+}
+
+/* Open button */
+.notebook-cover__button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 24px;
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 4px;
+  color: rgba(255, 255, 255, 0.4);
+  font-family: var(--font-rounded), 'Varela Round', sans-serif;
+  font-size: 0.8125rem;
+  font-weight: 400;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  cursor: not-allowed;
+  transition: all 0.2s ease;
+}
+
+.notebook-cover__button--active {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.2);
+  color: rgba(255, 255, 255, 0.9);
+  cursor: pointer;
+}
+
+.notebook-cover__button--active:hover {
+  background: rgba(255, 255, 255, 0.12);
+  border-color: rgba(255, 255, 255, 0.25);
+}
+
+.notebook-cover__button--dark {
+  border-color: rgba(255, 255, 255, 0.1);
+  color: rgba(255, 255, 255, 0.3);
+}
+
+.notebook-cover__button--dark.notebook-cover__button--active {
+  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(255, 255, 255, 0.15);
+  color: rgba(255, 255, 255, 0.85);
+}
+
+/* Footer branding */
+.notebook-cover__footer {
+  position: absolute;
+  bottom: 24px;
+  left: 48px;
+  right: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  color: rgba(255, 255, 255, 0.15);
+  font-family: system-ui, -apple-system, sans-serif;
+  font-size: 0.625rem;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+}
+
+.notebook-cover__footer--dark {
+  color: rgba(255, 255, 255, 0.1);
+}
+
+.notebook-cover__footer-line {
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.1) 50%, transparent 100%);
+}
+
+.notebook-cover__footer--dark .notebook-cover__footer-line {
+  background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.06) 50%, transparent 100%);
+}
+
+/* Flip container styling */
+.notebook-flip-container {
+  transform-style: preserve-3d;
+}
+
+/* ==========================================
+   📚 3D Notebook Card (Gallery View)
+   ==========================================
+   Realistic 3D notebook with page edges
+*/
+
+.notebook-card-3d {
+  position: relative;
+  cursor: pointer;
+  perspective: 1000px;
+  transform-style: preserve-3d;
+}
+
+/* Page edges container */
+.notebook-card-3d__pages {
+  position: absolute;
+  right: -8px;
+  top: 4px;
+  bottom: 4px;
+  width: 12px;
+  transform: rotateY(-90deg) translateX(-6px);
+  transform-origin: left center;
+  display: flex;
+  flex-direction: row;
+}
+
+/* Individual page edge layers */
+.notebook-card-3d__page-edge {
+  flex: 1;
+  background: linear-gradient(
+    180deg,
+    #f5f5f0 0%,
+    #e8e8e3 20%,
+    #f0f0eb 50%,
+    #e5e5e0 80%,
+    #f5f5f0 100%
+  );
+  border-right: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.notebook-card-3d__page-edge--1 {
+  background: linear-gradient(180deg, #fafaf5 0%, #f0f0eb 100%);
+}
+
+.notebook-card-3d__page-edge--2 {
+  background: linear-gradient(180deg, #f5f5f0 0%, #eaeae5 100%);
+}
+
+.notebook-card-3d__page-edge--3 {
+  background: linear-gradient(180deg, #f0f0eb 0%, #e5e5e0 100%);
+}
+
+.notebook-card-3d__page-edge--4 {
+  background: linear-gradient(180deg, #eaeae5 0%, #e0e0db 100%);
+}
+
+.notebook-card-3d__page-edge--5 {
+  background: linear-gradient(180deg, #e5e5e0 0%, #dbdbd6 100%);
+  border-right: none;
+}
+
+.dark .notebook-card-3d__page-edge {
+  background: linear-gradient(
+    180deg,
+    #3a3a3a 0%,
+    #2d2d2d 20%,
+    #353535 50%,
+    #2a2a2a 80%,
+    #3a3a3a 100%
+  );
+  border-right-color: rgba(0, 0, 0, 0.2);
+}
+
+.dark .notebook-card-3d__page-edge--1 {
+  background: linear-gradient(180deg, #404040 0%, #353535 100%);
+}
+
+.dark .notebook-card-3d__page-edge--2 {
+  background: linear-gradient(180deg, #3a3a3a 0%, #303030 100%);
+}
+
+.dark .notebook-card-3d__page-edge--3 {
+  background: linear-gradient(180deg, #353535 0%, #2a2a2a 100%);
+}
+
+.dark .notebook-card-3d__page-edge--4 {
+  background: linear-gradient(180deg, #303030 0%, #252525 100%);
+}
+
+.dark .notebook-card-3d__page-edge--5 {
+  background: linear-gradient(180deg, #2a2a2a 0%, #202020 100%);
+}
+
+/* Bottom edge (thickness) */
+.notebook-card-3d__bottom {
+  position: absolute;
+  left: 4px;
+  right: 4px;
+  bottom: -6px;
+  height: 8px;
+  background: linear-gradient(
+    90deg,
+    #1a1a1a 0%,
+    #2d2d2d 50%,
+    #1a1a1a 100%
+  );
+  transform: rotateX(-90deg) translateY(4px);
+  transform-origin: top center;
+  border-radius: 0 0 2px 2px;
+}
+
+.dark .notebook-card-3d__bottom {
+  background: linear-gradient(
+    90deg,
+    #0a0a0a 0%,
+    #1a1a1a 50%,
+    #0a0a0a 100%
+  );
+}
+
+/* Main cover */
+.notebook-card-3d__cover {
+  position: relative;
+  aspect-ratio: 3 / 4;
+  background: linear-gradient(
+    165deg,
+    #1a1a1a 0%,
+    #2d2d2d 30%,
+    #252525 70%,
+    #1f1f1f 100%
+  );
+  border-radius: 3px 10px 10px 3px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  transform-style: preserve-3d;
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.05) inset,
+    0 -1px 0 rgba(0, 0, 0, 0.2) inset,
+    -1px 0 0 rgba(255, 255, 255, 0.03) inset;
+}
+
+.dark .notebook-card-3d__cover {
+  background: linear-gradient(
+    165deg,
+    #0a0a0a 0%,
+    #1a1a1a 30%,
+    #151515 70%,
+    #0f0f0f 100%
+  );
+}
+
+/* Texture */
+.notebook-card-3d__texture {
+  position: absolute;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+  opacity: 0.04;
+  mix-blend-mode: overlay;
+  pointer-events: none;
+}
+
+/* Spine */
+.notebook-card-3d__spine {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 16px;
+  background: linear-gradient(
+    90deg,
+    #0d0d0d 0%,
+    #1a1a1a 30%,
+    #282828 50%,
+    #1a1a1a 70%,
+    #151515 100%
+  );
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 32px 0;
+  box-shadow:
+    inset -2px 0 4px rgba(0, 0, 0, 0.4),
+    1px 0 2px rgba(255, 255, 255, 0.02);
+}
+
+.dark .notebook-card-3d__spine {
+  background: linear-gradient(
+    90deg,
+    #050505 0%,
+    #0d0d0d 30%,
+    #181818 50%,
+    #0d0d0d 70%,
+    #080808 100%
+  );
+}
+
+.notebook-card-3d__spine-detail {
+  width: 100%;
+  height: 2px;
+  background: linear-gradient(90deg, transparent 15%, rgba(255,255,255,0.06) 50%, transparent 85%);
+}
+
+/* Elastic band */
+.notebook-card-3d__band {
+  position: absolute;
+  right: 24px;
+  top: 0;
+  bottom: 0;
+  width: 4px;
+  background: linear-gradient(
+    180deg,
+    transparent 0%,
+    #c41e3a 1.5%,
+    #a81d33 25%,
+    #8b1428 50%,
+    #a81d33 75%,
+    #c41e3a 98.5%,
+    transparent 100%
+  );
+  box-shadow:
+    0 0 8px rgba(196, 30, 58, 0.4),
+    inset 1px 0 1px rgba(255, 255, 255, 0.15),
+    inset -1px 0 1px rgba(0, 0, 0, 0.2);
+  border-radius: 1px;
+}
+
+.dark .notebook-card-3d__band {
+  background: linear-gradient(
+    180deg,
+    transparent 0%,
+    #8b1428 1.5%,
+    #751220 25%,
+    #5f0f1a 50%,
+    #751220 75%,
+    #8b1428 98.5%,
+    transparent 100%
+  );
+  box-shadow:
+    0 0 6px rgba(139, 20, 40, 0.5),
+    inset 1px 0 1px rgba(255, 255, 255, 0.1);
+}
+
+/* Content */
+.notebook-card-3d__content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 32px 32px 24px 40px;
+  gap: 16px;
+}
+
+/* Title label */
+.notebook-card-3d__label {
+  width: 100%;
+  padding: 14px 16px;
+  background: linear-gradient(
+    145deg,
+    rgba(255, 255, 255, 0.1) 0%,
+    rgba(255, 255, 255, 0.05) 100%
+  );
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 4px;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.05),
+    0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.notebook-card-3d__title {
+  font-family: 'Georgia', 'Times New Roman', serif;
+  font-size: 1rem;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.9);
+  text-align: center;
+  line-height: 1.4;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* Tags */
+.notebook-card-3d__tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  justify-content: center;
+  max-width: 100%;
+}
+
+.notebook-card-3d__tag {
+  padding: 4px 10px;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 3px;
+  font-size: 0.7rem;
+  color: rgba(255, 255, 255, 0.6);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.notebook-card-3d__tag-more {
+  padding: 4px 8px;
+  font-size: 0.7rem;
+  color: rgba(255, 255, 255, 0.4);
+}
+
+/* Footer */
+.notebook-card-3d__footer {
+  padding: 12px 32px 16px 40px;
+}
+
+.notebook-card-3d__date {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.35);
+}
+
+/* Hover overlay */
+.notebook-card-3d__overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    180deg,
+    rgba(0, 0, 0, 0.5) 0%,
+    rgba(0, 0, 0, 0.75) 100%
+  );
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  opacity: 0;
+  transition: opacity 0.25s ease;
+  border-radius: 3px 10px 10px 3px;
+}
+
+.notebook-card-3d:hover .notebook-card-3d__overlay {
+  opacity: 1;
+}
+
+.notebook-card-3d__actions {
+  display: flex;
+  gap: 12px;
+}
+
+.notebook-card-3d__action {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 16px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  font-size: 0.8rem;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.notebook-card-3d__action--primary {
+  background: rgba(99, 102, 241, 0.95);
+  color: white;
+}
+
+.notebook-card-3d__action--primary:hover {
+  background: rgba(99, 102, 241, 1);
+  transform: scale(1.05);
+}
+
+.notebook-card-3d__action--danger {
+  background: rgba(239, 68, 68, 0.95);
+  color: white;
+  padding: 10px 12px;
+}
+
+.notebook-card-3d__action--danger:hover {
+  background: rgba(239, 68, 68, 1);
+  transform: scale(1.05);
+}
+
+.notebook-card-3d__open-hint {
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.75);
+  font-weight: 500;
+}
+
+/* Shadow */
+.notebook-card-3d__shadow {
+  position: absolute;
+  bottom: -12px;
+  left: 12px;
+  right: 0;
+  height: 24px;
+  background: radial-gradient(ellipse 80% 50% at center, rgba(0,0,0,0.25) 0%, transparent 70%);
+  pointer-events: none;
+  transition: all 0.3s ease;
+  transform: rotateX(80deg);
+}
+
+.notebook-card-3d:hover .notebook-card-3d__shadow {
+  bottom: -16px;
+  background: radial-gradient(ellipse 85% 55% at center, rgba(0,0,0,0.35) 0%, transparent 70%);
+}
+
+/* Loading skeleton for notebook cards */
+.notebook-card-skeleton {
+  aspect-ratio: 3 / 4;
+  background: linear-gradient(
+    165deg,
+    var(--background-muted) 0%,
+    var(--surface) 50%,
+    var(--background-muted) 100%
+  );
+  border-radius: 3px 10px 10px 3px;
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+/* ==========================================
+   📑 Table of Contents Page
+   ==========================================
+   The first page after the cover showing all notebook pages
+*/
+
+.toc-page {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  padding: 32px 40px;
+  overflow: auto;
+}
+
+.toc-page--light {
+  background: linear-gradient(135deg, #fffef8 0%, #f5f5f0 50%, #fffef8 100%);
+  color: #2d3748;
+}
+
+.toc-page--dark {
+  background: linear-gradient(135deg, #1e1e2e 0%, #2a2a3a 50%, #1e1e2e 100%);
+  color: #e2e8f0;
+}
+
+.toc-page__texture {
+  position: absolute;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='paper'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23paper)'/%3E%3C/svg%3E");
+  opacity: 0.03;
+  mix-blend-mode: multiply;
+  pointer-events: none;
+}
+
+.toc-page__header {
+  text-align: center;
+  margin-bottom: 32px;
+  padding-bottom: 24px;
+}
+
+.toc-page__notebook-title {
+  font-family: var(--font-handwritten), 'Just Another Hand', cursive;
+  font-size: 2.5rem;
+  font-weight: 400;
+  margin-bottom: 12px;
+  letter-spacing: 0.02em;
+}
+
+.toc-page--light .toc-page__notebook-title {
+  color: #1a202c;
+}
+
+.toc-page--dark .toc-page__notebook-title {
+  color: #f7fafc;
+}
+
+.toc-page__divider {
+  width: 60px;
+  height: 2px;
+  margin: 16px auto;
+  border-radius: 1px;
+}
+
+.toc-page--light .toc-page__divider {
+  background: linear-gradient(90deg, transparent, #c41e3a, transparent);
+}
+
+.toc-page--dark .toc-page__divider {
+  background: linear-gradient(90deg, transparent, #8b1428, transparent);
+}
+
+.toc-page__title {
+  font-family: var(--font-rounded), 'Varela Round', sans-serif;
+  font-size: 0.9rem;
+  font-weight: 400;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  opacity: 0.6;
+}
+
+.toc-page__content {
+  flex: 1;
+  overflow: auto;
+}
+
+.toc-page__empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 200px;
+  text-align: center;
+  gap: 12px;
+}
+
+.toc-page--light .toc-page__empty {
+  color: #718096;
+}
+
+.toc-page--dark .toc-page__empty {
+  color: #a0aec0;
+}
+
+.toc-page__list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.toc-page__item {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+
+.toc-page__link {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-decoration: none;
+  border: none;
+  background: transparent;
+  text-align: left;
+  width: 100%;
+}
+
+.toc-page--light .toc-page__link {
+  color: #2d3748;
+}
+
+.toc-page--dark .toc-page__link {
+  color: #e2e8f0;
+}
+
+.toc-page--light .toc-page__link:hover {
+  background: rgba(0, 0, 0, 0.04);
+}
+
+.toc-page--dark .toc-page__link:hover {
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.toc-page__page-number {
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 6px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  flex-shrink: 0;
+}
+
+.toc-page--light .toc-page__page-number {
+  background: rgba(196, 30, 58, 0.1);
+  color: #c41e3a;
+}
+
+.toc-page--dark .toc-page__page-number {
+  background: rgba(139, 20, 40, 0.2);
+  color: #e57373;
+}
+
+.toc-page__page-title {
+  font-family: var(--font-handwritten), 'Just Another Hand', cursive;
+  font-size: 1.5rem;
+  font-weight: 400;
+  flex-shrink: 0;
+  max-width: 60%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.toc-page__dots {
+  flex: 1;
+  height: 1px;
+  margin: 0 8px;
+  background: repeating-linear-gradient(
+    90deg,
+    currentColor 0,
+    currentColor 2px,
+    transparent 2px,
+    transparent 6px
+  );
+  opacity: 0.2;
+}
+
+.toc-page__page-indicator {
+  font-size: 0.75rem;
+  opacity: 0.5;
+  flex-shrink: 0;
+}
+
+.toc-page__delete {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  opacity: 0;
+  transition: all 0.2s ease;
+}
+
+.toc-page__item:hover .toc-page__delete {
+  opacity: 1;
+}
+
+.toc-page--light .toc-page__delete {
+  background: rgba(239, 68, 68, 0.1);
+  color: #ef4444;
+}
+
+.toc-page--dark .toc-page__delete {
+  background: rgba(239, 68, 68, 0.2);
+  color: #f87171;
+}
+
+.toc-page__delete:hover {
+  transform: scale(1.1);
+}
+
+.toc-page__footer {
+  margin-top: 24px;
+  padding-top: 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+.toc-page--light .toc-page__footer {
+  border-top: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.toc-page--dark .toc-page__footer {
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.toc-page__add-button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 24px;
+  border-radius: 8px;
+  border: 2px dashed;
+  cursor: pointer;
+  font-family: var(--font-rounded), 'Varela Round', sans-serif;
+  font-size: 0.9rem;
+  font-weight: 400;
+  transition: all 0.2s ease;
+  background: transparent;
+}
+
+.toc-page--light .toc-page__add-button {
+  border-color: rgba(196, 30, 58, 0.3);
+  color: #c41e3a;
+}
+
+.toc-page--dark .toc-page__add-button {
+  border-color: rgba(139, 20, 40, 0.4);
+  color: #e57373;
+}
+
+.toc-page--light .toc-page__add-button:hover {
+  background: rgba(196, 30, 58, 0.05);
+  border-color: rgba(196, 30, 58, 0.5);
+}
+
+.toc-page--dark .toc-page__add-button:hover {
+  background: rgba(139, 20, 40, 0.15);
+  border-color: rgba(139, 20, 40, 0.6);
+}
+
+.toc-page__page-count {
+  font-size: 0.8rem;
+  opacity: 0.5;
+}
+
+/* ==========================================
+   📄 Notebook Page (Editor Wrapper)
+   ==========================================
+   Individual page with editor and navigation
+*/
+
+.notebook-page {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.notebook-page--light {
+  background: linear-gradient(135deg, #fffef8 0%, #f5f5f0 50%, #fffef8 100%);
+}
+
+.notebook-page--dark {
+  background: linear-gradient(135deg, #1e1e2e 0%, #2a2a3a 50%, #1e1e2e 100%);
+}
+
+.notebook-page__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  flex-shrink: 0;
+}
+
+.notebook-page--light .notebook-page__header {
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.notebook-page--dark .notebook-page__header {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.notebook-page__back-button {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 12px;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  font-size: 0.85rem;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.notebook-page--light .notebook-page__back-button {
+  background: rgba(0, 0, 0, 0.05);
+  color: #4a5568;
+}
+
+.notebook-page--dark .notebook-page__back-button {
+  background: rgba(255, 255, 255, 0.08);
+  color: #a0aec0;
+}
+
+.notebook-page--light .notebook-page__back-button:hover {
+  background: rgba(0, 0, 0, 0.08);
+}
+
+.notebook-page--dark .notebook-page__back-button:hover {
+  background: rgba(255, 255, 255, 0.12);
+}
+
+.notebook-page__indicator {
+  font-size: 0.8rem;
+  font-weight: 500;
+}
+
+.notebook-page--light .notebook-page__indicator {
+  color: #718096;
+}
+
+.notebook-page--dark .notebook-page__indicator {
+  color: #a0aec0;
+}
+
+.notebook-page__content {
+  flex: 1;
+  overflow: auto;
+  position: relative;
+}
+
+/* Paper lines inside the page */
+.notebook-page__content::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.notebook-page--light .notebook-page__content::before {
+  background-image: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 31px,
+    rgba(95, 108, 175, 0.1) 31px,
+    rgba(95, 108, 175, 0.1) 32px
+  );
+  background-size: 100% 32px;
+  background-position: 0 24px;
+}
+
+.notebook-page--dark .notebook-page__content::before {
+  background-image: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 31px,
+    rgba(157, 123, 224, 0.12) 31px,
+    rgba(157, 123, 224, 0.12) 32px
+  );
+  background-size: 100% 32px;
+  background-position: 0 24px;
+}
+
+.notebook-page__footer {
+  display: flex;
+  justify-content: center;
+  padding: 12px;
+  flex-shrink: 0;
+}
+
+.notebook-page__page-number {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.notebook-page--light .notebook-page__page-number {
+  background: rgba(0, 0, 0, 0.05);
+  color: #4a5568;
+}
+
+.notebook-page--dark .notebook-page__page-number {
+  background: rgba(255, 255, 255, 0.08);
+  color: #a0aec0;
+}
+
+/* ==========================================
+   📝 Notebook Editor Content Styling
+   ==========================================
+   Styles for text content inside notebook pages
+*/
+
+.notebook-editor-wrapper {
+  height: 100%;
+}
+
+.notebook-editor-wrapper .ProseMirror {
+  font-family: var(--font-handwritten), 'Just Another Hand', cursive;
+  font-size: 1.5rem;
+  line-height: 32px;
+  padding: 24px 24px 24px 88px;
+  min-height: 100%;
+}
+
+.notebook-editor-wrapper .ProseMirror p {
+  margin: 0;
+  line-height: 32px;
+}
+
+.notebook-editor-wrapper .ProseMirror h1 {
+  font-family: var(--font-handwritten), 'Just Another Hand', cursive;
+  font-size: 2.5rem;
+  font-weight: 400;
+  line-height: 64px;
+  margin: 0 0 0 0;
+}
+
+.notebook-editor-wrapper .ProseMirror h2 {
+  font-family: var(--font-handwritten), 'Just Another Hand', cursive;
+  font-size: 2rem;
+  font-weight: 400;
+  line-height: 32px;
+  margin: 0;
+}
+
+.notebook-editor-wrapper .ProseMirror h3 {
+  font-family: var(--font-handwritten), 'Just Another Hand', cursive;
+  font-size: 1.75rem;
+  font-weight: 400;
+  line-height: 32px;
+  margin: 0;
+}
+
+.notebook-editor-wrapper .ProseMirror ul,
+.notebook-editor-wrapper .ProseMirror ol {
+  padding-left: 24px;
+  margin: 0;
+}
+
+.notebook-editor-wrapper .ProseMirror li {
+  line-height: 32px;
+}
+
+.notebook-editor-wrapper .ProseMirror blockquote {
+  border-left: 3px solid rgba(196, 30, 58, 0.4);
+  padding-left: 16px;
+  margin: 0;
+  font-style: italic;
+}
+
+.notebook-editor-wrapper .ProseMirror code {
+  font-family: 'Fira Code', monospace;
+  font-size: 1rem;
+  background: rgba(0, 0, 0, 0.05);
+  padding: 2px 6px;
+  border-radius: 3px;
+}
+
+.dark .notebook-editor-wrapper .ProseMirror code {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.notebook-editor-wrapper .ProseMirror pre {
+  font-family: 'Fira Code', monospace;
+  font-size: 0.9rem;
+  background: rgba(0, 0, 0, 0.05);
+  padding: 16px;
+  border-radius: 6px;
+  margin: 0;
+  line-height: 1.5;
+}
+
+.dark .notebook-editor-wrapper .ProseMirror pre {
+  background: rgba(0, 0, 0, 0.3);
+}
+
+.notebook-editor-wrapper .ProseMirror .is-editor-empty:first-child::before {
+  font-family: var(--font-handwritten), 'Just Another Hand', cursive;
+  font-size: 1.5rem;
+}

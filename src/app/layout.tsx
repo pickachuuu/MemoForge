@@ -1,7 +1,7 @@
 // app/layout.tsx or app/layout.ts (Next.js App Router)
 
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Geist, Geist_Mono, Just_Another_Hand, Varela_Round } from "next/font/google";
 import { Cormorant_Garamond } from "next/font/google";
 import "./globals.css";
 
@@ -22,6 +22,18 @@ const cormorant = Cormorant_Garamond({
   weight: ["400", "500", "600", "700"],
 });
 
+const justAnotherHand = Just_Another_Hand({
+  variable: "--font-handwritten",
+  subsets: ["latin"],
+  weight: "400",
+});
+
+const varelaRound = Varela_Round({
+  variable: "--font-rounded",
+  subsets: ["latin"],
+  weight: "400",
+});
+
 // Metadata
 export const metadata: Metadata = {
   title: "MemoForge - Smart Learning Platform",
@@ -37,7 +49,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} ${cormorant.variable} antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} ${cormorant.variable} ${justAnotherHand.variable} ${varelaRound.variable} antialiased`}
       >
         {children}
       </body>

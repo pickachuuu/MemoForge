@@ -189,6 +189,145 @@ export function useNoteActions() {
         return slug;
     };
 
+    // =====================
+    // Page CRUD Operations
+    // =====================
+
+    /**
+     * Creates a new page for a note and returns its ID
+     */
+    const createPage = async (noteId: string, pageOrder?: number) => {
+        const { data: { session } } = await supabase.auth.getSession();
+        if (!session?.user?.id) throw new Error('Not authenticated');
+
+        // If no pageOrder specified, get the next order number
+        let order = pageOrder;
+        if (order === undefined) {
+            const { data: existingPages } = await supabase
+                .from('note_pages')
+                .select('page_order')
+                .eq('note_id', noteId)
+                .order('page_order', { ascending: false })
+                .limit(1);
+
+            order = existingPages && existingPages.length > 0
+                ? existingPages[0].page_order + 1
+                : 0;
+        }
+
+        const { data, error } = await supabase
+            .from('note_pages')
+            .insert([{
+                note_id: noteId,
+                title: 'Untitled Page',
+                content: '',
+                page_order: order
+            }])
+            .select('id')
+            .single();
+
+        if (error) {
+            console.error('Error creating page:', error);
+            throw error;
+        }
+
+        return data?.id;
+    };
+
+    /**
+     * Saves/updates a page with the given data
+     */
+    const savePage = async (
+        pageId: string,
+        { title, content }: { title?: string; content?: string }
+    ) => {
+        const updateData: { title?: string; content?: string; updated_at: string } = {
+            updated_at: new Date().toISOString()
+        };
+
+        if (title !== undefined) updateData.title = title;
+        if (content !== undefined) updateData.content = content;
+
+        const { error } = await supabase
+            .from('note_pages')
+            .update(updateData)
+            .eq('id', pageId);
+
+        if (error) {
+            console.error('Error saving page:', error);
+            throw error;
+        }
+
+        return true;
+    };
+
+    /**
+     * Fetches all pages for a note, ordered by page_order
+     */
+    const getPages = async (noteId: string) => {
+        const { data, error } = await supabase
+            .from('note_pages')
+            .select('*')
+            .eq('note_id', noteId)
+            .order('page_order', { ascending: true });
+
+        if (error) {
+            console.error('Error fetching pages:', error);
+            return [];
+        }
+
+        return data || [];
+    };
+
+    /**
+     * Deletes a page by its ID
+     */
+    const deletePage = async (pageId: string) => {
+        const { error } = await supabase
+            .from('note_pages')
+            .delete()
+            .eq('id', pageId);
+
+        if (error) {
+            console.error('Error deleting page:', error);
+            throw error;
+        }
+
+        return true;
+    };
+
+    /**
+     * Reorders pages by updating their page_order values
+     */
+    const reorderPages = async (pages: { id: string; page_order: number }[]) => {
+        // Update each page's order
+        for (const page of pages) {
+            const { error } = await supabase
+                .from('note_pages')
+                .update({ page_order: page.page_order })
+                .eq('id', page.id);
+
+            if (error) {
+                console.error('Error reordering page:', error);
+                throw error;
+            }
+        }
+
+        return true;
+    };
+
+    /**
+     * Extracts H1 heading from HTML content to use as page title
+     */
+    const extractH1Title = (htmlContent: string): string => {
+        const match = htmlContent.match(/<h1[^>]*>(.*?)<\/h1>/i);
+        if (match) {
+            // Strip HTML tags from the heading content
+            return match[1].replace(/<[^>]*>/g, '').trim() || 'Untitled Page';
+        }
+        return 'Untitled Page';
+    };
+
     return {
         createNote,
         saveNote,
@@ -196,6 +335,13 @@ export function useNoteActions() {
         getNoteBySlug,
         getNoteById,
         deleteNote,
-        updateNoteSlug
+        updateNoteSlug,
+        // Page operations
+        createPage,
+        savePage,
+        getPages,
+        deletePage,
+        reorderPages,
+        extractH1Title
     };
 }

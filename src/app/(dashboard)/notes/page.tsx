@@ -1,9 +1,10 @@
 'use client';
 
 import Header from '@/component/ui/Header';
-import { ClayCard, ClayButton, ClayBadge } from '@/component/ui/Clay';
+import { ClayCard } from '@/component/ui/Clay';
+import NotebookCard from '@/component/ui/NotebookCard';
 import CreateNoteButton from '@/component/features/CreateNoteButton';
-import { File01Icon, Delete01Icon, GoogleGeminiIcon, BookOpen01Icon, ArrowRight01Icon, Clock01Icon } from 'hugeicons-react';
+import { Book02Icon, BookOpen01Icon } from 'hugeicons-react';
 import { useEffect, useState } from 'react';
 import { useNoteActions } from '@/hook/useNoteActions';
 import { useFlashcardActions } from '@/hook/useFlashcardActions';
@@ -100,11 +101,11 @@ export default function NotesPage() {
     try {
       await deleteNote(selectedNote.id);
       setNotes(prevNotes => prevNotes.filter(note => note.id !== selectedNote.id));
-      setSaveSuccess('Note deleted successfully!');
+      setSaveSuccess('Notebook deleted successfully!');
       setTimeout(() => setSaveSuccess(null), 3000);
     } catch (error) {
-      console.error('Error deleting note:', error);
-      setSaveSuccess('Error deleting note. Please try again.');
+      console.error('Error deleting notebook:', error);
+      setSaveSuccess('Error deleting notebook. Please try again.');
       setTimeout(() => setSaveSuccess(null), 3000);
     }
   };
@@ -139,25 +140,13 @@ export default function NotesPage() {
     setSelectedNote(null);
   };
 
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
-    const now = new Date();
-    const diff = Math.floor((now.getTime() - date.getTime()) / 1000);
-
-    if (diff < 60) return 'Just now';
-    if (diff < 3600) return `${Math.floor(diff / 60)}m ago`;
-    if (diff < 86400) return `${Math.floor(diff / 3600)}h ago`;
-    if (diff < 604800) return `${Math.floor(diff / 86400)}d ago`;
-    return date.toLocaleDateString();
-  };
-
   return (
     <>
       <div className="space-y-6">
         <Header
-          title="Notes"
-          description="Organize and manage your study notes"
-          icon={<File01Icon className="w-6 h-6 text-accent" />}
+          title="Your Notebooks"
+          description="Your personal collection of study notebooks"
+          icon={<Book02Icon className="w-6 h-6 text-accent" />}
         >
           <CreateNoteButton />
         </Header>
@@ -182,24 +171,9 @@ export default function NotesPage() {
         )}
 
         {loading ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-            {Array.from({ length: 6 }).map((_, i) => (
-              <ClayCard key={i} variant="default" padding="none" className="rounded-2xl animate-pulse overflow-hidden">
-                <div className="p-5 space-y-4">
-                  <div className="flex items-start justify-between">
-                    <div className="h-6 w-2/3 bg-background-muted rounded-lg" />
-                    <div className="h-8 w-8 bg-background-muted rounded-lg" />
-                  </div>
-                  <div className="flex gap-2">
-                    <div className="h-6 w-16 bg-background-muted rounded-full" />
-                    <div className="h-6 w-12 bg-background-muted rounded-full" />
-                  </div>
-                </div>
-                <div className="px-5 py-4 bg-background-muted/30 flex justify-between">
-                  <div className="h-4 w-24 bg-background-muted rounded" />
-                  <div className="h-8 w-20 bg-background-muted rounded-lg" />
-                </div>
-              </ClayCard>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+            {Array.from({ length: 3 }).map((_, i) => (
+              <div key={i} className="notebook-card-skeleton" />
             ))}
           </div>
         ) : filteredNotes.length === 0 ? (
@@ -208,82 +182,24 @@ export default function NotesPage() {
               <div className="w-20 h-20 rounded-2xl bg-accent-muted flex items-center justify-center mx-auto mb-6">
                 <BookOpen01Icon className="w-10 h-10 text-accent" />
               </div>
-              <h3 className="text-xl font-semibold text-foreground mb-2">No notes yet</h3>
+              <h3 className="text-xl font-semibold text-foreground mb-2">No notebooks yet</h3>
               <p className="text-foreground-muted mb-6 max-w-sm mx-auto">
-                Create your first note to start organizing your study materials
+                Create your first notebook to start organizing your study materials
               </p>
               <CreateNoteButton />
             </div>
           </ClayCard>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
             {filteredNotes.map((note) => (
-              <Link href={`/editor/${note.slug || note.id}`} key={note.id} className="block group">
-                <ClayCard
-                  variant="default"
-                  padding="none"
-                  className="rounded-2xl overflow-hidden h-full flex flex-col hover:scale-[1.02] transition-all duration-300"
-                >
-                  {/* Card Header */}
-                  <div className="p-5 flex-1">
-                    <div className="flex items-start justify-between gap-3 mb-4">
-                      <h3 className="font-semibold text-lg text-foreground group-hover:text-accent transition-colors line-clamp-2">
-                        {note.title || 'Untitled Note'}
-                      </h3>
-                      <div className="p-2 rounded-xl bg-accent-muted shrink-0">
-                        <File01Icon className="w-5 h-5 text-accent" />
-                      </div>
-                    </div>
-
-                    {/* Tags */}
-                    <div className="flex flex-wrap gap-2">
-                      {(note.tags || []).slice(0, 3).map((tag: string) => (
-                        <ClayBadge key={tag} variant="accent" className="text-xs px-2 py-1">
-                          {tag}
-                        </ClayBadge>
-                      ))}
-                      {(note.tags || []).length > 3 && (
-                        <span className="text-xs text-foreground-muted px-2 py-1">
-                          +{note.tags.length - 3} more
-                        </span>
-                      )}
-                    </div>
-                  </div>
-
-                  {/* Card Footer */}
-                  <div className="px-5 py-4 bg-background-muted/30 flex items-center justify-between gap-3 border-t border-border/50">
-                    <div className="flex items-center gap-1.5 text-xs text-foreground-muted">
-                      <Clock01Icon className="w-3.5 h-3.5" />
-                      <span>{note.updated_at ? formatDate(note.updated_at) : 'Never'}</span>
-                    </div>
-
-                    <div className="flex gap-2">
-                      <button
-                        className="p-2 rounded-lg bg-accent-muted hover:bg-accent text-accent hover:text-white transition-all duration-200"
-                        title="Generate flashcards"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          e.preventDefault();
-                          handleGenerateFlashcards(note);
-                        }}
-                      >
-                        <GoogleGeminiIcon className="w-4 h-4" />
-                      </button>
-
-                      <button
-                        className="p-2 rounded-lg bg-red-50 dark:bg-red-950/30 hover:bg-red-500 text-red-500 hover:text-white transition-all duration-200"
-                        title="Delete note"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          e.preventDefault();
-                          handleDeleteNote(note);
-                        }}
-                      >
-                        <Delete01Icon className="w-4 h-4" />
-                      </button>
-                    </div>
-                  </div>
-                </ClayCard>
+              <Link href={`/editor/${note.slug || note.id}`} key={note.id} className="block">
+                <NotebookCard
+                  title={note.title}
+                  tags={note.tags || []}
+                  updatedAt={note.updated_at}
+                  onGenerateFlashcards={() => handleGenerateFlashcards(note)}
+                  onDelete={() => handleDeleteNote(note)}
+                />
               </Link>
             ))}
           </div>
@@ -302,10 +218,10 @@ export default function NotesPage() {
         isOpen={isDeleteModalOpen}
         onClose={() => setIsDeleteModalOpen(false)}
         onConfirm={handleConfirmDelete}
-        title="Delete Note"
-        description="Are you sure you want to delete this note? This action cannot be undone."
-        itemName={selectedNote?.title || 'Untitled Note'}
-        itemType="note"
+        title="Delete Notebook"
+        description="Are you sure you want to delete this notebook? This action cannot be undone."
+        itemName={selectedNote?.title || 'Untitled Notebook'}
+        itemType="notebook"
       />
     </>
   );

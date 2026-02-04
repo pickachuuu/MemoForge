@@ -124,3 +124,72 @@ export const hoverScale = {
 export const tapScale = {
   scale: 0.98,
 };
+
+// ==========================================
+// Notebook Flip Animation
+// ==========================================
+
+export const notebookFlipTransition: Transition = {
+  type: 'tween',
+  duration: 0.8,
+  ease: [0.4, 0, 0.2, 1], // Custom easing for realistic page flip
+};
+
+export const notebookCoverVariants: Variants = {
+  closed: {
+    rotateY: 0,
+    transition: notebookFlipTransition,
+  },
+  open: {
+    rotateY: -180,
+    transition: notebookFlipTransition,
+  },
+};
+
+export const notebookPagesVariants: Variants = {
+  hidden: {
+    opacity: 0,
+    scale: 0.98,
+  },
+  visible: {
+    opacity: 1,
+    scale: 1,
+    transition: {
+      duration: 0.4,
+      delay: 0.4, // Start appearing midway through the flip
+      ease: 'easeOut',
+    },
+  },
+};
+
+export const coverContentVariants: Variants = {
+  hidden: {
+    opacity: 0,
+    y: 20,
+  },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      duration: 0.5,
+      delay: 0.2,
+      ease: 'easeOut',
+    },
+  },
+  exit: {
+    opacity: 0,
+    transition: {
+      duration: 0.3,
+    },
+  },
+};
+
+// Subtle hover animation for the cover
+export const coverHover = {
+  scale: 1.01,
+  transition: {
+    type: 'spring',
+    stiffness: 300,
+    damping: 20,
+  },
+};

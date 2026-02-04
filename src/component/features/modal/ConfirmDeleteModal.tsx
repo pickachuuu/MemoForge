@@ -12,7 +12,7 @@ export interface ConfirmDeleteModalProps {
   title: string;
   description: string;
   itemName: string;
-  itemType: 'note' | 'flashcard set';
+  itemType: 'note' | 'notebook' | 'flashcard set';
   loading?: boolean;
 }
 
@@ -32,7 +32,7 @@ export default function ConfirmDeleteModal({
   const handleConfirm = async () => {
     setIsDeleting(true);
     setError(null);
-    
+
     try {
       await onConfirm();
       onClose();
@@ -57,11 +57,11 @@ export default function ConfirmDeleteModal({
   return (
     <>
       {/* Backdrop */}
-      <div 
+      <div
         className="fixed inset-0 bg-black/50 backdrop-blur-sm z-40"
         onClick={handleClose}
       />
-      
+
       {/* Modal */}
       <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
         <Card className="w-full max-w-md">
@@ -81,7 +81,7 @@ export default function ConfirmDeleteModal({
               <div className="flex items-center gap-2 mb-2">
                 <Delete01Icon className="w-4 h-4 text-foreground-muted" />
                 <span className="text-sm font-medium text-foreground-muted">
-                  {itemType === 'note' ? 'Note' : 'Flashcard Set'}
+                  {itemType === 'note' ? 'Note' : itemType === 'notebook' ? 'Notebook' : 'Flashcard Set'}
                 </span>
               </div>
               <p className="text-sm font-medium text-foreground">{itemName}</p>
@@ -125,7 +125,7 @@ export default function ConfirmDeleteModal({
               ) : (
                 <div className="flex items-center space-x-2">
                   <Delete01Icon className="w-4 h-4" />
-                  <span>Delete {itemType === 'note' ? 'Note' : 'Set'}</span>
+                  <span>Delete {itemType === 'note' ? 'Note' : itemType === 'notebook' ? 'Notebook' : 'Set'}</span>
                 </div>
               )}
             </Button>
