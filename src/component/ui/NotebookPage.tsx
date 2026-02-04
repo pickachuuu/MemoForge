@@ -1,0 +1,99 @@
+'use client';
+
+import RichTextEditor from './RichTextEditor';
+
+interface NotebookPageProps {
+  content: string;
+  onChange: (content: string) => void;
+  theme: 'light' | 'dark';
+  autoFocus?: boolean;
+}
+
+/**
+ * NotebookPage - Individual page with the lined notebook paper style
+ * Toolbar is handled externally by the parent
+ */
+export default function NotebookPage({
+  content,
+  onChange,
+  theme,
+  autoFocus = true,
+}: NotebookPageProps) {
+  const isDark = theme === 'dark';
+  const editorBg = isDark ? '#1e1e2e' : '#fffef8';
+  const lineColor = isDark ? 'rgba(157, 123, 224, 0.15)' : 'rgba(95, 108, 175, 0.12)';
+  const marginColor = isDark ? 'rgba(180, 100, 100, 0.2)' : 'rgba(220, 80, 80, 0.25)';
+  const bgMuted = isDark ? '#1a1a2e' : '#f5f5f0';
+
+  return (
+    <div
+      className="w-full h-full rounded-lg relative overflow-hidden"
+      style={{ backgroundColor: editorBg }}
+    >
+      {/* Notebook lines */}
+      <div
+        className="absolute inset-0 pointer-events-none"
+        style={{
+          backgroundImage: `repeating-linear-gradient(
+            0deg,
+            transparent,
+            transparent 31px,
+            ${lineColor} 31px,
+            ${lineColor} 32px
+          )`,
+          backgroundSize: '100% 32px',
+          backgroundPosition: '0 24px',
+        }}
+      />
+
+      {/* Red margin line */}
+      <div
+        className="absolute top-0 bottom-0 w-0.5 pointer-events-none"
+        style={{
+          left: '72px',
+          background: `linear-gradient(180deg, transparent 0%, ${marginColor} 5%, ${marginColor} 95%, transparent 100%)`,
+        }}
+      />
+
+      {/* Hole punches */}
+      <div className="absolute left-4 top-0 bottom-0 w-4 pointer-events-none">
+        {[80, 200, 320, 440, 560, 680].map((top) => (
+          <div
+            key={top}
+            className="absolute rounded-full"
+            style={{
+              top: `${top}px`,
+              left: '4px',
+              width: '16px',
+              height: '16px',
+              backgroundColor: bgMuted,
+              boxShadow: `inset 2px 2px 4px ${isDark ? 'rgba(0,0,0,0.5)' : 'rgba(0,0,0,0.1)'}`,
+            }}
+          />
+        ))}
+      </div>
+
+      {/* Paper texture overlay */}
+      <div
+        className="absolute inset-0 pointer-events-none opacity-[0.02]"
+        style={{
+          backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='paper'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23paper)'/%3E%3C/svg%3E")`,
+          mixBlendMode: 'multiply',
+        }}
+      />
+
+      {/* Editor */}
+      <div className="relative h-full notebook-editor-wrapper">
+        <RichTextEditor
+          content={content}
+          onChange={onChange}
+          placeholder="Start writing... Use Heading 1 (H1) for the page title"
+          className="h-full"
+          editorClassName="notebook-editor-content"
+          autoFocus={autoFocus}
+          fullscreen={false}
+        />
+      </div>
+    </div>
+  );
+}
