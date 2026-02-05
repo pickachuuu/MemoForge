@@ -62,8 +62,14 @@ export default function TakeExamPage() {
     };
   }, [exam?.questions]);
 
-  // Load exam
+  // Load exam - only run once when examId changes
+  const hasLoadedRef = useRef(false);
+
   useEffect(() => {
+    // Prevent double-loading
+    if (hasLoadedRef.current) return;
+    hasLoadedRef.current = true;
+
     const loadExam = async () => {
       setIsLoading(true);
       try {
@@ -102,7 +108,8 @@ export default function TakeExamPage() {
     };
 
     loadExam();
-  }, [examId, getExamById, startAttemptMutation, getInProgressAttempt, getAttemptResponses, router]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [examId]);
 
   // Timer
   useEffect(() => {
