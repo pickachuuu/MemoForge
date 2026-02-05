@@ -1,10 +1,10 @@
 'use client';
 
-import { useEffect, useState, useRef, ReactNode } from 'react';
+import { useEffect, useState, useRef, ReactNode, useCallback } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { useNoteActions } from '@/hook/useNoteActions';
 import { createClient } from '@/utils/supabase/client';
-import RichTextEditor from '@/component/ui/RichTextEditor';
+import { VerticalEditorToolbar, Editor } from '@/component/ui/RichTextEditor';
 import PageFlipContainer, { ViewType } from '@/component/ui/PageFlipContainer';
 import NotebookCover from '@/component/ui/NotebookCover';
 import TableOfContents, { NotePage } from '@/component/ui/TableOfContents';
@@ -63,6 +63,14 @@ export default function EditorPage() {
   const [pages, setPages] = useState<NotePage[]>([]);
   const [currentPageContent, setCurrentPageContent] = useState('');
   const [lastSavedContent, setLastSavedContent] = useState('');
+
+  // Editor instance for toolbar
+  const [editor, setEditor] = useState<Editor | null>(null);
+
+  // Callback when editor is ready
+  const handleEditorReady = useCallback((editorInstance: Editor) => {
+    setEditor(editorInstance);
+  }, []);
 
   // Store the actual previous content component for flip animation
   const previousContentRef = useRef<ReactNode>(null);
@@ -299,6 +307,7 @@ export default function EditorPage() {
 
     setCurrentView('toc');
     setCurrentPageIndex(null);
+    setEditor(null);
   };
 
   // Handle deleting a page
@@ -543,6 +552,7 @@ export default function EditorPage() {
         content={currentPageContent}
         onChange={setCurrentPageContent}
         theme={theme}
+        onEditorReady={handleEditorReady}
       />
     ) : null;
 
@@ -738,12 +748,30 @@ export default function EditorPage() {
       )}
 
       {/* Content Area */}
-      <div className="flex-1 overflow-hidden flex" style={{ backgroundColor: bgMuted }}>
+      <div
+        className="flex-1 overflow-hidden flex relative"
+        style={{
+          backgroundColor: theme === 'dark' ? '#12121a' : '#e8e6e0',
+        }}
+      >
+        {/* Subtle gradient background */}
+        <div
+          className="absolute inset-0 pointer-events-none"
+          style={{
+            backgroundImage: theme === 'dark'
+              ? `radial-gradient(ellipse 80% 50% at 20% 80%, rgba(157, 123, 224, 0.08) 0%, transparent 50%),
+                 radial-gradient(ellipse 60% 40% at 80% 20%, rgba(99, 102, 241, 0.06) 0%, transparent 50%)`
+              : `radial-gradient(ellipse 80% 50% at 20% 80%, rgba(95, 108, 175, 0.08) 0%, transparent 50%),
+                 radial-gradient(ellipse 60% 40% at 80% 20%, rgba(180, 160, 120, 0.06) 0%, transparent 50%)`,
+          }}
+        />
         {/* Main notebook area */}
-        <div className="flex-1 overflow-auto py-8 px-4">
+        <div className="flex-1 overflow-hidden py-8 px-4 relative z-10 flex items-center justify-center">
           <div
-            className="max-w-4xl mx-auto relative"
+            className="relative"
             style={{
+              width: '100%',
+              maxWidth: '56rem',
               height: currentView === 'cover' ? 'calc(100vh - 64px)' : 'calc(100vh - 140px)',
               minHeight: '500px',
             }}
@@ -788,116 +816,199 @@ export default function EditorPage() {
           </div>
         </div>
 
-        {/* Right side control panel (visible on TOC and pages) */}
+        {/* Right side floating control panel (visible on TOC and pages) */}
         {(currentView === 'toc' || currentView === 'page') && (
           <div
-            className="w-16 flex-shrink-0 flex flex-col items-center py-8 gap-2"
+            className="absolute right-0 top-0 bottom-0 flex items-center justify-center z-20"
             style={{
-              backgroundColor: theme === 'dark' ? 'rgba(0,0,0,0.2)' : 'rgba(0,0,0,0.03)',
-              borderLeft: `1px solid ${borderColor}`,
+              width: 'calc((100% - 56rem) / 2 + 60px)',
+              minWidth: '220px',
             }}
           >
-            {/* Current position indicator */}
             <div
-              className={`w-10 px-1 py-2 rounded-lg flex flex-col items-center justify-center text-xs font-medium ${
-                theme === 'dark' ? 'bg-gray-900 text-gray-400' : 'bg-gray-100 text-gray-500'
-              }`}
+              className="rounded-2xl overflow-hidden"
+              style={{
+                width: currentView === 'page' ? '160px' : '120px',
+                background: theme === 'dark'
+                  ? 'linear-gradient(145deg, #2a2a3a 0%, #232333 50%, #1e1e2e 100%)'
+                  : 'linear-gradient(160deg, #f8f7f4 0%, #f0efec 50%, #e8e7e4 100%)',
+                boxShadow: theme === 'dark'
+                  ? '0 8px 32px rgba(0, 0, 0, 0.5), 0 4px 16px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.05)'
+                  : '0 8px 32px rgba(0, 0, 0, 0.12), 0 4px 16px rgba(0, 0, 0, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.8)',
+                border: theme === 'dark'
+                  ? '1px solid rgba(255, 255, 255, 0.08)'
+                  : '1px solid rgba(0, 0, 0, 0.06)',
+              }}
             >
-              {currentView === 'toc' ? (
-                <>
-                  <Menu01Icon className="w-4 h-4 mb-1" />
-                  <span className="text-[10px]">TOC</span>
-                </>
-              ) : (
-                <>
-                  <span className="text-lg font-bold" style={{ fontFamily: 'var(--font-handwritten)' }}>
-                    {(currentPageIndex ?? 0) + 1}
-                  </span>
-                  <span className="opacity-60">of {pages.length}</span>
-                </>
+              {/* Page indicator section */}
+              <div
+                className="p-3 flex items-center justify-center"
+                style={{
+                  borderBottom: theme === 'dark'
+                    ? '1px solid rgba(255,255,255,0.06)'
+                    : '1px solid rgba(0,0,0,0.06)',
+                }}
+              >
+                <div
+                  className={`px-4 py-2 rounded-xl flex items-center gap-2 text-sm font-medium ${
+                    theme === 'dark'
+                      ? 'bg-gray-900/60 text-gray-300'
+                      : 'bg-white/60 text-gray-600'
+                  }`}
+                  style={{
+                    boxShadow: theme === 'dark'
+                      ? 'inset 0 2px 4px rgba(0,0,0,0.4)'
+                      : 'inset 0 2px 4px rgba(0,0,0,0.06)',
+                  }}
+                >
+                  {currentView === 'toc' ? (
+                    <>
+                      <Menu01Icon className="w-4 h-4" />
+                      <span>Contents</span>
+                    </>
+                  ) : (
+                    <>
+                      <span className="text-lg font-bold" style={{ fontFamily: 'var(--font-handwritten)' }}>
+                        {(currentPageIndex ?? 0) + 1}
+                      </span>
+                      <span className="opacity-60">/ {pages.length}</span>
+                    </>
+                  )}
+                </div>
+              </div>
+
+              {/* Navigation controls - 2x2 grid */}
+              <div
+                className="p-3"
+                style={{
+                  borderBottom: theme === 'dark'
+                    ? '1px solid rgba(255,255,255,0.06)'
+                    : '1px solid rgba(0,0,0,0.06)',
+                }}
+              >
+                <div className="grid grid-cols-2 gap-2">
+                  {/* First / TOC */}
+                  <button
+                    onClick={handleFirstPage}
+                    disabled={currentView === 'toc'}
+                    className={`w-full h-9 rounded-xl flex items-center justify-center transition-all ${
+                      currentView === 'toc'
+                        ? 'opacity-30 cursor-not-allowed'
+                        : theme === 'dark'
+                          ? 'bg-gray-800/80 hover:bg-gray-700/80 text-gray-300'
+                          : 'bg-white/80 hover:bg-white text-gray-600'
+                    }`}
+                    style={{
+                      boxShadow: currentView === 'toc' ? 'none' : (theme === 'dark'
+                        ? '0 2px 4px rgba(0,0,0,0.3)'
+                        : '0 2px 4px rgba(0,0,0,0.08)'),
+                    }}
+                    title="Back to Contents"
+                  >
+                    <ArrowDownLeft01Icon className="w-4 h-4" />
+                  </button>
+
+                  {/* Last page */}
+                  <button
+                    onClick={handleLastPage}
+                    disabled={currentView === 'page' && currentPageIndex === pages.length - 1}
+                    className={`w-full h-9 rounded-xl flex items-center justify-center transition-all ${
+                      currentView === 'page' && currentPageIndex === pages.length - 1
+                        ? 'opacity-30 cursor-not-allowed'
+                        : theme === 'dark'
+                          ? 'bg-gray-800/80 hover:bg-gray-700/80 text-gray-300'
+                          : 'bg-white/80 hover:bg-white text-gray-600'
+                    }`}
+                    style={{
+                      boxShadow: (currentView === 'page' && currentPageIndex === pages.length - 1) ? 'none' : (theme === 'dark'
+                        ? '0 2px 4px rgba(0,0,0,0.3)'
+                        : '0 2px 4px rgba(0,0,0,0.08)'),
+                    }}
+                    title="Last page"
+                  >
+                    <ArrowUpRight01Icon className="w-4 h-4" />
+                  </button>
+
+                  {/* Previous page */}
+                  <button
+                    onClick={handlePrevPage}
+                    disabled={currentView === 'toc'}
+                    className={`w-full h-9 rounded-xl flex items-center justify-center transition-all ${
+                      currentView === 'toc'
+                        ? 'opacity-30 cursor-not-allowed'
+                        : theme === 'dark'
+                          ? 'bg-gray-800/80 hover:bg-gray-700/80 text-gray-300'
+                          : 'bg-white/80 hover:bg-white text-gray-600'
+                    }`}
+                    style={{
+                      boxShadow: currentView === 'toc' ? 'none' : (theme === 'dark'
+                        ? '0 2px 4px rgba(0,0,0,0.3)'
+                        : '0 2px 4px rgba(0,0,0,0.08)'),
+                    }}
+                    title={currentView === 'page' && currentPageIndex === 0 ? 'Back to Contents' : 'Previous page'}
+                  >
+                    <ArrowLeft01Icon className="w-4 h-4" />
+                  </button>
+
+                  {/* Next page */}
+                  <button
+                    onClick={handleNextPage}
+                    disabled={currentView === 'page' && currentPageIndex === pages.length - 1}
+                    className={`w-full h-9 rounded-xl flex items-center justify-center transition-all ${
+                      currentView === 'page' && currentPageIndex === pages.length - 1
+                        ? 'opacity-30 cursor-not-allowed'
+                        : theme === 'dark'
+                          ? 'bg-gray-800/80 hover:bg-gray-700/80 text-gray-300'
+                          : 'bg-white/80 hover:bg-white text-gray-600'
+                    }`}
+                    style={{
+                      boxShadow: (currentView === 'page' && currentPageIndex === pages.length - 1) ? 'none' : (theme === 'dark'
+                        ? '0 2px 4px rgba(0,0,0,0.3)'
+                        : '0 2px 4px rgba(0,0,0,0.08)'),
+                    }}
+                    title={currentView === 'toc' ? 'Go to first page' : 'Next page'}
+                  >
+                    <ArrowRight01Icon className="w-4 h-4" />
+                  </button>
+                </div>
+              </div>
+
+              {/* Editor toolbar (only when editing a page) */}
+              {currentView === 'page' && editor && (
+                <div
+                  className="p-3 overflow-y-auto"
+                  style={{
+                    maxHeight: 'calc(100vh - 400px)',
+                    borderBottom: theme === 'dark'
+                      ? '1px solid rgba(255,255,255,0.06)'
+                      : '1px solid rgba(0,0,0,0.06)',
+                  }}
+                >
+                  <VerticalEditorToolbar editor={editor} theme={theme} />
+                </div>
               )}
+
+              {/* Add new page */}
+              <div className="p-3">
+                <button
+                  onClick={handleAddPageFromEditor}
+                  className={`w-full h-9 rounded-xl flex items-center justify-center gap-2 transition-all text-sm font-medium ${
+                    theme === 'dark'
+                      ? 'bg-indigo-700/60 hover:bg-indigo-600/60 text-indigo-200'
+                      : 'bg-indigo-500/90 hover:bg-indigo-600/90 text-white'
+                  }`}
+                  style={{
+                    boxShadow: theme === 'dark'
+                      ? '0 2px 8px rgba(99, 102, 241, 0.3)'
+                      : '0 2px 8px rgba(99, 102, 241, 0.4)',
+                  }}
+                  title="Add new page"
+                >
+                  <Add01Icon className="w-4 h-4" />
+                  <span>Add Page</span>
+                </button>
+              </div>
             </div>
-
-            <div className="h-2" />
-
-            {/* First / TOC */}
-            <button
-              onClick={handleFirstPage}
-              disabled={currentView === 'toc'}
-              className={`w-10 h-10 rounded-lg flex items-center justify-center transition-all ${
-                currentView === 'toc'
-                  ? 'opacity-30 cursor-not-allowed'
-                  : theme === 'dark'
-                    ? 'bg-gray-800 hover:bg-gray-700 text-gray-300'
-                    : 'bg-white hover:bg-gray-50 text-gray-600 shadow-sm'
-              }`}
-              title="Back to Contents"
-            >
-              <ArrowDownLeft01Icon className="w-5 h-5" />
-            </button>
-
-            {/* Previous page */}
-            <button
-              onClick={handlePrevPage}
-              disabled={currentView === 'toc'}
-              className={`w-10 h-10 rounded-lg flex items-center justify-center transition-all ${
-                currentView === 'toc'
-                  ? 'opacity-30 cursor-not-allowed'
-                  : theme === 'dark'
-                    ? 'bg-gray-800 hover:bg-gray-700 text-gray-300'
-                    : 'bg-white hover:bg-gray-50 text-gray-600 shadow-sm'
-              }`}
-              title={currentView === 'page' && currentPageIndex === 0 ? 'Back to Contents' : 'Previous page'}
-            >
-              <ArrowLeft01Icon className="w-5 h-5" />
-            </button>
-
-            {/* Next page */}
-            <button
-              onClick={handleNextPage}
-              disabled={currentView === 'page' && currentPageIndex === pages.length - 1}
-              className={`w-10 h-10 rounded-lg flex items-center justify-center transition-all ${
-                currentView === 'page' && currentPageIndex === pages.length - 1
-                  ? 'opacity-30 cursor-not-allowed'
-                  : theme === 'dark'
-                    ? 'bg-gray-800 hover:bg-gray-700 text-gray-300'
-                    : 'bg-white hover:bg-gray-50 text-gray-600 shadow-sm'
-              }`}
-              title={currentView === 'toc' ? 'Go to first page' : 'Next page'}
-            >
-              <ArrowRight01Icon className="w-5 h-5" />
-            </button>
-
-            {/* Last page */}
-            <button
-              onClick={handleLastPage}
-              disabled={currentView === 'page' && currentPageIndex === pages.length - 1}
-              className={`w-10 h-10 rounded-lg flex items-center justify-center transition-all ${
-                currentView === 'page' && currentPageIndex === pages.length - 1
-                  ? 'opacity-30 cursor-not-allowed'
-                  : theme === 'dark'
-                    ? 'bg-gray-800 hover:bg-gray-700 text-gray-300'
-                    : 'bg-white hover:bg-gray-50 text-gray-600 shadow-sm'
-              }`}
-              title="Last page"
-            >
-              <ArrowUpRight01Icon className="w-5 h-5" />
-            </button>
-
-            <div className="flex-1" />
-
-            {/* Add new page */}
-            <button
-              onClick={handleAddPageFromEditor}
-              className={`w-10 h-10 rounded-lg flex items-center justify-center transition-all ${
-                theme === 'dark'
-                  ? 'bg-indigo-900/50 hover:bg-indigo-800/50 text-indigo-300'
-                  : 'bg-indigo-50 hover:bg-indigo-100 text-indigo-600 shadow-sm'
-              }`}
-              title="Add new page"
-            >
-              <Add01Icon className="w-5 h-5" />
-            </button>
           </div>
         )}
       </div>

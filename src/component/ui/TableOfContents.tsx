@@ -1,6 +1,5 @@
 'use client';
 
-import { motion } from 'motion/react';
 import { Add01Icon, File01Icon, Delete01Icon } from 'hugeicons-react';
 
 export interface NotePage {
@@ -58,13 +57,7 @@ export default function TableOfContents({
         ) : (
           <ul className="toc-page__list">
             {pages.map((page, index) => (
-              <motion.li
-                key={page.id}
-                className="toc-page__item"
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: index * 0.05 }}
-              >
+              <li key={page.id} className="toc-page__item">
                 <button
                   className="toc-page__link"
                   onClick={() => onPageClick(index)}
@@ -86,7 +79,7 @@ export default function TableOfContents({
                     <Delete01Icon className="w-4 h-4" />
                   </button>
                 )}
-              </motion.li>
+              </li>
             ))}
           </ul>
         )}
@@ -94,15 +87,10 @@ export default function TableOfContents({
 
       {/* Add page button */}
       <div className="toc-page__footer">
-        <motion.button
-          className="toc-page__add-button"
-          onClick={onAddPage}
-          whileHover={{ scale: 1.02 }}
-          whileTap={{ scale: 0.98 }}
-        >
+        <button className="toc-page__add-button" onClick={onAddPage}>
           <Add01Icon className="w-5 h-5" />
           <span>Add New Page</span>
-        </motion.button>
+        </button>
 
         <div className="toc-page__page-count">
           {pages.length} {pages.length === 1 ? 'page' : 'pages'}

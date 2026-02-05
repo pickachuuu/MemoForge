@@ -1,12 +1,13 @@
 'use client';
 
-import RichTextEditor from './RichTextEditor';
+import RichTextEditor, { Editor } from './RichTextEditor';
 
 interface NotebookPageProps {
   content: string;
   onChange: (content: string) => void;
   theme: 'light' | 'dark';
   autoFocus?: boolean;
+  onEditorReady?: (editor: Editor) => void;
 }
 
 /**
@@ -18,6 +19,7 @@ export default function NotebookPage({
   onChange,
   theme,
   autoFocus = true,
+  onEditorReady,
 }: NotebookPageProps) {
   const isDark = theme === 'dark';
   const editorBg = isDark ? '#1e1e2e' : '#fffef8';
@@ -30,7 +32,7 @@ export default function NotebookPage({
       className="w-full h-full rounded-lg relative overflow-hidden"
       style={{ backgroundColor: editorBg }}
     >
-      {/* Notebook lines */}
+      {/* Notebook lines - aligned with text (32px line-height grid) */}
       <div
         className="absolute inset-0 pointer-events-none"
         style={{
@@ -42,7 +44,13 @@ export default function NotebookPage({
             ${lineColor} 32px
           )`,
           backgroundSize: '100% 32px',
-          backgroundPosition: '0 24px',
+          /*
+           * Position lines so text baselines sit on them
+           * With padding-top: 31px and 32px line-height, baseline is ~23px from top
+           * Line offset = 31px (padding) + 24px (baseline in line box) - 31px (line pos in gradient) = 24px
+           * Fine-tuned to 23px for better visual alignment with handwritten fonts
+           */
+          backgroundPosition: '0 23px',
         }}
       />
 
@@ -92,6 +100,8 @@ export default function NotebookPage({
           editorClassName="notebook-editor-content"
           autoFocus={autoFocus}
           fullscreen={false}
+          hideToolbar={true}
+          onEditorReady={onEditorReady}
         />
       </div>
     </div>

@@ -3029,41 +3029,56 @@ body {
   height: 100%;
 }
 
+/*
+ * Notebook line alignment system:
+ * - Paper lines are at 32px intervals, starting 24px from top (lines at 55px, 87px, 119px, etc.)
+ * - All text must have line-height as multiple of 32px
+ * - Padding-top positions first baseline on first line
+ */
 .notebook-editor-wrapper .ProseMirror {
   font-family: var(--font-handwritten), 'Just Another Hand', cursive;
   font-size: 1.5rem;
   line-height: 32px;
-  padding: 24px 24px 24px 88px;
+  /* Padding top calculated to place baseline on notebook line */
+  /* First line is at 55px (24px offset + 31px), baseline needs ~31px padding */
+  padding: 31px 24px 24px 88px;
   min-height: 100%;
 }
 
 .notebook-editor-wrapper .ProseMirror p {
   margin: 0;
+  padding: 0;
   line-height: 32px;
 }
 
+/* H1: Large title spanning 2 lines (64px) */
 .notebook-editor-wrapper .ProseMirror h1 {
   font-family: var(--font-handwritten), 'Just Another Hand', cursive;
   font-size: 2.5rem;
   font-weight: 400;
   line-height: 64px;
-  margin: 0 0 0 0;
+  margin: 0;
+  padding: 0;
 }
 
+/* H2: Medium heading on single line */
 .notebook-editor-wrapper .ProseMirror h2 {
   font-family: var(--font-handwritten), 'Just Another Hand', cursive;
   font-size: 2rem;
   font-weight: 400;
   line-height: 32px;
   margin: 0;
+  padding: 0;
 }
 
+/* H3: Small heading on single line */
 .notebook-editor-wrapper .ProseMirror h3 {
   font-family: var(--font-handwritten), 'Just Another Hand', cursive;
   font-size: 1.75rem;
   font-weight: 400;
   line-height: 32px;
   margin: 0;
+  padding: 0;
 }
 
 .notebook-editor-wrapper .ProseMirror ul,
@@ -3074,6 +3089,14 @@ body {
 
 .notebook-editor-wrapper .ProseMirror li {
   line-height: 32px;
+  margin: 0;
+  padding: 0;
+}
+
+.notebook-editor-wrapper .ProseMirror li p {
+  margin: 0;
+  padding: 0;
+  line-height: 32px;
 }
 
 .notebook-editor-wrapper .ProseMirror blockquote {
@@ -3081,6 +3104,13 @@ body {
   padding-left: 16px;
   margin: 0;
   font-style: italic;
+  line-height: 32px;
+}
+
+.notebook-editor-wrapper .ProseMirror blockquote p {
+  margin: 0;
+  padding: 0;
+  line-height: 32px;
 }
 
 .notebook-editor-wrapper .ProseMirror code {
@@ -3089,27 +3119,45 @@ body {
   background: rgba(0, 0, 0, 0.05);
   padding: 2px 6px;
   border-radius: 3px;
+  line-height: 32px;
 }
 
 .dark .notebook-editor-wrapper .ProseMirror code {
   background: rgba(255, 255, 255, 0.08);
 }
 
+/* Code blocks need special handling - they break the line grid */
 .notebook-editor-wrapper .ProseMirror pre {
   font-family: 'Fira Code', monospace;
-  font-size: 0.9rem;
+  font-size: 0.875rem;
   background: rgba(0, 0, 0, 0.05);
   padding: 16px;
   border-radius: 6px;
   margin: 0;
-  line-height: 1.5;
+  /* Use 32px line-height to stay on grid */
+  line-height: 32px;
 }
 
 .dark .notebook-editor-wrapper .ProseMirror pre {
   background: rgba(0, 0, 0, 0.3);
 }
 
+.notebook-editor-wrapper .ProseMirror pre code {
+  line-height: 32px;
+  padding: 0;
+  background: transparent;
+}
+
+/* Horizontal rule - span one line */
+.notebook-editor-wrapper .ProseMirror hr {
+  border: none;
+  border-top: 2px solid rgba(196, 30, 58, 0.3);
+  margin: 15px 0;
+  height: 0;
+}
+
 .notebook-editor-wrapper .ProseMirror .is-editor-empty:first-child::before {
   font-family: var(--font-handwritten), 'Just Another Hand', cursive;
   font-size: 1.5rem;
+  line-height: 32px;
 }

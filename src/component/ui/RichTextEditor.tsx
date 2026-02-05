@@ -6,7 +6,7 @@ import Placeholder from '@tiptap/extension-placeholder';
 import Underline from '@tiptap/extension-underline';
 import TextAlign from '@tiptap/extension-text-align';
 import Highlight from '@tiptap/extension-highlight';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useImperativeHandle, forwardRef } from 'react';
 import {
   TextBoldIcon,
   TextItalicIcon,
@@ -30,6 +30,9 @@ import {
   Moon01Icon,
 } from 'hugeicons-react';
 
+// Export Editor type for external use
+export type { Editor } from '@tiptap/react';
+
 // ============================================
 // Toolbar Button Component
 // ============================================
@@ -39,9 +42,36 @@ interface ToolbarButtonProps {
   disabled?: boolean;
   children: React.ReactNode;
   title: string;
+  vertical?: boolean;
+  theme?: 'light' | 'dark';
 }
 
-function ToolbarButton({ onClick, isActive, disabled, children, title }: ToolbarButtonProps) {
+function ToolbarButton({ onClick, isActive, disabled, children, title, vertical, theme }: ToolbarButtonProps) {
+  if (vertical) {
+    return (
+      <button
+        type="button"
+        onClick={onClick}
+        disabled={disabled}
+        title={title}
+        className={`
+          w-9 h-9 rounded-lg flex items-center justify-center transition-all
+          disabled:opacity-30 disabled:cursor-not-allowed
+          ${isActive
+            ? theme === 'dark'
+              ? 'bg-indigo-900/50 text-indigo-300'
+              : 'bg-indigo-100 text-indigo-600'
+            : theme === 'dark'
+              ? 'bg-gray-800 hover:bg-gray-700 text-gray-300'
+              : 'bg-white hover:bg-gray-50 text-gray-600 shadow-sm'
+          }
+        `}
+      >
+        {children}
+      </button>
+    );
+  }
+
   return (
     <button
       type="button"
@@ -65,8 +95,250 @@ function ToolbarButton({ onClick, isActive, disabled, children, title }: Toolbar
 // ============================================
 // Toolbar Divider
 // ============================================
-function ToolbarDivider() {
+function ToolbarDivider({ vertical }: { vertical?: boolean }) {
+  if (vertical) {
+    return <div className="w-full h-px bg-gray-200 dark:bg-gray-700 my-1" />;
+  }
   return <div className="w-px h-6 bg-border/50 mx-0.5" />;
+}
+
+// ============================================
+// Vertical Editor Toolbar (for side panel)
+// ============================================
+interface VerticalEditorToolbarProps {
+  editor: Editor | null;
+  theme: 'light' | 'dark';
+}
+
+function VerticalToolbarButton({
+  onClick,
+  isActive,
+  disabled,
+  title,
+  theme,
+  children
+}: {
+  onClick: () => void;
+  isActive?: boolean;
+  disabled?: boolean;
+  title: string;
+  theme: 'light' | 'dark';
+  children: React.ReactNode;
+}) {
+  const isDark = theme === 'dark';
+
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      disabled={disabled}
+      title={title}
+      className={`
+        w-full h-9 rounded-xl flex items-center justify-center transition-all
+        disabled:opacity-30 disabled:cursor-not-allowed
+        ${isActive
+          ? isDark
+            ? 'bg-indigo-700/60 text-indigo-200'
+            : 'bg-indigo-500/20 text-indigo-600'
+          : isDark
+            ? 'bg-gray-800/80 hover:bg-gray-700/80 text-gray-300'
+            : 'bg-white/80 hover:bg-white text-gray-600'
+        }
+      `}
+      style={{
+        boxShadow: disabled ? 'none' : (isDark
+          ? '0 2px 4px rgba(0,0,0,0.3)'
+          : '0 2px 4px rgba(0,0,0,0.08)'),
+      }}
+    >
+      {children}
+    </button>
+  );
+}
+
+function VerticalToolbarDivider({ theme }: { theme: 'light' | 'dark' }) {
+  return (
+    <div
+      className="w-full h-px"
+      style={{
+        background: theme === 'dark'
+          ? 'linear-gradient(90deg, transparent, rgba(255,255,255,0.15), transparent)'
+          : 'linear-gradient(90deg, transparent, rgba(0,0,0,0.1), transparent)'
+      }}
+    />
+  );
+}
+
+export function VerticalEditorToolbar({ editor, theme }: VerticalEditorToolbarProps) {
+  if (!editor) return null;
+
+  return (
+    <div className="flex flex-col gap-3">
+      {/* Undo/Redo row */}
+      <div className="grid grid-cols-2 gap-2">
+        <VerticalToolbarButton
+          onClick={() => editor.chain().focus().undo().run()}
+          disabled={!editor.can().undo()}
+          title="Undo"
+          theme={theme}
+        >
+          <ArrowTurnBackwardIcon className="w-4 h-4" />
+        </VerticalToolbarButton>
+        <VerticalToolbarButton
+          onClick={() => editor.chain().focus().redo().run()}
+          disabled={!editor.can().redo()}
+          title="Redo"
+          theme={theme}
+        >
+          <ArrowTurnForwardIcon className="w-4 h-4" />
+        </VerticalToolbarButton>
+      </div>
+
+      <VerticalToolbarDivider theme={theme} />
+
+      {/* Text Formatting - 3 columns */}
+      <div className="grid grid-cols-3 gap-2">
+        <VerticalToolbarButton
+          onClick={() => editor.chain().focus().toggleBold().run()}
+          isActive={editor.isActive('bold')}
+          title="Bold"
+          theme={theme}
+        >
+          <TextBoldIcon className="w-4 h-4" />
+        </VerticalToolbarButton>
+        <VerticalToolbarButton
+          onClick={() => editor.chain().focus().toggleItalic().run()}
+          isActive={editor.isActive('italic')}
+          title="Italic"
+          theme={theme}
+        >
+          <TextItalicIcon className="w-4 h-4" />
+        </VerticalToolbarButton>
+        <VerticalToolbarButton
+          onClick={() => editor.chain().focus().toggleUnderline().run()}
+          isActive={editor.isActive('underline')}
+          title="Underline"
+          theme={theme}
+        >
+          <TextUnderlineIcon className="w-4 h-4" />
+        </VerticalToolbarButton>
+        <VerticalToolbarButton
+          onClick={() => editor.chain().focus().toggleStrike().run()}
+          isActive={editor.isActive('strike')}
+          title="Strikethrough"
+          theme={theme}
+        >
+          <TextStrikethroughIcon className="w-4 h-4" />
+        </VerticalToolbarButton>
+        <VerticalToolbarButton
+          onClick={() => editor.chain().focus().toggleHighlight().run()}
+          isActive={editor.isActive('highlight')}
+          title="Highlight"
+          theme={theme}
+        >
+          <PaintBrush04Icon className="w-4 h-4" />
+        </VerticalToolbarButton>
+      </div>
+
+      <VerticalToolbarDivider theme={theme} />
+
+      {/* Headings - 3 columns */}
+      <div className="grid grid-cols-3 gap-2">
+        <VerticalToolbarButton
+          onClick={() => editor.chain().focus().toggleHeading({ level: 1 }).run()}
+          isActive={editor.isActive('heading', { level: 1 })}
+          title="Heading 1"
+          theme={theme}
+        >
+          <Heading01Icon className="w-4 h-4" />
+        </VerticalToolbarButton>
+        <VerticalToolbarButton
+          onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()}
+          isActive={editor.isActive('heading', { level: 2 })}
+          title="Heading 2"
+          theme={theme}
+        >
+          <Heading02Icon className="w-4 h-4" />
+        </VerticalToolbarButton>
+        <VerticalToolbarButton
+          onClick={() => editor.chain().focus().toggleHeading({ level: 3 }).run()}
+          isActive={editor.isActive('heading', { level: 3 })}
+          title="Heading 3"
+          theme={theme}
+        >
+          <Heading03Icon className="w-4 h-4" />
+        </VerticalToolbarButton>
+      </div>
+
+      <VerticalToolbarDivider theme={theme} />
+
+      {/* Lists & Blocks - 2 columns */}
+      <div className="grid grid-cols-2 gap-2">
+        <VerticalToolbarButton
+          onClick={() => editor.chain().focus().toggleBulletList().run()}
+          isActive={editor.isActive('bulletList')}
+          title="Bullet List"
+          theme={theme}
+        >
+          <ListViewIcon className="w-4 h-4" />
+        </VerticalToolbarButton>
+        <VerticalToolbarButton
+          onClick={() => editor.chain().focus().toggleOrderedList().run()}
+          isActive={editor.isActive('orderedList')}
+          title="Numbered List"
+          theme={theme}
+        >
+          <LeftToRightListNumberIcon className="w-4 h-4" />
+        </VerticalToolbarButton>
+        <VerticalToolbarButton
+          onClick={() => editor.chain().focus().toggleBlockquote().run()}
+          isActive={editor.isActive('blockquote')}
+          title="Quote"
+          theme={theme}
+        >
+          <QuoteDownIcon className="w-4 h-4" />
+        </VerticalToolbarButton>
+        <VerticalToolbarButton
+          onClick={() => editor.chain().focus().toggleCodeBlock().run()}
+          isActive={editor.isActive('codeBlock')}
+          title="Code Block"
+          theme={theme}
+        >
+          <SourceCodeIcon className="w-4 h-4" />
+        </VerticalToolbarButton>
+      </div>
+
+      <VerticalToolbarDivider theme={theme} />
+
+      {/* Text Alignment - 3 columns */}
+      <div className="grid grid-cols-3 gap-2">
+        <VerticalToolbarButton
+          onClick={() => editor.chain().focus().setTextAlign('left').run()}
+          isActive={editor.isActive({ textAlign: 'left' })}
+          title="Align Left"
+          theme={theme}
+        >
+          <TextAlignLeftIcon className="w-4 h-4" />
+        </VerticalToolbarButton>
+        <VerticalToolbarButton
+          onClick={() => editor.chain().focus().setTextAlign('center').run()}
+          isActive={editor.isActive({ textAlign: 'center' })}
+          title="Align Center"
+          theme={theme}
+        >
+          <TextAlignCenterIcon className="w-4 h-4" />
+        </VerticalToolbarButton>
+        <VerticalToolbarButton
+          onClick={() => editor.chain().focus().setTextAlign('right').run()}
+          isActive={editor.isActive({ textAlign: 'right' })}
+          title="Align Right"
+          theme={theme}
+        >
+          <TextAlignRightIcon className="w-4 h-4" />
+        </VerticalToolbarButton>
+      </div>
+    </div>
+  );
 }
 
 // ============================================
@@ -323,6 +595,13 @@ function EditorToolbar({ editor, fullscreen }: EditorToolbarProps) {
 }
 
 // ============================================
+// Editor Ref Handle
+// ============================================
+export interface RichTextEditorHandle {
+  getEditor: () => Editor | null;
+}
+
+// ============================================
 // Main Rich Text Editor Component
 // ============================================
 interface RichTextEditorProps {
@@ -333,9 +612,11 @@ interface RichTextEditorProps {
   editorClassName?: string;
   autoFocus?: boolean;
   fullscreen?: boolean;
+  hideToolbar?: boolean;
+  onEditorReady?: (editor: Editor) => void;
 }
 
-export function RichTextEditor({
+export const RichTextEditor = forwardRef<RichTextEditorHandle, RichTextEditorProps>(function RichTextEditor({
   content,
   onChange,
   placeholder = 'Start writing...',
@@ -343,7 +624,9 @@ export function RichTextEditor({
   editorClassName = '',
   autoFocus = false,
   fullscreen = false,
-}: RichTextEditorProps) {
+  hideToolbar = false,
+  onEditorReady,
+}, ref) {
   const editor = useEditor({
     extensions: [
       StarterKit.configure({
@@ -375,6 +658,18 @@ export function RichTextEditor({
       onChange(editor.getHTML());
     },
   });
+
+  // Expose editor instance via ref
+  useImperativeHandle(ref, () => ({
+    getEditor: () => editor,
+  }), [editor]);
+
+  // Notify parent when editor is ready
+  useEffect(() => {
+    if (editor && onEditorReady) {
+      onEditorReady(editor);
+    }
+  }, [editor, onEditorReady]);
 
   // Update content when prop changes (e.g., loading a note)
   useEffect(() => {
@@ -451,7 +746,7 @@ export function RichTextEditor({
     return (
       <div className={`flex flex-col h-full ${className}`}>
         {/* Sticky Toolbar */}
-        <EditorToolbar editor={editor} fullscreen />
+        {!hideToolbar && <EditorToolbar editor={editor} fullscreen />}
 
         {/* Document Area - Notebook style */}
         <div
@@ -527,12 +822,12 @@ export function RichTextEditor({
   // Regular (non-fullscreen) mode
   return (
     <div className={`rich-text-editor-container ${className}`}>
-      <EditorToolbar editor={editor} />
+      {!hideToolbar && <EditorToolbar editor={editor} />}
       <div className="tiptap-editor-wrapper">
         <EditorContent editor={editor} />
       </div>
     </div>
   );
-}
+})
 
 export default RichTextEditor;
