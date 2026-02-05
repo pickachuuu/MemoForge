@@ -1,7 +1,7 @@
 'use client';
 
 import { motion } from 'motion/react';
-import { ReactNode, useRef, useLayoutEffect, useState } from 'react';
+import { ReactNode, useRef, useLayoutEffect, useState, useCallback } from 'react';
 
 export type ViewType = 'cover' | 'toc' | 'page';
 
@@ -45,6 +45,7 @@ export default function PageFlipContainer({
       id: number;
       direction: 'forward' | 'backward';
       frontContent: ReactNode;
+      targetContent: ReactNode; // Content to show after animation completes
     } | null;
   }>({
     baseContent: currentView === 'cover' ? cover : currentView === 'toc' ? toc : pageContent,
@@ -57,6 +58,17 @@ export default function PageFlipContainer({
     return pageContent;
   };
 
+  // Handle animation complete - update base and clear flip atomically
+  const handleAnimationComplete = useCallback(() => {
+    setDisplayState(prev => {
+      if (!prev.flip) return prev;
+      return {
+        baseContent: prev.flip.targetContent,
+        flip: null,
+      };
+    });
+  }, []);
+
   // useLayoutEffect runs BEFORE browser paint - prevents visual jitter
   useLayoutEffect(() => {
     if (currentPosition !== prevPositionRef.current) {
@@ -67,9 +79,10 @@ export default function PageFlipContainer({
       const oldContent = previousContent;
 
       // Set everything in ONE state update - no intermediate renders
+      // Forward: base shows NEW (revealed underneath), flip front shows OLD (turning away)
+      // Backward: base shows OLD (stays visible), flip front shows NEW (coming back)
+      //           When animation completes, base switches to NEW (covered by flip at that moment)
       setDisplayState({
-        // Forward: base shows NEW (revealed underneath)
-        // Backward: base shows OLD (stays until covered)
         baseContent: dir === 'forward' ? newContent : oldContent,
         flip: {
           id: animIdRef.current,
@@ -77,25 +90,14 @@ export default function PageFlipContainer({
           // Forward: front shows OLD (turning away)
           // Backward: front shows NEW (coming back)
           frontContent: dir === 'forward' ? oldContent : newContent,
+          // Store target content for when animation completes
+          targetContent: newContent,
         },
       });
 
       prevPositionRef.current = currentPosition;
     }
   }, [currentPosition, previousContent, cover, toc, pageContent, currentView]);
-
-  // Clear flip after animation
-  useLayoutEffect(() => {
-    if (displayState.flip) {
-      const t = setTimeout(() => {
-        setDisplayState(prev => ({
-          baseContent: getCurrentContent(),
-          flip: null,
-        }));
-      }, 550);
-      return () => clearTimeout(t);
-    }
-  }, [displayState.flip?.id]);
 
   // Colors
   const paperColor = isDark ? '#1e1e2e' : '#fffef8';
@@ -178,6 +180,7 @@ export default function PageFlipContainer({
           initial={{ rotateY: displayState.flip.direction === 'forward' ? 0 : -180 }}
           animate={{ rotateY: displayState.flip.direction === 'forward' ? -180 : 0 }}
           transition={{ duration: 0.5, ease: [0.4, 0, 0.2, 1] }}
+          onAnimationComplete={handleAnimationComplete}
         >
           {/* Front */}
           <div
