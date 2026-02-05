@@ -70,6 +70,7 @@ export default function PageFlipContainer({
   }, []);
 
   // useLayoutEffect runs BEFORE browser paint - prevents visual jitter
+  // Only handles position/view changes that require animation
   useLayoutEffect(() => {
     if (currentPosition !== prevPositionRef.current) {
       // Position changed - trigger flip animation
@@ -80,33 +81,30 @@ export default function PageFlipContainer({
       const oldContent = previousContent;
 
       // Set everything in ONE state update - no intermediate renders
-      // Forward: base shows NEW (revealed underneath), flip front shows OLD (turning away)
-      // Backward: base shows OLD (stays visible), flip front shows NEW (coming back)
-      //           When animation completes, base switches to NEW (covered by flip at that moment)
       setDisplayState({
         baseContent: dir === 'forward' ? newContent : oldContent,
         flip: {
           id: animIdRef.current,
           direction: dir,
-          // Forward: front shows OLD (turning away)
-          // Backward: front shows NEW (coming back)
           frontContent: dir === 'forward' ? oldContent : newContent,
-          // Store target content for when animation completes
           targetContent: newContent,
         },
       });
 
       prevPositionRef.current = currentPosition;
-    } else if (!displayState.flip) {
-      // No position change and no animation in progress - update base content directly
-      // This ensures typing in the cover title or editing page content updates immediately
-      const currentContent = getCurrentContent();
-      setDisplayState(prev => ({
-        ...prev,
-        baseContent: currentContent,
-      }));
     }
-  }, [currentPosition, previousContent, cover, toc, pageContent, currentView]);
+  }, [currentPosition, previousContent]);
+
+  // Track if position is about to change (before useLayoutEffect runs)
+  const positionChanged = currentPosition !== prevPositionRef.current;
+
+  // Derive base content directly when not animating
+  // If position just changed, keep showing previous content until animation starts
+  const baseContent = displayState.flip
+    ? displayState.baseContent
+    : positionChanged
+      ? previousContent
+      : getCurrentContent();
 
   // Colors
   const paperColor = isDark ? '#1e1e2e' : '#fffef8';
@@ -168,13 +166,13 @@ export default function PageFlipContainer({
         />
       ))}
 
-      {/* Base layer - content controlled by displayState */}
+      {/* Base layer - content controlled by displayState during animation, direct otherwise */}
       {/* Note: overflow-visible when on cover to allow color picker dropdown to show */}
       <div
         className={`absolute inset-0 rounded-lg ${currentView === 'cover' ? 'overflow-visible' : 'overflow-hidden'}`}
         style={{ zIndex: 10, backgroundColor: currentView === 'cover' ? 'transparent' : paperColor }}
       >
-        {displayState.baseContent}
+        {baseContent}
       </div>
 
       {/* Flipping page */}
@@ -185,7 +183,7 @@ export default function PageFlipContainer({
           style={{
             transformStyle: 'preserve-3d',
             transformOrigin: 'left center',
-            zIndex: 20,
+            zIndex: 50,
           }}
           initial={{ rotateY: displayState.flip.direction === 'forward' ? 0 : -180 }}
           animate={{ rotateY: displayState.flip.direction === 'forward' ? -180 : 0 }}

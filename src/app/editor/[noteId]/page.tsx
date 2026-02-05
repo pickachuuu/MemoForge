@@ -53,6 +53,9 @@ export default function EditorPage() {
   // Previous content ref for flip animation
   const previousContentRef = useRef<ReactNode>(null);
 
+  // Track if we've initialized this session
+  const initializedRef = useRef<string | null>(null);
+
   // ========================================
   // Zustand Stores
   // ========================================
@@ -104,6 +107,27 @@ export default function EditorPage() {
 
   // Light mode only (dark mode removed)
   const theme = 'light' as const;
+
+  // ========================================
+  // Reset stores when creating a new notebook
+  // ========================================
+  useEffect(() => {
+    // Only reset if we're on a new note AND we haven't initialized for this route yet
+    // This prevents resetting when navigating back to an existing note
+    const currentRoute = isNewNote ? 'new' : noteIdOrSlug;
+
+    if (initializedRef.current !== currentRoute) {
+      if (isNewNote) {
+        // Reset all stores for a fresh new note
+        resetEditor();
+        resetNote();
+        resetUI();
+      }
+      initializedRef.current = currentRoute || null;
+    }
+    // Only depend on route identifiers, not on reset functions (they're stable)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isNewNote, noteIdOrSlug]);
 
   // ========================================
   // TanStack Query Hooks

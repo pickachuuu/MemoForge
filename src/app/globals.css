@@ -3943,3 +3943,281 @@ body {
     0 4px 14px rgba(0, 0, 0, 0.22),
     inset 0 1px 3px rgba(255, 255, 255, 0.35);
 }
+
+/* ============================================
+   Polaroid Image Styles
+   Block-level element in document flow
+   ============================================ */
+
+.polaroid-image-wrapper {
+  display: flex;
+  width: 100%;
+  margin: 1rem 0;
+  /* Prevent text selection during resize */
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+/* Alignment classes applied via data attribute */
+.polaroid-image-wrapper[data-alignment="left"] {
+  justify-content: flex-start;
+}
+
+.polaroid-image-wrapper[data-alignment="center"],
+.polaroid-image-wrapper:not([data-alignment]) {
+  justify-content: center;
+}
+
+.polaroid-image-wrapper[data-alignment="right"] {
+  justify-content: flex-end;
+}
+
+.polaroid-image {
+  position: relative;
+  display: block;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  user-select: none;
+  -webkit-user-select: none;
+  /* Prevent image ghosting on drag */
+  -webkit-user-drag: none;
+}
+
+.polaroid-image.resizing {
+  transition: none;
+  cursor: se-resize !important;
+}
+
+.polaroid-image.selected {
+  z-index: 10;
+}
+
+.polaroid-frame {
+  background: linear-gradient(145deg, #ffffff 0%, #f8f8f8 100%);
+  padding: 12px 12px 40px 12px;
+  border-radius: 4px;
+  box-shadow:
+    0 8px 24px rgba(0, 0, 0, 0.15),
+    0 4px 8px rgba(0, 0, 0, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.9),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.05);
+  position: relative;
+  transition: box-shadow 0.2s ease;
+}
+
+.polaroid-image.selected .polaroid-frame {
+  box-shadow:
+    0 12px 32px rgba(99, 102, 241, 0.25),
+    0 6px 12px rgba(0, 0, 0, 0.12),
+    0 0 0 3px rgba(99, 102, 241, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.9),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.05);
+}
+
+.polaroid-image-container {
+  overflow: hidden;
+  border-radius: 2px;
+  background: #f0f0f0;
+}
+
+.polaroid-image-container img {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  object-fit: cover;
+  /* Prevent image dragging */
+  -webkit-user-drag: none;
+  user-select: none;
+  pointer-events: none;
+}
+
+.polaroid-caption {
+  position: absolute;
+  bottom: 8px;
+  left: 12px;
+  right: 12px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+}
+
+.polaroid-caption-text {
+  font-family: 'Caveat', 'Segoe Script', 'Bradley Hand', cursive;
+  font-size: 14px;
+  color: #4a4a4a;
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
+
+/* Toolbar with drag handle and alignment */
+.polaroid-toolbar {
+  position: absolute;
+  top: -44px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  padding: 4px 6px;
+  background: linear-gradient(135deg, #ffffff 0%, #f8f8f8 100%);
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  border-radius: 10px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.12);
+  z-index: 100;
+}
+
+/* Toolbar divider */
+.polaroid-toolbar-divider {
+  width: 1px;
+  height: 20px;
+  background: rgba(0, 0, 0, 0.12);
+  margin: 0 4px;
+}
+
+/* Drag handle */
+.polaroid-drag-handle {
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: grab;
+  border-radius: 6px;
+  transition: all 0.15s ease;
+  color: #888;
+}
+
+.polaroid-drag-handle:hover {
+  background: rgba(0, 0, 0, 0.06);
+  color: #555;
+}
+
+.polaroid-drag-handle:active {
+  cursor: grabbing;
+  background: rgba(0, 0, 0, 0.1);
+}
+
+.polaroid-drag-handle svg {
+  width: 14px;
+  height: 14px;
+}
+
+/* Alignment button */
+.polaroid-align-button {
+  width: 28px;
+  height: 28px;
+  background: transparent;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s ease;
+  color: #999;
+}
+
+.polaroid-align-button:hover {
+  background: rgba(0, 0, 0, 0.06);
+  color: #555;
+}
+
+.polaroid-align-button:active {
+  background: rgba(0, 0, 0, 0.1);
+}
+
+.polaroid-align-button.active {
+  background: rgba(99, 102, 241, 0.15);
+  color: #6366f1;
+}
+
+.polaroid-align-button.active:hover {
+  background: rgba(99, 102, 241, 0.2);
+}
+
+.polaroid-align-button svg {
+  width: 16px;
+  height: 16px;
+}
+
+/* Resize handle */
+.polaroid-resize-handle {
+  position: absolute;
+  bottom: 4px;
+  right: 4px;
+  width: 24px;
+  height: 24px;
+  background: linear-gradient(135deg, #ffffff 0%, #f0f0f0 100%);
+  border-radius: 4px;
+  cursor: se-resize !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.15s ease, transform 0.15s ease;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+  z-index: 100;
+  touch-action: none;
+}
+
+.polaroid-resize-handle:hover {
+  background: linear-gradient(135deg, #f0f0f0 0%, #e0e0e0 100%);
+  transform: scale(1.1);
+}
+
+.polaroid-resize-handle:active {
+  background: linear-gradient(135deg, #e8e8e8 0%, #d8d8d8 100%);
+  transform: scale(1.05);
+}
+
+.polaroid-resize-handle .resize-icon {
+  width: 10px;
+  height: 10px;
+  color: #666;
+  pointer-events: none;
+}
+
+/* Global cursor maintenance during resize operations */
+body.polaroid-resizing {
+  cursor: se-resize !important;
+  user-select: none !important;
+  -webkit-user-select: none !important;
+}
+
+body.polaroid-resizing * {
+  cursor: se-resize !important;
+}
+
+/* Tape effect decorations (optional - adds to polaroid aesthetic) */
+.polaroid-frame::before {
+  content: '';
+  position: absolute;
+  top: -8px;
+  left: 50%;
+  transform: translateX(-50%) rotate(-2deg);
+  width: 60px;
+  height: 20px;
+  background: linear-gradient(180deg,
+    rgba(255, 248, 220, 0.9) 0%,
+    rgba(255, 245, 200, 0.85) 100%
+  );
+  border-radius: 2px;
+  box-shadow:
+    0 2px 4px rgba(0, 0, 0, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.5);
+  opacity: 0.9;
+}
+
+/* Subtle paper texture */
+.polaroid-frame::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+  opacity: 0.03;
+  pointer-events: none;
+  border-radius: 4px;
+}

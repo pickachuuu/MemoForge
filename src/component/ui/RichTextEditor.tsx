@@ -7,7 +7,7 @@ import Underline from '@tiptap/extension-underline';
 import TextAlign from '@tiptap/extension-text-align';
 import Highlight from '@tiptap/extension-highlight';
 import { Color } from '@tiptap/extension-color';
-import { ResizableImage } from './ResizableImage';
+import { PolaroidImage } from './PolaroidImage';
 import { TextStyle } from '@tiptap/extension-text-style';
 import { useEffect, useState, useImperativeHandle, forwardRef, useRef } from 'react';
 import {
@@ -225,7 +225,7 @@ export function VerticalEditorToolbar({ editor, theme }: VerticalEditorToolbarPr
       const reader = new FileReader();
       reader.onload = (e) => {
         const base64 = e.target?.result as string;
-        editor.chain().focus().setResizableImage({ src: base64 }).run();
+        editor.chain().focus().setPolaroidImage({ src: base64 }).run();
       };
       reader.readAsDataURL(file);
     }
@@ -527,8 +527,8 @@ export function VerticalEditorToolbar({ editor, theme }: VerticalEditorToolbarPr
         </VerticalToolbarButton>
         <VerticalToolbarButton
           onClick={handleImageClick}
-          isActive={editor.isActive('resizableImage')}
-          title="Insert Image"
+          isActive={editor.isActive('polaroidImage')}
+          title="Insert Polaroid"
           theme={theme}
         >
           <Image01Icon className="w-4 h-4" />
@@ -874,7 +874,7 @@ export const RichTextEditor = forwardRef<RichTextEditorHandle, RichTextEditorPro
       TextAlign.configure({
         types: ['heading', 'paragraph'],
       }),
-      ResizableImage,
+      PolaroidImage,
     ],
     content,
     immediatelyRender: false,
