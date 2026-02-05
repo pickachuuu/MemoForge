@@ -37,6 +37,7 @@ CREATE TABLE IF NOT EXISTS public.notes (
     content TEXT NOT NULL,
     status note_status DEFAULT 'draft',
     tags TEXT[],
+    cover_color TEXT DEFAULT 'lavender',
     is_public BOOLEAN DEFAULT FALSE,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()

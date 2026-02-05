@@ -3161,3 +3161,934 @@ body {
   font-size: 1.5rem;
   line-height: 32px;
 }
+
+/* ============================================
+   CLAYMORPHIC NOTEBOOK COVER
+   3D puffy appearance with customizable colors
+   ============================================ */
+
+/* Base cover styles */
+.clay-notebook-cover {
+  --clay-primary: #9B87F5;
+  --clay-secondary: #B4A7F7;
+  --clay-accent: #D4CDF9;
+  --clay-text: #FFFFFF;
+  --clay-shadow: rgba(155, 135, 245, 0.4);
+
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+/* Editor mode - full size cover */
+.clay-notebook-cover--editor {
+  display: flex;
+  align-items: stretch;
+  justify-content: stretch;
+}
+
+/* Card mode - for grid display */
+.clay-notebook-cover--card {
+  cursor: pointer;
+  aspect-ratio: 3 / 4;
+}
+
+/* 3D perspective wrapper for editor - fills entire container */
+.clay-notebook-cover__3d-wrapper {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  flex: 1;
+  min-height: 0;
+  perspective: 1200px;
+  transform-style: preserve-3d;
+}
+
+/* Edge stack for 3D depth (editor mode) */
+.clay-notebook-cover__edge-stack {
+  position: absolute;
+  top: 8px;
+  right: -10px;
+  bottom: 8px;
+  width: 16px;
+  display: flex;
+  flex-direction: row;
+  gap: 2px;
+  transform: translateZ(-10px);
+  pointer-events: none;
+}
+
+.clay-notebook-cover__edge {
+  flex: 1;
+  border-radius: 0 6px 6px 0;
+}
+
+.clay-notebook-cover__edge--1 {
+  background: linear-gradient(90deg, #fafaf5 0%, #f0f0eb 100%);
+  box-shadow: 1px 0 2px rgba(0, 0, 0, 0.1);
+}
+
+.clay-notebook-cover__edge--2 {
+  background: linear-gradient(90deg, #f5f5f0 0%, #eaeae5 100%);
+  box-shadow: 1px 0 2px rgba(0, 0, 0, 0.08);
+}
+
+.clay-notebook-cover__edge--3 {
+  background: linear-gradient(90deg, #f0f0eb 0%, #e5e5e0 100%);
+  box-shadow: 1px 0 2px rgba(0, 0, 0, 0.06);
+}
+
+.clay-notebook-cover__edge--4 {
+  background: linear-gradient(90deg, #eaeae5 0%, #e0e0db 100%);
+}
+
+.dark .clay-notebook-cover__edge--1 {
+  background: linear-gradient(90deg, #404045 0%, #38383d 100%);
+}
+
+.dark .clay-notebook-cover__edge--2 {
+  background: linear-gradient(90deg, #38383d 0%, #303035 100%);
+}
+
+.dark .clay-notebook-cover__edge--3 {
+  background: linear-gradient(90deg, #303035 0%, #28282d 100%);
+}
+
+.dark .clay-notebook-cover__edge--4 {
+  background: linear-gradient(90deg, #28282d 0%, #202025 100%);
+}
+
+/* Bottom edge for thickness */
+.clay-notebook-cover__bottom-edge {
+  position: absolute;
+  bottom: -8px;
+  left: 8px;
+  right: 8px;
+  height: 12px;
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--clay-primary) 70%, black) 0%,
+    color-mix(in srgb, var(--clay-primary) 50%, black) 100%
+  );
+  border-radius: 0 0 8px 8px;
+  transform: rotateX(-60deg);
+  transform-origin: top center;
+  pointer-events: none;
+}
+
+/* Ambient shadow below notebook */
+.clay-notebook-cover__ambient-shadow {
+  position: absolute;
+  bottom: -20px;
+  left: 10%;
+  right: 10%;
+  height: 30px;
+  background: radial-gradient(ellipse 60% 100% at center, var(--clay-shadow) 0%, transparent 70%);
+  filter: blur(12px);
+  opacity: 0.7;
+  z-index: -1;
+  pointer-events: none;
+}
+
+/* Main cover body */
+.clay-notebook-cover__body {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  border-radius: 20px;
+  background: linear-gradient(
+    155deg,
+    var(--clay-accent) 0%,
+    var(--clay-secondary) 25%,
+    var(--clay-primary) 50%,
+    color-mix(in srgb, var(--clay-primary) 85%, black) 100%
+  );
+  box-shadow:
+    /* Outer shadow for depth */
+    0 25px 50px -15px var(--clay-shadow),
+    0 15px 30px -10px rgba(0, 0, 0, 0.15),
+    8px 0 20px -10px rgba(0, 0, 0, 0.1),
+    /* Inner highlight for puffy look */
+    inset 0 2px 6px rgba(255, 255, 255, 0.4),
+    inset 0 -3px 6px rgba(0, 0, 0, 0.15),
+    inset -2px 0 4px rgba(0, 0, 0, 0.05);
+  display: flex;
+  flex-direction: column;
+  overflow: visible;
+  z-index: 1;
+  pointer-events: auto;
+}
+
+.clay-notebook-cover__body--card {
+  border-radius: 16px;
+}
+
+/* Glossy highlight overlay */
+.clay-notebook-cover__gloss {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 40%;
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.15) 0%,
+    rgba(255, 255, 255, 0.05) 50%,
+    transparent 100%
+  );
+  border-radius: 20px 20px 0 0;
+  pointer-events: none;
+}
+
+/* Spine detail */
+.clay-notebook-cover__spine {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 28px;
+  background: linear-gradient(
+    90deg,
+    rgba(0, 0, 0, 0.2) 0%,
+    rgba(0, 0, 0, 0.1) 30%,
+    transparent 100%
+  );
+  border-radius: 20px 0 0 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 20px;
+  padding: 0 8px;
+  pointer-events: none;
+}
+
+.clay-notebook-cover__spine-line {
+  width: 100%;
+  height: 2px;
+  background: linear-gradient(90deg, rgba(255, 255, 255, 0.1) 0%, transparent 100%);
+  border-radius: 1px;
+}
+
+/* Shadow layer for card mode */
+.clay-notebook-cover__shadow {
+  position: absolute;
+  bottom: -10px;
+  left: 8%;
+  right: 8%;
+  height: 24px;
+  background: radial-gradient(ellipse 50% 100% at center, var(--clay-shadow) 0%, transparent 70%);
+  filter: blur(10px);
+  opacity: 0.6;
+  transition: all 0.3s ease;
+  z-index: -1;
+}
+
+.clay-notebook-cover--card:hover .clay-notebook-cover__shadow {
+  bottom: -14px;
+  opacity: 0.8;
+}
+
+/* Page stack effect for card mode */
+.clay-notebook-cover__pages {
+  position: absolute;
+  top: 6px;
+  right: -8px;
+  bottom: 6px;
+  width: 14px;
+  display: flex;
+  flex-direction: row;
+  gap: 2px;
+  z-index: -1;
+}
+
+.clay-notebook-cover__page {
+  flex: 1;
+  border-radius: 0 6px 6px 0;
+  box-shadow: 1px 0 2px rgba(0, 0, 0, 0.08);
+}
+
+.clay-notebook-cover__page--1 {
+  background: linear-gradient(90deg, #fafaf5 0%, #f0f0eb 100%);
+}
+
+.clay-notebook-cover__page--2 {
+  background: linear-gradient(90deg, #f0f0eb 0%, #e5e5e0 100%);
+}
+
+.clay-notebook-cover__page--3 {
+  background: linear-gradient(90deg, #e5e5e0 0%, #dbdbd6 100%);
+}
+
+.dark .clay-notebook-cover__page--1 {
+  background: linear-gradient(90deg, #404045 0%, #38383d 100%);
+}
+
+.dark .clay-notebook-cover__page--2 {
+  background: linear-gradient(90deg, #38383d 0%, #303035 100%);
+}
+
+.dark .clay-notebook-cover__page--3 {
+  background: linear-gradient(90deg, #303035 0%, #28282d 100%);
+}
+
+/* Binding holes */
+.clay-notebook-cover__binding {
+  position: absolute;
+  left: 40px;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.clay-notebook-cover__binding--card {
+  left: 12px;
+  gap: 24px;
+}
+
+.clay-notebook-cover__hole {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: linear-gradient(
+    145deg,
+    rgba(0, 0, 0, 0.35) 0%,
+    rgba(0, 0, 0, 0.15) 100%
+  );
+  box-shadow:
+    inset 0 2px 4px rgba(0, 0, 0, 0.4),
+    inset 0 -1px 2px rgba(255, 255, 255, 0.1),
+    0 1px 2px rgba(255, 255, 255, 0.15);
+}
+
+.clay-notebook-cover__hole--small {
+  width: 10px;
+  height: 10px;
+}
+
+/* Content area for editor mode */
+/* Header branding area */
+.clay-notebook-cover__header {
+  padding: 28px 40px 16px 68px; /* 40px + 28px spine to center content */
+  display: flex;
+  justify-content: center;
+  pointer-events: none;
+}
+
+.clay-notebook-cover__brand {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+
+.clay-notebook-cover__emblem {
+  width: 36px;
+  height: 36px;
+  margin-bottom: 4px;
+}
+
+.clay-notebook-cover__emblem-icon {
+  width: 100%;
+  height: 100%;
+  color: rgba(255, 255, 255, 0.25);
+  filter: drop-shadow(0 1px 0 rgba(255, 255, 255, 0.15)) drop-shadow(0 -1px 0 rgba(0, 0, 0, 0.3));
+}
+
+/* Engraved text effect for brand */
+.clay-notebook-cover__brand-text {
+  font-family: 'Georgia', 'Times New Roman', serif;
+  font-size: 1.1rem;
+  font-weight: 700;
+  letter-spacing: 0.35em;
+  color: transparent;
+  background: linear-gradient(
+    180deg,
+    rgba(0, 0, 0, 0.35) 0%,
+    rgba(0, 0, 0, 0.2) 50%,
+    rgba(255, 255, 255, 0.15) 51%,
+    rgba(255, 255, 255, 0.1) 100%
+  );
+  -webkit-background-clip: text;
+  background-clip: text;
+  text-shadow:
+    0 1px 1px rgba(255, 255, 255, 0.2),
+    0 -1px 1px rgba(0, 0, 0, 0.4);
+  position: relative;
+}
+
+.clay-notebook-cover__brand-tagline {
+  font-family: 'Georgia', 'Times New Roman', serif;
+  font-size: 0.6rem;
+  font-weight: 400;
+  letter-spacing: 0.2em;
+  color: rgba(255, 255, 255, 0.3);
+  font-style: italic;
+  text-shadow: 0 1px 1px rgba(0, 0, 0, 0.3);
+}
+
+.clay-notebook-cover__content {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px 40px 16px 68px; /* 40px + 28px spine to center content */
+  z-index: 10;
+  position: relative;
+  pointer-events: auto;
+}
+
+.clay-notebook-cover__inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  width: 100%;
+  max-width: 340px;
+  padding: 28px 24px;
+  position: relative;
+  z-index: 20;
+  pointer-events: auto;
+  background: rgba(0, 0, 0, 0.08);
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow:
+    inset 0 2px 4px rgba(0, 0, 0, 0.15),
+    inset 0 -1px 2px rgba(255, 255, 255, 0.1);
+}
+
+/* Corner flourishes */
+.clay-notebook-cover__flourish {
+  position: absolute;
+  width: 24px;
+  height: 24px;
+  border-color: rgba(255, 255, 255, 0.2);
+  border-style: solid;
+  border-width: 0;
+  pointer-events: none;
+}
+
+.clay-notebook-cover__flourish--tl {
+  top: 8px;
+  left: 8px;
+  border-top-width: 2px;
+  border-left-width: 2px;
+  border-top-left-radius: 8px;
+}
+
+.clay-notebook-cover__flourish--tr {
+  top: 8px;
+  right: 8px;
+  border-top-width: 2px;
+  border-right-width: 2px;
+  border-top-right-radius: 8px;
+}
+
+.clay-notebook-cover__flourish--bl {
+  bottom: 8px;
+  left: 8px;
+  border-bottom-width: 2px;
+  border-left-width: 2px;
+  border-bottom-left-radius: 8px;
+}
+
+.clay-notebook-cover__flourish--br {
+  bottom: 8px;
+  right: 8px;
+  border-bottom-width: 2px;
+  border-right-width: 2px;
+  border-bottom-right-radius: 8px;
+}
+
+/* Color picker */
+.clay-notebook-cover__color-picker-container {
+  position: relative;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  z-index: 100;
+}
+
+.clay-notebook-cover__color-toggle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 18px;
+  background: rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 24px;
+  color: var(--clay-text);
+  font-size: 0.85rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  backdrop-filter: blur(8px);
+  box-shadow:
+    0 4px 12px rgba(0, 0, 0, 0.1),
+    inset 0 1px 2px rgba(255, 255, 255, 0.2);
+}
+
+.clay-notebook-cover__color-toggle:hover {
+  background: rgba(255, 255, 255, 0.3);
+  transform: translateY(-1px);
+}
+
+.clay-notebook-cover__color-preview {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.6);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.clay-notebook-cover__color-palette {
+  position: absolute;
+  top: calc(100% + 12px);
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 10px;
+  padding: 14px 16px;
+  background: rgba(255, 255, 255, 0.98);
+  border-radius: 20px;
+  box-shadow:
+    0 15px 50px rgba(0, 0, 0, 0.25),
+    0 5px 15px rgba(0, 0, 0, 0.15);
+  z-index: 1000;
+}
+
+.dark .clay-notebook-cover__color-palette {
+  background: rgba(35, 35, 45, 0.98);
+}
+
+.clay-notebook-cover__color-option {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 3px solid transparent;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow:
+    0 3px 10px rgba(0, 0, 0, 0.2),
+    inset 0 1px 2px rgba(255, 255, 255, 0.3);
+}
+
+.clay-notebook-cover__color-option:hover {
+  transform: scale(1.15);
+  box-shadow:
+    0 5px 15px rgba(0, 0, 0, 0.25),
+    inset 0 1px 2px rgba(255, 255, 255, 0.3);
+}
+
+.clay-notebook-cover__color-option--active {
+  border-color: white;
+  transform: scale(1.1);
+  box-shadow:
+    0 3px 10px rgba(0, 0, 0, 0.2),
+    0 0 0 3px rgba(0, 0, 0, 0.15);
+}
+
+/* Title input label */
+/* Label header */
+.clay-notebook-cover__label-header {
+  font-size: 0.55rem;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  color: rgba(255, 255, 255, 0.45);
+  margin-bottom: 8px;
+  text-align: center;
+  text-shadow: 0 1px 1px rgba(0, 0, 0, 0.2);
+}
+
+.clay-notebook-cover__label {
+  width: 100%;
+  padding: 14px 22px 18px;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 14px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  transition: all 0.2s ease;
+  backdrop-filter: blur(8px);
+  box-shadow:
+    0 4px 16px rgba(0, 0, 0, 0.1),
+    inset 0 1px 2px rgba(255, 255, 255, 0.2),
+    inset 0 -1px 2px rgba(0, 0, 0, 0.1);
+  position: relative;
+  z-index: 50;
+  pointer-events: auto;
+}
+
+.clay-notebook-cover__label--focused {
+  background: rgba(255, 255, 255, 0.28);
+  border-color: rgba(255, 255, 255, 0.45);
+  box-shadow:
+    0 0 0 4px rgba(255, 255, 255, 0.12),
+    0 4px 16px rgba(0, 0, 0, 0.1),
+    inset 0 1px 2px rgba(255, 255, 255, 0.2);
+}
+
+.clay-notebook-cover__input {
+  width: 100%;
+  background: transparent;
+  border: none;
+  font-family: 'Georgia', 'Times New Roman', serif;
+  font-size: 1.2rem;
+  font-weight: 500;
+  color: var(--clay-text);
+  text-align: center;
+  outline: none;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  position: relative;
+  z-index: 100;
+  pointer-events: auto;
+  cursor: text;
+}
+
+.clay-notebook-cover__input::placeholder {
+  color: rgba(255, 255, 255, 0.55);
+  font-style: italic;
+}
+
+/* Open button */
+.clay-notebook-cover__button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 14px 26px;
+  background: rgba(255, 255, 255, 0.12);
+  border: 2px solid rgba(255, 255, 255, 0.18);
+  border-radius: 14px;
+  color: rgba(255, 255, 255, 0.45);
+  font-size: 0.9rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  cursor: not-allowed;
+  transition: all 0.2s ease;
+}
+
+.clay-notebook-cover__button--active {
+  background: rgba(255, 255, 255, 0.22);
+  border-color: rgba(255, 255, 255, 0.35);
+  color: var(--clay-text);
+  cursor: pointer;
+  box-shadow:
+    0 6px 20px rgba(0, 0, 0, 0.15),
+    inset 0 1px 3px rgba(255, 255, 255, 0.25);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.clay-notebook-cover__button--active:hover {
+  background: rgba(255, 255, 255, 0.32);
+  transform: translateY(-1px);
+}
+
+/* Footer branding */
+.clay-notebook-cover__footer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px 40px 24px 68px; /* 40px + 28px spine to center content */
+  pointer-events: none;
+}
+
+.clay-notebook-cover__footer-ornament {
+  width: 80px;
+  height: 16px;
+  position: relative;
+}
+
+.clay-notebook-cover__footer-ornament::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.25) 30%, rgba(255, 255, 255, 0.25) 70%, transparent 100%);
+}
+
+.clay-notebook-cover__footer-ornament::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) rotate(45deg);
+  width: 6px;
+  height: 6px;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  background: rgba(255, 255, 255, 0.05);
+}
+
+/* Card mode content */
+/* Card header with brand */
+.clay-notebook-cover__card-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 14px 18px 8px 46px; /* 18px + 28px spine to center */
+  pointer-events: none;
+}
+
+.clay-notebook-cover__card-emblem {
+  width: 18px;
+  height: 18px;
+  color: rgba(255, 255, 255, 0.25);
+  filter: drop-shadow(0 1px 0 rgba(255, 255, 255, 0.1)) drop-shadow(0 -1px 0 rgba(0, 0, 0, 0.2));
+}
+
+.clay-notebook-cover__card-emblem svg {
+  width: 100%;
+  height: 100%;
+}
+
+.clay-notebook-cover__card-brand {
+  font-family: 'Georgia', 'Times New Roman', serif;
+  font-size: 0.55rem;
+  font-weight: 700;
+  letter-spacing: 0.25em;
+  color: transparent;
+  background: linear-gradient(
+    180deg,
+    rgba(0, 0, 0, 0.3) 0%,
+    rgba(0, 0, 0, 0.15) 50%,
+    rgba(255, 255, 255, 0.12) 51%,
+    rgba(255, 255, 255, 0.08) 100%
+  );
+  -webkit-background-clip: text;
+  background-clip: text;
+  text-shadow:
+    0 1px 1px rgba(255, 255, 255, 0.15),
+    0 -1px 1px rgba(0, 0, 0, 0.3);
+}
+
+.clay-notebook-cover__card-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 18px 12px 46px; /* 18px + 28px spine to center */
+  gap: 12px;
+  position: relative;
+  z-index: 2;
+}
+
+.clay-notebook-cover__card-label {
+  width: 100%;
+  max-width: 280px;
+  padding: 20px 24px;
+  background: rgba(0, 0, 0, 0.15);
+  border-radius: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow:
+    inset 0 2px 4px rgba(0, 0, 0, 0.2),
+    inset 0 -1px 2px rgba(255, 255, 255, 0.1);
+}
+
+.clay-notebook-cover__card-title {
+  font-family: 'Georgia', 'Times New Roman', serif;
+  font-size: 1.1rem;
+  font-weight: 600;
+  text-align: center;
+  line-height: 1.4;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  /* Engraved/debossed text effect */
+  color: rgba(255, 255, 255, 0.85);
+  text-shadow:
+    0 -1px 1px rgba(0, 0, 0, 0.6),
+    0 1px 1px rgba(255, 255, 255, 0.15);
+  letter-spacing: 0.03em;
+}
+
+/* Tags */
+.clay-notebook-cover__tags {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 6px;
+  padding: 0 4px;
+}
+
+.clay-notebook-cover__tag {
+  padding: 4px 10px;
+  background: rgba(255, 255, 255, 0.18);
+  border-radius: 8px;
+  font-size: 0.7rem;
+  color: rgba(255, 255, 255, 0.9);
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.1);
+}
+
+.clay-notebook-cover__tag-more {
+  padding: 4px 8px;
+  font-size: 0.7rem;
+  color: rgba(255, 255, 255, 0.55);
+}
+
+/* Card footer */
+.clay-notebook-cover__card-footer {
+  padding: 8px 18px 14px 46px; /* 18px + 28px spine to center */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.clay-notebook-cover__card-ornament {
+  width: 50px;
+  height: 8px;
+  position: relative;
+  align-self: center;
+}
+
+.clay-notebook-cover__card-ornament::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.2) 30%, rgba(255, 255, 255, 0.2) 70%, transparent 100%);
+}
+
+.clay-notebook-cover__card-ornament::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) rotate(45deg);
+  width: 4px;
+  height: 4px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.clay-notebook-cover__date {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.7rem;
+  color: rgba(255, 255, 255, 0.5);
+  align-self: center;
+}
+
+/* Hover overlay */
+.clay-notebook-cover__overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    180deg,
+    rgba(0, 0, 0, 0.35) 0%,
+    rgba(0, 0, 0, 0.65) 100%
+  );
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  border-radius: 16px;
+  backdrop-filter: blur(3px);
+  z-index: 10;
+}
+
+.clay-notebook-cover--card:hover .clay-notebook-cover__overlay {
+  opacity: 1;
+}
+
+.clay-notebook-cover__actions {
+  display: flex;
+  gap: 12px;
+}
+
+.clay-notebook-cover__action {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 16px;
+  border: none;
+  border-radius: 12px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.clay-notebook-cover__action--primary {
+  background: linear-gradient(145deg, #818CF8, #6366F1);
+  color: white;
+  box-shadow:
+    0 4px 14px rgba(99, 102, 241, 0.45),
+    inset 0 1px 2px rgba(255, 255, 255, 0.25);
+}
+
+.clay-notebook-cover__action--primary:hover {
+  transform: scale(1.05);
+  box-shadow:
+    0 6px 18px rgba(99, 102, 241, 0.55),
+    inset 0 1px 2px rgba(255, 255, 255, 0.25);
+}
+
+.clay-notebook-cover__action--danger {
+  background: linear-gradient(145deg, #F87171, #EF4444);
+  color: white;
+  padding: 10px 12px;
+  box-shadow:
+    0 4px 14px rgba(239, 68, 68, 0.45),
+    inset 0 1px 2px rgba(255, 255, 255, 0.25);
+}
+
+.clay-notebook-cover__action--danger:hover {
+  transform: scale(1.05);
+  box-shadow:
+    0 6px 18px rgba(239, 68, 68, 0.55),
+    inset 0 1px 2px rgba(255, 255, 255, 0.25);
+}
+
+.clay-notebook-cover__open-hint {
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.8);
+  font-weight: 500;
+}
+
+/* Standalone color picker component */
+.clay-notebook-color-picker {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.clay-notebook-color-picker__option {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 3px solid transparent;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow:
+    0 4px 10px rgba(0, 0, 0, 0.18),
+    inset 0 1px 3px rgba(255, 255, 255, 0.35);
+}
+
+.clay-notebook-color-picker__option:hover {
+  transform: scale(1.12);
+}
+
+.clay-notebook-color-picker__option--active {
+  border-color: var(--foreground);
+  transform: scale(1.12);
+  box-shadow:
+    0 4px 14px rgba(0, 0, 0, 0.22),
+    inset 0 1px 3px rgba(255, 255, 255, 0.35);
+}

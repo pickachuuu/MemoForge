@@ -2,7 +2,7 @@
 
 import Header from '@/component/ui/Header';
 import { ClayCard } from '@/component/ui/Clay';
-import NotebookCard from '@/component/ui/NotebookCard';
+import ClayNotebookCover, { NotebookColorKey } from '@/component/ui/ClayNotebookCover';
 import CreateNoteButton from '@/component/features/CreateNoteButton';
 import { Book02Icon, BookOpen01Icon } from 'hugeicons-react';
 import { useEffect, useState } from 'react';
@@ -193,10 +193,12 @@ export default function NotesPage() {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
             {filteredNotes.map((note) => (
               <Link href={`/editor/${note.slug || note.id}`} key={note.id} className="block">
-                <NotebookCard
+                <ClayNotebookCover
+                  mode="card"
                   title={note.title}
                   tags={note.tags || []}
                   updatedAt={note.updated_at}
+                  color={(note.cover_color as NotebookColorKey) || 'lavender'}
                   onGenerateFlashcards={() => handleGenerateFlashcards(note)}
                   onDelete={() => handleDeleteNote(note)}
                 />

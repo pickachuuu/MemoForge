@@ -6,7 +6,7 @@ import { useNoteActions } from '@/hook/useNoteActions';
 import { createClient } from '@/utils/supabase/client';
 import { VerticalEditorToolbar, Editor } from '@/component/ui/RichTextEditor';
 import PageFlipContainer, { ViewType } from '@/component/ui/PageFlipContainer';
-import NotebookCover from '@/component/ui/NotebookCover';
+import ClayNotebookCover, { NotebookColorKey, NOTEBOOK_COLORS } from '@/component/ui/ClayNotebookCover';
 import TableOfContents, { NotePage } from '@/component/ui/TableOfContents';
 import NotebookPage from '@/component/ui/NotebookPage';
 import Link from 'next/link';
@@ -55,6 +55,7 @@ export default function EditorPage() {
   const [tags, setTags] = useState<string[]>([]);
   const [tagInput, setTagInput] = useState('');
   const [showTagInput, setShowTagInput] = useState(false);
+  const [coverColor, setCoverColor] = useState<NotebookColorKey>('lavender');
   const [saveStatus, setSaveStatus] = useState<'saved' | 'saving' | 'error'>('saved');
   const [loading, setLoading] = useState(!!noteIdOrSlug && noteIdOrSlug !== 'new');
   const [theme, setTheme] = useState<'light' | 'dark'>('light');
@@ -141,6 +142,7 @@ export default function EditorPage() {
           setSlug(note.slug);
           setTitle(note.title || '');
           setTags(note.tags || []);
+          setCoverColor((note.cover_color as NotebookColorKey) || 'lavender');
 
           // Fetch pages for this note
           const notePages = await getPages(note.id);
@@ -180,10 +182,12 @@ export default function EditorPage() {
   const captureCurrentState = () => {
     if (currentView === 'cover') {
       previousContentRef.current = (
-        <NotebookCover
+        <ClayNotebookCover
+          mode="editor"
           title={title}
           onTitleChange={() => {}}
           onOpen={() => {}}
+          color={coverColor}
           theme={theme}
         />
       );
@@ -219,13 +223,13 @@ export default function EditorPage() {
     // Create the note when opening
     if (!id && isNewNote) {
       try {
-        const newId = await createNote();
+        const newId = await createNote(coverColor);
         if (newId) {
           setId(newId);
           setSaveStatus('saved');
 
-          // Save the title immediately
-          await saveNote(newId, { title, content: '', tags: [] });
+          // Save the title immediately with cover color
+          await saveNote(newId, { title, content: '', tags: [], coverColor });
 
           // Go to TOC
           setCurrentView('toc');
@@ -456,13 +460,13 @@ export default function EditorPage() {
     return () => clearTimeout(timeoutId);
   }, [currentPageContent, currentPageIndex, pages, lastSavedContent, savePage, extractH1Title, currentView]);
 
-  // Auto-save note metadata (title, tags)
+  // Auto-save note metadata (title, tags, coverColor)
   useEffect(() => {
     if (!id || !title.trim() || currentView === 'cover') return;
 
     const timeoutId = setTimeout(async () => {
       try {
-        await saveNote(id, { title, content: '', tags });
+        await saveNote(id, { title, content: '', tags, coverColor });
 
         const { data: updatedNote } = await supabase
           .from('notes')
@@ -480,7 +484,7 @@ export default function EditorPage() {
     }, 1500);
 
     return () => clearTimeout(timeoutId);
-  }, [id, title, tags, saveNote, slug, router, currentView]);
+  }, [id, title, tags, coverColor, saveNote, slug, router, currentView]);
 
   const handleAddTag = () => {
     const trimmedTag = tagInput.trim();
@@ -523,12 +527,20 @@ export default function EditorPage() {
   const textColor = theme === 'dark' ? '#9ca3af' : '#4b5563';
   const iconColor = theme === 'dark' ? '#9ca3af' : '#4b5563';
 
+  // Handle cover color change
+  const handleColorChange = (newColor: NotebookColorKey) => {
+    setCoverColor(newColor);
+  };
+
   // Cover component
   const coverComponent = (
-    <NotebookCover
+    <ClayNotebookCover
+      mode="editor"
       title={title}
       onTitleChange={setTitle}
       onOpen={handleOpenNotebook}
+      onColorChange={handleColorChange}
+      color={coverColor}
       theme={theme}
     />
   );

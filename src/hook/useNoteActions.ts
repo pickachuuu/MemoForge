@@ -9,7 +9,7 @@ export function useNoteActions() {
     /**
      * Creates a new empty note and returns its ID
      */
-    const createNote = async () => {
+    const createNote = async (coverColor?: string) => {
         const { data: { session } } = await supabase.auth.getSession();
 
         const { data, error } = await supabase
@@ -18,6 +18,7 @@ export function useNoteActions() {
                 title: '',
                 content: '',
                 tags: [],
+                cover_color: coverColor || 'lavender',
                 user_id: session?.user?.id,
                 slug: null // Slug will be generated when title is set
             }])
@@ -37,7 +38,7 @@ export function useNoteActions() {
      */
     const saveNote = async (
         id: string,
-        { title, content, tags }: { title: string; content: string; tags: string[] }
+        { title, content, tags, coverColor }: { title: string; content: string; tags: string[]; coverColor?: string }
     ) => {
         if (!title) return;
 
@@ -46,16 +47,22 @@ export function useNoteActions() {
         // Generate a unique slug from the title using the note's ID
         const slug = generateUniqueSlug(title, id);
 
+        const updateData: Record<string, unknown> = {
+            title,
+            content,
+            tags,
+            slug,
+            user_id: session?.user?.id,
+            updated_at: new Date().toISOString()
+        };
+
+        if (coverColor) {
+            updateData.cover_color = coverColor;
+        }
+
         const { data, error } = await supabase
             .from('notes')
-            .update({
-                title,
-                content,
-                tags,
-                slug,
-                user_id: session?.user?.id,
-                updated_at: new Date().toISOString()
-            })
+            .update(updateData)
             .eq('id', id)
             .eq('user_id', session?.user?.id);
 

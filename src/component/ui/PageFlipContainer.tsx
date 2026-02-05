@@ -72,6 +72,7 @@ export default function PageFlipContainer({
   // useLayoutEffect runs BEFORE browser paint - prevents visual jitter
   useLayoutEffect(() => {
     if (currentPosition !== prevPositionRef.current) {
+      // Position changed - trigger flip animation
       const dir = currentPosition > prevPositionRef.current ? 'forward' : 'backward';
       animIdRef.current++;
 
@@ -96,6 +97,14 @@ export default function PageFlipContainer({
       });
 
       prevPositionRef.current = currentPosition;
+    } else if (!displayState.flip) {
+      // No position change and no animation in progress - update base content directly
+      // This ensures typing in the cover title or editing page content updates immediately
+      const currentContent = getCurrentContent();
+      setDisplayState(prev => ({
+        ...prev,
+        baseContent: currentContent,
+      }));
     }
   }, [currentPosition, previousContent, cover, toc, pageContent, currentView]);
 
@@ -160,9 +169,10 @@ export default function PageFlipContainer({
       ))}
 
       {/* Base layer - content controlled by displayState */}
+      {/* Note: overflow-visible when on cover to allow color picker dropdown to show */}
       <div
-        className="absolute inset-0 rounded-lg overflow-hidden"
-        style={{ zIndex: 10, backgroundColor: paperColor }}
+        className={`absolute inset-0 rounded-lg ${currentView === 'cover' ? 'overflow-visible' : 'overflow-hidden'}`}
+        style={{ zIndex: 10, backgroundColor: currentView === 'cover' ? 'transparent' : paperColor }}
       >
         {displayState.baseContent}
       </div>
