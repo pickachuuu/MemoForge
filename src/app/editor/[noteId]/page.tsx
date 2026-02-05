@@ -527,9 +527,9 @@ export default function EditorPage() {
               </button>
             ) : (
               <Link
-                href="/notes"
+                href="/library"
                 className="p-1.5 rounded transition-colors hover:bg-gray-100"
-                title="Back to Notebooks"
+                title="Back to Library"
               >
                 <ArrowLeft02Icon className="w-5 h-5" style={{ color: iconColor }} />
               </Link>

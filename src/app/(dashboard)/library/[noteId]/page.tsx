@@ -1,7 +1,6 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { ClayBadge } from '@/component/ui/Clay';
 import { useParams, useRouter } from 'next/navigation';
 import { useNoteActions } from '@/hook/useNoteActions';
 import { createClient } from '@/utils/supabase/client';
@@ -59,7 +58,7 @@ export default function NotePage() {
           });
 
           if (note.slug && noteIdOrSlug === note.id) {
-            router.replace(`/notes/${note.slug}`, { scroll: false });
+            router.replace(`/library/${note.slug}`, { scroll: false });
           }
         }
       } catch (error) {
@@ -119,7 +118,7 @@ export default function NotePage() {
 
         if (updatedNote?.slug && updatedNote.slug !== slug) {
           setSlug(updatedNote.slug);
-          router.replace(`/notes/${updatedNote.slug}`, { scroll: false });
+          router.replace(`/library/${updatedNote.slug}`, { scroll: false });
         }
       } catch {
         setSaveStatus('error');
@@ -186,11 +185,11 @@ export default function NotePage() {
         <div className="max-w-5xl mx-auto px-6 py-3 flex items-center justify-between gap-4">
           {/* Left: Back button */}
           <Link
-            href="/notes"
+            href="/library"
             className="flex items-center gap-2 text-foreground-muted hover:text-foreground transition-colors"
           >
             <ArrowLeft01Icon className="w-5 h-5" />
-            <span className="text-sm font-medium hidden sm:inline">Notes</span>
+            <span className="text-sm font-medium hidden sm:inline">Library</span>
           </Link>
 
           {/* Center: Save Status */}
@@ -336,7 +335,7 @@ export default function NotePage() {
               <p className="text-xs text-foreground-muted">
                 Shareable URL:{' '}
                 <code className="bg-background-muted px-2 py-1 rounded-lg text-accent">
-                  /notes/{slug}
+                  /library/{slug}
                 </code>
               </p>
             </div>

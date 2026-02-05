@@ -99,7 +99,7 @@ export default function RecentActivity() {
           <h3 className="text-lg font-semibold text-foreground">Recent Activity</h3>
           <p className="text-sm text-foreground-muted">Your latest learning activities</p>
         </div>
-        <Link href="/notes" className="text-sm text-primary hover:text-primary-dark font-semibold flex items-center gap-1.5 transition-colors px-3 py-1.5 rounded-lg hover:bg-primary-muted/50">
+        <Link href="/library" className="text-sm text-primary hover:text-primary-dark font-semibold flex items-center gap-1.5 transition-colors px-3 py-1.5 rounded-lg hover:bg-primary-muted/50">
           View all
           <ArrowRight01Icon className="w-4 h-4" />
         </Link>

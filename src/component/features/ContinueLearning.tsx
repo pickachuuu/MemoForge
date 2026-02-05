@@ -74,7 +74,7 @@ export default function ContinueLearning() {
           title: 'Create Flashcards',
           description: 'Generate cards from your notes',
           icon: <Add01Icon className="w-6 h-6" />,
-          href: '/notes',
+          href: '/library',
           gradient: 'from-primary via-primary to-indigo-600', // Indigo - creative action
           shadowColor: 'shadow-primary/30',
           priority: 'normal',
@@ -141,7 +141,7 @@ export default function ContinueLearning() {
 
       {/* Secondary Actions */}
       <div className="mt-4 grid grid-cols-2 gap-3">
-        <Link href="/notes">
+        <Link href="/library">
           <div className="p-3 rounded-xl bg-gradient-to-br from-gray-50 to-gray-100/50 hover:from-secondary-muted/30 hover:to-secondary-muted/50 border border-gray-100 hover:border-secondary/20 transition-all cursor-pointer group">
             <div className="flex items-center gap-2.5">
               <div className="p-2 rounded-lg bg-gradient-to-br from-secondary-muted to-secondary-muted/70 shadow-sm">

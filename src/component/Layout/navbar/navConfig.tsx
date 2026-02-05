@@ -10,11 +10,15 @@ export const navItems: navbarItemType[] = [
         href: '/dashboard'
     },
     {
-        name: 'Notes',
-        href: '/notes'
+        name: 'Library',
+        href: '/library'
     },
     {
         name: 'Flashcards',
         href: '/flashcards'
+    },
+    {
+        name: 'Exams',
+        href: '/exams'
     }
 ]

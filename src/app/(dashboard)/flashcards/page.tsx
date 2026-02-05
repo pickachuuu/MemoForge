@@ -211,7 +211,7 @@ export default function FlashcardDashboardPage() {
           description="Study with interactive flashcards"
           icon={<BookOpen01Icon className="w-6 h-6 text-secondary" />}
         >
-          <Link href="/notes">
+          <Link href="/library">
             <button className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-accent text-white font-medium text-sm hover:bg-accent/90 transition-colors">
               <File01Icon className="w-4 h-4" />
               Forge from notes
@@ -248,10 +248,10 @@ export default function FlashcardDashboardPage() {
               <p className="text-foreground-muted mb-6 max-w-sm mx-auto">
                 Create flashcards from your notes to start studying
               </p>
-              <Link href="/notes">
+              <Link href="/library">
                 <button className="inline-flex items-center gap-2 px-5 py-3 rounded-xl bg-accent text-white font-medium hover:bg-accent/90 transition-colors">
                   <File01Icon className="w-5 h-5" />
-                  Go to Notes
+                  Go to Library
                 </button>
               </Link>
             </div>

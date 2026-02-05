@@ -65,7 +65,7 @@ export default function QuickActions() {
       title: 'Create Note',
       description: 'Start a new study note',
       icon: <Add01Icon className="w-5 h-5 text-white" />,
-      href: '/notes',
+      href: '/library',
       variant: 'primary',
     },
     {
@@ -79,7 +79,7 @@ export default function QuickActions() {
       title: 'Browse Notes',
       description: 'View all your notes',
       icon: <File01Icon className="w-5 h-5 text-primary" />,
-      href: '/notes',
+      href: '/library',
       variant: 'default',
     },
     {
