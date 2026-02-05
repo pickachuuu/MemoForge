@@ -985,8 +985,8 @@ export default function EditorPage() {
                 </div>
               </div>
 
-              {/* Editor toolbar (only when editing a page) */}
-              {currentView === 'page' && editor && (
+              {/* Editor toolbar (shown on TOC and page views) */}
+              {(currentView === 'page' || currentView === 'toc') && editor && (
                 <div
                   className="p-3 overflow-y-auto"
                   style={{

@@ -6,7 +6,10 @@ import Placeholder from '@tiptap/extension-placeholder';
 import Underline from '@tiptap/extension-underline';
 import TextAlign from '@tiptap/extension-text-align';
 import Highlight from '@tiptap/extension-highlight';
-import { useEffect, useState, useImperativeHandle, forwardRef } from 'react';
+import Image from '@tiptap/extension-image';
+import { Color } from '@tiptap/extension-color';
+import { TextStyle } from '@tiptap/extension-text-style';
+import { useEffect, useState, useImperativeHandle, forwardRef, useRef } from 'react';
 import {
   TextBoldIcon,
   TextItalicIcon,
@@ -28,7 +31,32 @@ import {
   MinusSignIcon,
   Sun01Icon,
   Moon01Icon,
+  Image01Icon,
+  TextColorIcon,
 } from 'hugeicons-react';
+
+// Preset colors for text and highlighting
+const TEXT_COLORS = [
+  { name: 'Default', color: null },
+  { name: 'Red', color: '#ef4444' },
+  { name: 'Orange', color: '#f97316' },
+  { name: 'Amber', color: '#f59e0b' },
+  { name: 'Green', color: '#22c55e' },
+  { name: 'Teal', color: '#14b8a6' },
+  { name: 'Blue', color: '#3b82f6' },
+  { name: 'Indigo', color: '#6366f1' },
+  { name: 'Purple', color: '#a855f7' },
+  { name: 'Pink', color: '#ec4899' },
+];
+
+const HIGHLIGHT_COLORS = [
+  { name: 'Yellow', color: '#fef08a' },
+  { name: 'Green', color: '#bbf7d0' },
+  { name: 'Blue', color: '#bfdbfe' },
+  { name: 'Purple', color: '#e9d5ff' },
+  { name: 'Pink', color: '#fbcfe8' },
+  { name: 'Orange', color: '#fed7aa' },
+];
 
 // Export Editor type for external use
 export type { Editor } from '@tiptap/react';
@@ -170,10 +198,81 @@ function VerticalToolbarDivider({ theme }: { theme: 'light' | 'dark' }) {
 }
 
 export function VerticalEditorToolbar({ editor, theme }: VerticalEditorToolbarProps) {
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const textColorRef = useRef<HTMLDivElement>(null);
+  const highlightColorRef = useRef<HTMLDivElement>(null);
+  const [showTextColors, setShowTextColors] = useState(false);
+  const [showHighlightColors, setShowHighlightColors] = useState(false);
+
+  // Close dropdowns when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (textColorRef.current && !textColorRef.current.contains(event.target as Node)) {
+        setShowTextColors(false);
+      }
+      if (highlightColorRef.current && !highlightColorRef.current.contains(event.target as Node)) {
+        setShowHighlightColors(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file && editor) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const base64 = e.target?.result as string;
+        editor.chain().focus().setImage({ src: base64 }).run();
+      };
+      reader.readAsDataURL(file);
+    }
+    // Reset the input so the same file can be selected again
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
+  };
+
+  const handleImageClick = () => {
+    fileInputRef.current?.click();
+  };
+
+  const handleTextColor = (color: string | null) => {
+    if (color) {
+      editor?.chain().focus().setColor(color).run();
+    } else {
+      editor?.chain().focus().unsetColor().run();
+    }
+    setShowTextColors(false);
+  };
+
+  const handleHighlightColor = (color: string) => {
+    editor?.chain().focus().toggleHighlight({ color }).run();
+    setShowHighlightColors(false);
+  };
+
+  const removeHighlight = () => {
+    editor?.chain().focus().unsetHighlight().run();
+    setShowHighlightColors(false);
+  };
+
   if (!editor) return null;
+
+  const isDark = theme === 'dark';
 
   return (
     <div className="flex flex-col gap-3">
+      {/* Hidden file input for image upload */}
+      <input
+        type="file"
+        ref={fileInputRef}
+        onChange={handleImageUpload}
+        accept="image/*"
+        className="hidden"
+      />
+
       {/* Undo/Redo row */}
       <div className="grid grid-cols-2 gap-2">
         <VerticalToolbarButton
@@ -230,14 +329,134 @@ export function VerticalEditorToolbar({ editor, theme }: VerticalEditorToolbarPr
         >
           <TextStrikethroughIcon className="w-4 h-4" />
         </VerticalToolbarButton>
-        <VerticalToolbarButton
-          onClick={() => editor.chain().focus().toggleHighlight().run()}
-          isActive={editor.isActive('highlight')}
-          title="Highlight"
-          theme={theme}
-        >
-          <PaintBrush04Icon className="w-4 h-4" />
-        </VerticalToolbarButton>
+      </div>
+
+      <VerticalToolbarDivider theme={theme} />
+
+      {/* Color Options */}
+      <div className="space-y-2">
+        {/* Text Color Picker */}
+        <div className="relative" ref={textColorRef}>
+          <button
+            type="button"
+            onClick={() => {
+              setShowTextColors(!showTextColors);
+              setShowHighlightColors(false);
+            }}
+            title="Text Color"
+            className={`
+              w-full h-9 rounded-xl flex items-center justify-center gap-2 transition-all text-xs font-medium
+              ${isDark
+                ? 'bg-gray-800/80 hover:bg-gray-700/80 text-gray-300 border border-gray-700/50'
+                : 'bg-white hover:bg-gray-50 text-gray-600 border border-gray-200/80 shadow-sm'
+              }
+            `}
+          >
+            <TextColorIcon className="w-4 h-4" />
+            <span>Text Color</span>
+            <div
+              className="w-3 h-3 rounded-full border border-gray-400/50"
+              style={{ backgroundColor: editor.getAttributes('textStyle').color || (isDark ? '#e5e7eb' : '#374151') }}
+            />
+          </button>
+
+          {showTextColors && (
+            <div className={`
+              absolute left-0 right-0 mt-2 p-2 rounded-xl z-50
+              ${isDark
+                ? 'bg-gray-800 border border-gray-700 shadow-xl'
+                : 'bg-white border border-gray-200 shadow-xl'
+              }
+            `}>
+              <div className="grid grid-cols-5 gap-1.5">
+                {TEXT_COLORS.map((c) => (
+                  <button
+                    key={c.name}
+                    type="button"
+                    onClick={() => handleTextColor(c.color)}
+                    title={c.name}
+                    className={`
+                      w-7 h-7 rounded-lg transition-all flex items-center justify-center
+                      ${!c.color
+                        ? isDark
+                          ? 'bg-gray-700 hover:bg-gray-600 border border-gray-600'
+                          : 'bg-gray-100 hover:bg-gray-200 border border-gray-300'
+                        : 'hover:scale-110'
+                      }
+                    `}
+                    style={c.color ? { backgroundColor: c.color } : undefined}
+                  >
+                    {!c.color && (
+                      <span className={`text-xs ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>∅</span>
+                    )}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* Highlight Color Picker */}
+        <div className="relative" ref={highlightColorRef}>
+          <button
+            type="button"
+            onClick={() => {
+              setShowHighlightColors(!showHighlightColors);
+              setShowTextColors(false);
+            }}
+            title="Highlight Color"
+            className={`
+              w-full h-9 rounded-xl flex items-center justify-center gap-2 transition-all text-xs font-medium
+              ${editor.isActive('highlight')
+                ? isDark
+                  ? 'bg-indigo-900/50 text-indigo-300 border border-indigo-700/50'
+                  : 'bg-indigo-100 text-indigo-600 border border-indigo-200'
+                : isDark
+                  ? 'bg-gray-800/80 hover:bg-gray-700/80 text-gray-300 border border-gray-700/50'
+                  : 'bg-white hover:bg-gray-50 text-gray-600 border border-gray-200/80 shadow-sm'
+              }
+            `}
+          >
+            <PaintBrush04Icon className="w-4 h-4" />
+            <span>Highlight</span>
+          </button>
+
+          {showHighlightColors && (
+            <div className={`
+              absolute left-0 right-0 mt-2 p-2 rounded-xl z-50
+              ${isDark
+                ? 'bg-gray-800 border border-gray-700 shadow-xl'
+                : 'bg-white border border-gray-200 shadow-xl'
+              }
+            `}>
+              <div className="grid grid-cols-3 gap-1.5 mb-2">
+                {HIGHLIGHT_COLORS.map((c) => (
+                  <button
+                    key={c.name}
+                    type="button"
+                    onClick={() => handleHighlightColor(c.color)}
+                    title={c.name}
+                    className="w-full h-7 rounded-lg transition-all hover:scale-105"
+                    style={{ backgroundColor: c.color }}
+                  />
+                ))}
+              </div>
+              <button
+                type="button"
+                onClick={removeHighlight}
+                className={`
+                  w-full h-7 rounded-lg text-xs font-medium transition-all
+                  ${isDark
+                    ? 'bg-gray-700 hover:bg-gray-600 text-gray-300'
+                    : 'bg-gray-100 hover:bg-gray-200 text-gray-600'
+                  }
+                `}
+              >
+                Remove Highlight
+              </button>
+            </div>
+          )}
+        </div>
       </div>
 
       <VerticalToolbarDivider theme={theme} />
@@ -305,6 +524,14 @@ export function VerticalEditorToolbar({ editor, theme }: VerticalEditorToolbarPr
           theme={theme}
         >
           <SourceCodeIcon className="w-4 h-4" />
+        </VerticalToolbarButton>
+        <VerticalToolbarButton
+          onClick={handleImageClick}
+          isActive={editor.isActive('image')}
+          title="Insert Image"
+          theme={theme}
+        >
+          <Image01Icon className="w-4 h-4" />
         </VerticalToolbarButton>
       </div>
 
@@ -639,11 +866,20 @@ export const RichTextEditor = forwardRef<RichTextEditorHandle, RichTextEditorPro
         emptyEditorClass: 'is-editor-empty',
       }),
       Underline,
+      TextStyle,
+      Color,
       Highlight.configure({
-        multicolor: false,
+        multicolor: true,
       }),
       TextAlign.configure({
         types: ['heading', 'paragraph'],
+      }),
+      Image.configure({
+        inline: false,
+        allowBase64: true,
+        HTMLAttributes: {
+          class: 'editor-image',
+        },
       }),
     ],
     content,
