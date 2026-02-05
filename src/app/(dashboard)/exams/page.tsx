@@ -1,12 +1,17 @@
 'use client';
 
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { ClayCard, ClayBadge, ClayButton } from '@/component/ui/Clay';
-import { useExamActions, ExamListItem } from '@/hook/useExamActions';
 import { ExamGenerationResponse } from '@/lib/gemini';
 import CreateExamModal from '@/component/features/modal/CreateExamModal';
 import ConfirmDeleteModal from '@/component/features/modal/ConfirmDeleteModal';
+import {
+  useExams,
+  useCreateExam,
+  useDeleteExam,
+  ExamListItem
+} from '@/hooks/useExams';
 import {
   TestTube01Icon,
   SparklesIcon,
@@ -15,9 +20,7 @@ import {
   Add01Icon,
   Delete01Icon,
   ArrowRight01Icon,
-  Award01Icon,
-  CheckmarkCircle01Icon,
-  Cancel01Icon
+  Award01Icon
 } from 'hugeicons-react';
 import { clsx } from 'clsx';
 
@@ -34,34 +37,14 @@ export default function ExamsPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [examToDelete, setExamToDelete] = useState<ExamListItem | null>(null);
-  const [exams, setExams] = useState<ExamListItem[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [isSaving, setIsSaving] = useState(false);
-  const [isDeleting, setIsDeleting] = useState(false);
 
-  const {
-    getUserExams,
-    createExamSet,
-    saveExamQuestions,
-    deleteExam
-  } = useExamActions();
+  // TanStack Query hooks
+  const { data: exams = [], isLoading } = useExams();
+  const createExamMutation = useCreateExam();
+  const deleteExamMutation = useDeleteExam();
 
-  // Load exams on mount
-  useEffect(() => {
-    const loadExams = async () => {
-      setIsLoading(true);
-      try {
-        const data = await getUserExams();
-        setExams(data);
-      } catch (error) {
-        console.error('Error loading exams:', error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    loadExams();
-  }, [getUserExams]);
+  const isSaving = createExamMutation.isPending;
+  const isDeleting = deleteExamMutation.isPending;
 
   const handleExamGenerated = useCallback(async (
     examResponse: ExamGenerationResponse,
@@ -82,7 +65,6 @@ export default function ExamsPage() {
       return;
     }
 
-    setIsSaving(true);
     try {
       // Deduplicate questions by content (in case AI returned duplicates)
       const seenQuestions = new Set<string>();
@@ -98,33 +80,25 @@ export default function ExamsPage() {
 
       console.log(`[ExamPage] Saving ${uniqueQuestions.length} unique questions (was ${examResponse.questions.length})`);
 
-      // Create the exam set
-      const examId = await createExamSet(
-        noteIds.length === 1 ? noteIds[0] : null,
+      // Create the exam set with questions using mutation
+      await createExamMutation.mutateAsync({
+        noteId: noteIds.length === 1 ? noteIds[0] : null,
         title,
-        {
+        config: {
           difficulty: config.difficulty,
           timeLimitMinutes: config.timeLimitEnabled ? config.timeLimitMinutes : null,
           includeMultipleChoice: config.includeMultipleChoice,
           includeIdentification: config.includeIdentification,
           includeEssay: config.includeEssay,
-        }
-      );
-
-      // Save the unique questions
-      await saveExamQuestions(examId, uniqueQuestions);
-
-      // Refresh the list
-      const data = await getUserExams();
-      setExams(data);
+        },
+        questions: uniqueQuestions,
+      });
 
       setIsModalOpen(false);
     } catch (error) {
       console.error('Error saving exam:', error);
-    } finally {
-      setIsSaving(false);
     }
-  }, [isSaving, createExamSet, saveExamQuestions, getUserExams]);
+  }, [isSaving, createExamMutation]);
 
   const handleDeleteClick = useCallback((exam: ExamListItem) => {
     setExamToDelete(exam);
@@ -134,18 +108,14 @@ export default function ExamsPage() {
   const handleConfirmDelete = useCallback(async () => {
     if (!examToDelete) return;
 
-    setIsDeleting(true);
     try {
-      await deleteExam(examToDelete.id);
-      setExams(prev => prev.filter(e => e.id !== examToDelete.id));
+      await deleteExamMutation.mutateAsync(examToDelete.id);
       setIsDeleteModalOpen(false);
       setExamToDelete(null);
     } catch (error) {
       console.error('Error deleting exam:', error);
-    } finally {
-      setIsDeleting(false);
     }
-  }, [examToDelete, deleteExam]);
+  }, [examToDelete, deleteExamMutation]);
 
   const handleTakeExam = useCallback((examId: string) => {
     router.push(`/exam/${examId}`);

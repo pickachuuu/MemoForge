@@ -7,26 +7,10 @@ import MasteryProgress from '@/component/features/MasteryProgress';
 import WeeklyActivityChart from '@/component/features/WeeklyActivityChart';
 import ContinueLearning from '@/component/features/ContinueLearning';
 import RecentActivity from '@/component/features/RecentActivity';
-import { useEffect, useState } from 'react';
-import { getCurrentUserProfile } from '@/hook/useAuthActions';
+import { useUserProfile } from '@/hooks/useAuth';
 
 export default function Dashboard() {
-  const [user, setUser] = useState<{ full_name?: string; email?: string } | null>(null);
-
-  useEffect(() => {
-    // Try to load user from localStorage first
-    const cached = localStorage.getItem('dashboardUser');
-    if (cached) {
-      setUser(JSON.parse(cached));
-    }
-    // Always fetch in background to update localStorage
-    getCurrentUserProfile().then((profile) => {
-      if (profile) {
-        setUser(profile);
-        localStorage.setItem('dashboardUser', JSON.stringify(profile));
-      }
-    });
-  }, []);
+  const { data: user } = useUserProfile();
 
   return (
     <div className="space-y-8 pb-8">

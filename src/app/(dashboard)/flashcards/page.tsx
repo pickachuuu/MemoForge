@@ -1,51 +1,45 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import Header from '@/component/ui/Header';
 import { ClayCard, ClayBadge } from '@/component/ui/Clay';
-import { BookOpen01Icon, Target01Icon, RefreshIcon, File01Icon, Share01Icon, Delete01Icon, ArrowRight01Icon, Clock01Icon, SparklesIcon } from 'hugeicons-react';
+import { BookOpen01Icon, RefreshIcon, Share01Icon, Delete01Icon, Clock01Icon, SparklesIcon } from 'hugeicons-react';
 import { useFlashcardActions } from '@/hook/useFlashcardActions';
 import { FlashcardSet } from '@/lib/database.types';
 import ReforgeModal from '@/component/features/modal/ReforgeModal';
 import ConfirmDeleteModal from '@/component/features/modal/ConfirmDeleteModal';
 import ForgeFlashcardsModal from '@/component/features/modal/ForgeFlashcardsModal';
 import { GeminiResponse } from '@/lib/gemini';
-import { createClient } from '@/utils/supabase/client';
-import { redirect } from 'next/navigation';
-import Link from 'next/link';
-
-const supabase = createClient();
+import {
+  useFlashcardSets,
+  useSaveGeneratedFlashcards,
+  useReforgeFlashcards,
+  useDeleteFlashcardSet,
+  useTogglePublicStatus
+} from '@/hooks/useFlashcards';
 
 export default function FlashcardDashboardPage() {
   const router = useRouter();
-  const [flashcardSets, setFlashcardSets] = useState<FlashcardSet[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
   const [isReforgeModalOpen, setIsReforgeModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [isForgeModalOpen, setIsForgeModalOpen] = useState(false);
   const [selectedSet, setSelectedSet] = useState<FlashcardSet | null>(null);
   const [existingFlashcards, setExistingFlashcards] = useState<{ question: string; answer: string; difficulty: 'easy' | 'medium' | 'hard' }[]>([]);
-  const [saving, setSaving] = useState(false);
   const [saveSuccess, setSaveSuccess] = useState<string | undefined>(undefined);
   const [shareLinkCopied, setShareLinkCopied] = useState<string | null>(null);
-  const { getUserFlashcardSets, getSetProgress, getFirstCardInSet, saveGeneratedFlashcards, deleteFlashcardSet, reforgeFlashcards, togglePublicStatus, getFlashcardsBySet } = useFlashcardActions();
 
-  const loadFlashcardSets = useCallback(async () => {
-    setIsLoading(true);
-    try {
-      const sets = await getUserFlashcardSets();
-      setFlashcardSets(sets);
-    } catch (error) {
-      console.error('Error loading flashcard sets:', error);
-    } finally {
-      setIsLoading(false);
-    }
-  }, [getUserFlashcardSets]);
+  // TanStack Query hooks
+  const { data: flashcardSets = [], isLoading } = useFlashcardSets();
+  const saveFlashcardsMutation = useSaveGeneratedFlashcards();
+  const reforgeMutation = useReforgeFlashcards();
+  const deleteMutation = useDeleteFlashcardSet();
+  const togglePublicMutation = useTogglePublicStatus();
 
-  useEffect(() => {
-    loadFlashcardSets();
-  }, [loadFlashcardSets]);
+  // Keep the old hook for utility functions not yet migrated
+  const { getFirstCardInSet, getFlashcardsBySet } = useFlashcardActions();
+
+  const saving = saveFlashcardsMutation.isPending || reforgeMutation.isPending;
 
   const handleCardClick = useCallback(async (setId: string) => {
     try {
@@ -62,9 +56,7 @@ export default function FlashcardDashboardPage() {
     setSelectedSet(set);
 
     try {
-      // Use the hook method for consistent ordering by position
       const flashcards = await getFlashcardsBySet(set.id);
-      // Convert to GeminiFlashcard format expected by ReforgeModal
       setExistingFlashcards(flashcards.map(f => ({
         question: f.question,
         answer: f.answer,
@@ -81,26 +73,21 @@ export default function FlashcardDashboardPage() {
   const handleFlashcardsGenerated = async (geminiResponse: GeminiResponse, action: 'add_more' | 'regenerate') => {
     if (!selectedSet) return;
 
-    setSaving(true);
     setSaveSuccess(undefined);
     try {
-      await reforgeFlashcards(
-        selectedSet.id,
+      await reforgeMutation.mutateAsync({
+        setId: selectedSet.id,
         action,
-        geminiResponse.flashcards
-      );
+        flashcards: geminiResponse.flashcards
+      });
 
       const actionText = action === 'regenerate' ? 'regenerated' : 'added';
       setSaveSuccess(`Successfully ${actionText} ${geminiResponse.flashcards.length} flashcards!`);
-
-      await loadFlashcardSets();
       setTimeout(() => setSaveSuccess(undefined), 3000);
     } catch (error) {
       console.error('Error reforging flashcards:', error);
       setSaveSuccess('Error reforging flashcards. Please try again.');
       setTimeout(() => setSaveSuccess(undefined), 3000);
-    } finally {
-      setSaving(false);
     }
   };
 
@@ -119,8 +106,7 @@ export default function FlashcardDashboardPage() {
     if (!selectedSet) return;
 
     try {
-      await deleteFlashcardSet(selectedSet.id);
-      setFlashcardSets(prevSets => prevSets.filter(set => set.id !== selectedSet.id));
+      await deleteMutation.mutateAsync(selectedSet.id);
       setSaveSuccess('Flashcard set deleted successfully!');
       setTimeout(() => setSaveSuccess(undefined), 3000);
     } catch (error) {
@@ -135,23 +121,20 @@ export default function FlashcardDashboardPage() {
     noteIds: string[],
     setTitle: string
   ) => {
-    setSaving(true);
     try {
-      await saveGeneratedFlashcards({
+      await saveFlashcardsMutation.mutateAsync({
         noteId: noteIds.length === 1 ? noteIds[0] : undefined,
         noteTitle: setTitle,
         difficulty: 'medium',
         geminiResponse,
       });
       setSaveSuccess(`Successfully created ${geminiResponse.flashcards.length} flashcards!`);
-      await loadFlashcardSets();
       setTimeout(() => setSaveSuccess(undefined), 3000);
     } catch (error) {
       console.error('Error saving flashcards:', error);
       setSaveSuccess('Error saving flashcards. Please try again.');
       setTimeout(() => setSaveSuccess(undefined), 3000);
     } finally {
-      setSaving(false);
       setIsForgeModalOpen(false);
     }
   };
@@ -161,12 +144,7 @@ export default function FlashcardDashboardPage() {
 
     if (!set.is_public) {
       try {
-        await togglePublicStatus(set.id, true);
-        setFlashcardSets(prevSets =>
-          prevSets.map(s =>
-            s.id === set.id ? { ...s, is_public: true } : s
-          )
-        );
+        await togglePublicMutation.mutateAsync({ setId: set.id, isPublic: true });
       } catch (error) {
         console.error('Error making set public:', error);
         return;

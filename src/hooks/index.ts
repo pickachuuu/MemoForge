@@ -25,3 +25,57 @@ export {
   type DashboardStats,
   type ActivityItem,
 } from './useDashboard';
+
+// Auth hooks
+export {
+  useUserProfile,
+  authKeys,
+  type UserProfile,
+} from './useAuth';
+
+// Flashcard hooks
+export {
+  useFlashcardSets,
+  useFlashcardSet,
+  useStudySetData,
+  usePublicFlashcardSet,
+  usePublicFlashcards,
+  useSaveGeneratedFlashcards,
+  useReforgeFlashcards,
+  useUpdateFlashcardStatus,
+  useDeleteFlashcardSet,
+  useTogglePublicStatus,
+  flashcardKeys,
+  type StudySetData,
+  type SaveFlashcardsOptions,
+  type ReforgeOptions,
+  type UpdateStatusParams,
+  type Flashcard,
+  type FlashcardSet,
+} from './useFlashcards';
+
+// Exam hooks
+export {
+  useExams,
+  useExam,
+  useAttemptResults,
+  useInProgressAttempt,
+  useExamAttempts,
+  useCreateExam,
+  useDeleteExam,
+  useStartExamAttempt,
+  useSaveResponse,
+  useSubmitExam,
+  useAbandonAttempt,
+  examKeys,
+  type ExamWithQuestions,
+  type AttemptWithResponses,
+  type ExamListItem,
+  type CreateExamParams,
+  type SaveResponseParams,
+  type SubmitExamParams,
+  type ExamSet,
+  type ExamQuestion,
+  type ExamAttempt,
+  type ExamResponse,
+} from './useExams';

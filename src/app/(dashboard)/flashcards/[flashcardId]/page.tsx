@@ -5,9 +5,10 @@ import { useState, useEffect, useCallback, useMemo } from "react";
 import Card from "@/component/ui/Card";
 import Header from "@/component/ui/Header";
 import Button from "@/component/ui/Button";
-import { useFlashcardActions, StudySetData } from "@/hook/useFlashcardActions";
+import { useFlashcardActions } from "@/hook/useFlashcardActions";
 import { Flashcard } from "@/lib/database.types";
 import { Share01Icon, ArrowLeft01Icon, ArrowRight01Icon, CheckmarkCircle01Icon, Cancel01Icon } from "hugeicons-react";
+import { useUpdateFlashcardStatus, useTogglePublicStatus, StudySetData } from "@/hooks/useFlashcards";
 
 export default function FlashcardPage() {
     const params = useParams();
@@ -19,17 +20,16 @@ export default function FlashcardPage() {
     const [currentIndex, setCurrentIndex] = useState(0);
     const [showAnswer, setShowAnswer] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
-    const [isUpdating, setIsUpdating] = useState(false);
     const [isSharing, setIsSharing] = useState(false);
     const [shareLinkCopied, setShareLinkCopied] = useState(false);
 
-const {
-        getStudySetData,
-        getFlashcardById,
-        markFlashcardAsMastered,
-        markFlashcardAsLearning,
-        togglePublicStatus
-    } = useFlashcardActions();
+    // TanStack Query mutations
+    const updateStatusMutation = useUpdateFlashcardStatus();
+    const togglePublicMutation = useTogglePublicStatus();
+    const isUpdating = updateStatusMutation.isPending;
+
+    // Keep old hook for utility functions
+    const { getStudySetData, getFlashcardById } = useFlashcardActions();
 
     // Derived state from studyData
     const currentCard = useMemo(() => {
@@ -173,12 +173,14 @@ const {
     const handleMarkAsMastered = useCallback(async () => {
         if (!currentCard || isUpdating) return;
 
-        setIsUpdating(true);
         try {
-            const updatedCard = await markFlashcardAsMastered(currentCard.id);
+            const updatedCard = await updateStatusMutation.mutateAsync({
+                flashcardId: currentCard.id,
+                status: 'mastered',
+                wasCorrect: true
+            });
 
             if (updatedCard) {
-                // Update the card in our local state
                 setStudyData(prev => {
                     if (!prev) return prev;
                     return {
@@ -191,20 +193,20 @@ const {
             }
         } catch (error) {
             console.error('Error marking as mastered:', error);
-        } finally {
-            setIsUpdating(false);
         }
-    }, [currentCard, isUpdating, markFlashcardAsMastered]);
+    }, [currentCard, isUpdating, updateStatusMutation]);
 
     const handleMarkAsLearning = useCallback(async () => {
         if (!currentCard || isUpdating) return;
 
-        setIsUpdating(true);
         try {
-            const updatedCard = await markFlashcardAsLearning(currentCard.id);
+            const updatedCard = await updateStatusMutation.mutateAsync({
+                flashcardId: currentCard.id,
+                status: 'learning',
+                wasCorrect: false
+            });
 
             if (updatedCard) {
-                // Update the card in our local state
                 setStudyData(prev => {
                     if (!prev) return prev;
                     return {
@@ -217,10 +219,8 @@ const {
             }
         } catch (error) {
             console.error('Error marking as learning:', error);
-        } finally {
-            setIsUpdating(false);
         }
-    }, [currentCard, isUpdating, markFlashcardAsLearning]);
+    }, [currentCard, isUpdating, updateStatusMutation]);
 
     const handleToggleSharing = useCallback(async () => {
         if (!studyData?.set) return;
@@ -228,9 +228,8 @@ const {
         setIsSharing(true);
         try {
             const newPublicStatus = !studyData.set.is_public;
-            await togglePublicStatus(studyData.set.id, newPublicStatus);
+            await togglePublicMutation.mutateAsync({ setId: studyData.set.id, isPublic: newPublicStatus });
 
-            // Update local state
             setStudyData(prev => {
                 if (!prev) return prev;
                 return {
@@ -243,7 +242,7 @@ const {
         } finally {
             setIsSharing(false);
         }
-    }, [studyData?.set, togglePublicStatus]);
+    }, [studyData?.set, togglePublicMutation]);
 
     const handleCopyShareLink = useCallback(async () => {
         if (!studyData?.set) return;

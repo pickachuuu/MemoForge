@@ -3,14 +3,19 @@
 import { useParams, useRouter } from "next/navigation";
 import { useState, useEffect, useCallback, useMemo, useRef } from "react";
 import Link from "next/link";
-import { useExamActions, ExamWithQuestions } from "@/hook/useExamActions";
-import { getCurrentUserProfile } from "@/hook/useAuthActions";
+import { useExamActions } from "@/hook/useExamActions";
+import { useUserProfile } from "@/hooks/useAuth";
+import {
+  useStartExamAttempt,
+  useSaveResponse,
+  useSubmitExam,
+  ExamWithQuestions
+} from "@/hooks/useExams";
 import {
   ArrowLeft02Icon,
   Clock01Icon,
   Home01Icon,
   Loading03Icon,
-  Tick01Icon,
   TestTube01Icon,
 } from "hugeicons-react";
 
@@ -29,19 +34,24 @@ export default function TakeExamPage() {
   const [startTime] = useState<number>(Date.now());
   const [gradingStatus, setGradingStatus] = useState<string>('');
   const [gradingError, setGradingError] = useState<string | null>(null);
-  const [userName, setUserName] = useState<string>('');
 
   const timerRef = useRef<NodeJS.Timeout | null>(null);
   const lastSavedRef = useRef<Map<string, string>>(new Map());
 
+  // TanStack Query hooks
+  const { data: userProfile } = useUserProfile();
+  const startAttemptMutation = useStartExamAttempt();
+  const saveResponseMutation = useSaveResponse();
+  const submitExamMutation = useSubmitExam();
+
+  // Keep old hook for utility functions not yet migrated
   const {
     getExamById,
-    startExamAttempt,
     getInProgressAttempt,
-    getAttemptResponses,
-    saveResponse,
-    submitExam
+    getAttemptResponses
   } = useExamActions();
+
+  const userName = userProfile?.full_name || '';
 
   const { mcQuestions, idQuestions, essayQuestions } = useMemo(() => {
     if (!exam?.questions) return { mcQuestions: [], idQuestions: [], essayQuestions: [] };
@@ -52,17 +62,11 @@ export default function TakeExamPage() {
     };
   }, [exam?.questions]);
 
-  // Load exam and user profile
+  // Load exam
   useEffect(() => {
     const loadExam = async () => {
       setIsLoading(true);
       try {
-        // Fetch user profile for name
-        const profile = await getCurrentUserProfile();
-        if (profile?.full_name) {
-          setUserName(profile.full_name);
-        }
-
         const examData = await getExamById(examId);
         if (!examData) {
           router.push('/exams');
@@ -82,7 +86,7 @@ export default function TakeExamPage() {
             setTimeRemaining(Math.max(0, remaining));
           }
         } else {
-          const newAttemptId = await startExamAttempt(examId);
+          const newAttemptId = await startAttemptMutation.mutateAsync(examId);
           setAttemptId(newAttemptId);
 
           if (examData.time_limit_minutes) {
@@ -98,7 +102,7 @@ export default function TakeExamPage() {
     };
 
     loadExam();
-  }, [examId, getExamById, startExamAttempt, getInProgressAttempt, getAttemptResponses, router]);
+  }, [examId, getExamById, startAttemptMutation, getInProgressAttempt, getAttemptResponses, router]);
 
   // Timer
   useEffect(() => {
@@ -145,12 +149,12 @@ export default function TakeExamPage() {
     if (lastSavedRef.current.get(questionId) === answer) return;
 
     try {
-      await saveResponse(attemptId, questionId, answer);
+      await saveResponseMutation.mutateAsync({ attemptId, questionId, userAnswer: answer });
       lastSavedRef.current.set(questionId, answer);
     } catch (error) {
       console.error('Error saving response:', error);
     }
-  }, [attemptId, saveResponse]);
+  }, [attemptId, saveResponseMutation]);
 
   const handleSubmitExam = useCallback(async () => {
     if (!attemptId || !exam) return;
@@ -164,7 +168,7 @@ export default function TakeExamPage() {
       const answer = answers.get(question.id);
       if (answer !== undefined && lastSavedRef.current.get(question.id) !== answer) {
         try {
-          await saveResponse(attemptId, question.id, answer);
+          await saveResponseMutation.mutateAsync({ attemptId, questionId: question.id, userAnswer: answer });
           lastSavedRef.current.set(question.id, answer);
         } catch (e) {
           console.error('Error saving answer:', e);
@@ -181,7 +185,7 @@ export default function TakeExamPage() {
       }
 
       const timeSpent = Math.floor((Date.now() - startTime) / 1000);
-      await submitExam(attemptId, timeSpent);
+      await submitExamMutation.mutateAsync({ attemptId, timeSpentSeconds: timeSpent });
 
       if (timerRef.current) clearInterval(timerRef.current);
 
@@ -191,7 +195,7 @@ export default function TakeExamPage() {
       setGradingError(error instanceof Error ? error.message : 'Failed to grade exam.');
       setIsSubmitting(false);
     }
-  }, [attemptId, exam, startTime, submitExam, examId, router, answers, saveResponse]);
+  }, [attemptId, exam, startTime, submitExamMutation, examId, router, answers, saveResponseMutation]);
 
   if (isLoading) {
     return (
