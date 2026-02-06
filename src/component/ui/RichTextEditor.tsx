@@ -204,6 +204,9 @@ export function VerticalEditorToolbar({ editor, theme }: VerticalEditorToolbarPr
   const [showTextColors, setShowTextColors] = useState(false);
   const [showHighlightColors, setShowHighlightColors] = useState(false);
 
+  // Whether the editor is available and ready for commands
+  const canEdit = !!editor && !editor.isDestroyed;
+
   // Close dropdowns when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -221,11 +224,11 @@ export function VerticalEditorToolbar({ editor, theme }: VerticalEditorToolbarPr
 
   const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
-    if (file && editor) {
+    if (file && canEdit) {
       const reader = new FileReader();
       reader.onload = (e) => {
         const base64 = e.target?.result as string;
-        editor.chain().focus().setPolaroidImage({ src: base64 }).run();
+        editor!.chain().focus().setPolaroidImage({ src: base64 }).run();
       };
       reader.readAsDataURL(file);
     }
@@ -236,34 +239,35 @@ export function VerticalEditorToolbar({ editor, theme }: VerticalEditorToolbarPr
   };
 
   const handleImageClick = () => {
-    fileInputRef.current?.click();
+    if (canEdit) fileInputRef.current?.click();
   };
 
   const handleTextColor = (color: string | null) => {
+    if (!canEdit) return;
     if (color) {
-      editor?.chain().focus().setColor(color).run();
+      editor!.chain().focus().setColor(color).run();
     } else {
-      editor?.chain().focus().unsetColor().run();
+      editor!.chain().focus().unsetColor().run();
     }
     setShowTextColors(false);
   };
 
   const handleHighlightColor = (color: string) => {
-    editor?.chain().focus().toggleHighlight({ color }).run();
+    if (!canEdit) return;
+    editor!.chain().focus().toggleHighlight({ color }).run();
     setShowHighlightColors(false);
   };
 
   const removeHighlight = () => {
-    editor?.chain().focus().unsetHighlight().run();
+    if (!canEdit) return;
+    editor!.chain().focus().unsetHighlight().run();
     setShowHighlightColors(false);
   };
-
-  if (!editor) return null;
 
   const isDark = theme === 'dark';
 
   return (
-    <div className="flex flex-col gap-3">
+    <div className={`flex flex-col gap-3 ${!canEdit ? 'opacity-40 pointer-events-none' : ''}`}>
       {/* Hidden file input for image upload */}
       <input
         type="file"
@@ -276,16 +280,16 @@ export function VerticalEditorToolbar({ editor, theme }: VerticalEditorToolbarPr
       {/* Undo/Redo row */}
       <div className="grid grid-cols-2 gap-2">
         <VerticalToolbarButton
-          onClick={() => editor.chain().focus().undo().run()}
-          disabled={!editor.can().undo()}
+          onClick={() => editor?.chain().focus().undo().run()}
+          disabled={!canEdit || !(editor?.can().undo() ?? false)}
           title="Undo"
           theme={theme}
         >
           <ArrowTurnBackwardIcon className="w-4 h-4" />
         </VerticalToolbarButton>
         <VerticalToolbarButton
-          onClick={() => editor.chain().focus().redo().run()}
-          disabled={!editor.can().redo()}
+          onClick={() => editor?.chain().focus().redo().run()}
+          disabled={!canEdit || !(editor?.can().redo() ?? false)}
           title="Redo"
           theme={theme}
         >
@@ -298,32 +302,36 @@ export function VerticalEditorToolbar({ editor, theme }: VerticalEditorToolbarPr
       {/* Text Formatting - 3 columns */}
       <div className="grid grid-cols-3 gap-2">
         <VerticalToolbarButton
-          onClick={() => editor.chain().focus().toggleBold().run()}
-          isActive={editor.isActive('bold')}
+          onClick={() => editor?.chain().focus().toggleBold().run()}
+          isActive={canEdit && (editor?.isActive('bold') ?? false)}
+          disabled={!canEdit}
           title="Bold"
           theme={theme}
         >
           <TextBoldIcon className="w-4 h-4" />
         </VerticalToolbarButton>
         <VerticalToolbarButton
-          onClick={() => editor.chain().focus().toggleItalic().run()}
-          isActive={editor.isActive('italic')}
+          onClick={() => editor?.chain().focus().toggleItalic().run()}
+          isActive={canEdit && (editor?.isActive('italic') ?? false)}
+          disabled={!canEdit}
           title="Italic"
           theme={theme}
         >
           <TextItalicIcon className="w-4 h-4" />
         </VerticalToolbarButton>
         <VerticalToolbarButton
-          onClick={() => editor.chain().focus().toggleUnderline().run()}
-          isActive={editor.isActive('underline')}
+          onClick={() => editor?.chain().focus().toggleUnderline().run()}
+          isActive={canEdit && (editor?.isActive('underline') ?? false)}
+          disabled={!canEdit}
           title="Underline"
           theme={theme}
         >
           <TextUnderlineIcon className="w-4 h-4" />
         </VerticalToolbarButton>
         <VerticalToolbarButton
-          onClick={() => editor.chain().focus().toggleStrike().run()}
-          isActive={editor.isActive('strike')}
+          onClick={() => editor?.chain().focus().toggleStrike().run()}
+          isActive={canEdit && (editor?.isActive('strike') ?? false)}
+          disabled={!canEdit}
           title="Strikethrough"
           theme={theme}
         >
@@ -340,12 +348,15 @@ export function VerticalEditorToolbar({ editor, theme }: VerticalEditorToolbarPr
           <button
             type="button"
             onClick={() => {
+              if (!canEdit) return;
               setShowTextColors(!showTextColors);
               setShowHighlightColors(false);
             }}
+            disabled={!canEdit}
             title="Text Color"
             className={`
               w-full h-9 rounded-xl flex items-center justify-center gap-2 transition-all text-xs font-medium
+              disabled:opacity-30 disabled:cursor-not-allowed
               ${isDark
                 ? 'bg-gray-800/80 hover:bg-gray-700/80 text-gray-300 border border-gray-700/50'
                 : 'bg-white hover:bg-gray-50 text-gray-600 border border-gray-200/80 shadow-sm'
@@ -356,11 +367,11 @@ export function VerticalEditorToolbar({ editor, theme }: VerticalEditorToolbarPr
             <span>Text Color</span>
             <div
               className="w-3 h-3 rounded-full border border-gray-400/50"
-              style={{ backgroundColor: editor.getAttributes('textStyle').color || (isDark ? '#e5e7eb' : '#374151') }}
+              style={{ backgroundColor: (canEdit && editor?.getAttributes('textStyle')?.color) || (isDark ? '#e5e7eb' : '#374151') }}
             />
           </button>
 
-          {showTextColors && (
+          {showTextColors && canEdit && (
             <div className={`
               absolute left-0 right-0 mt-2 p-2 rounded-xl z-50
               ${isDark
@@ -401,13 +412,16 @@ export function VerticalEditorToolbar({ editor, theme }: VerticalEditorToolbarPr
           <button
             type="button"
             onClick={() => {
+              if (!canEdit) return;
               setShowHighlightColors(!showHighlightColors);
               setShowTextColors(false);
             }}
+            disabled={!canEdit}
             title="Highlight Color"
             className={`
               w-full h-9 rounded-xl flex items-center justify-center gap-2 transition-all text-xs font-medium
-              ${editor.isActive('highlight')
+              disabled:opacity-30 disabled:cursor-not-allowed
+              ${canEdit && editor?.isActive('highlight')
                 ? isDark
                   ? 'bg-indigo-900/50 text-indigo-300 border border-indigo-700/50'
                   : 'bg-indigo-100 text-indigo-600 border border-indigo-200'
@@ -421,7 +435,7 @@ export function VerticalEditorToolbar({ editor, theme }: VerticalEditorToolbarPr
             <span>Highlight</span>
           </button>
 
-          {showHighlightColors && (
+          {showHighlightColors && canEdit && (
             <div className={`
               absolute left-0 right-0 mt-2 p-2 rounded-xl z-50
               ${isDark
@@ -464,24 +478,27 @@ export function VerticalEditorToolbar({ editor, theme }: VerticalEditorToolbarPr
       {/* Headings - 3 columns */}
       <div className="grid grid-cols-3 gap-2">
         <VerticalToolbarButton
-          onClick={() => editor.chain().focus().toggleHeading({ level: 1 }).run()}
-          isActive={editor.isActive('heading', { level: 1 })}
+          onClick={() => editor?.chain().focus().toggleHeading({ level: 1 }).run()}
+          isActive={canEdit && (editor?.isActive('heading', { level: 1 }) ?? false)}
+          disabled={!canEdit}
           title="Heading 1"
           theme={theme}
         >
           <Heading01Icon className="w-4 h-4" />
         </VerticalToolbarButton>
         <VerticalToolbarButton
-          onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()}
-          isActive={editor.isActive('heading', { level: 2 })}
+          onClick={() => editor?.chain().focus().toggleHeading({ level: 2 }).run()}
+          isActive={canEdit && (editor?.isActive('heading', { level: 2 }) ?? false)}
+          disabled={!canEdit}
           title="Heading 2"
           theme={theme}
         >
           <Heading02Icon className="w-4 h-4" />
         </VerticalToolbarButton>
         <VerticalToolbarButton
-          onClick={() => editor.chain().focus().toggleHeading({ level: 3 }).run()}
-          isActive={editor.isActive('heading', { level: 3 })}
+          onClick={() => editor?.chain().focus().toggleHeading({ level: 3 }).run()}
+          isActive={canEdit && (editor?.isActive('heading', { level: 3 }) ?? false)}
+          disabled={!canEdit}
           title="Heading 3"
           theme={theme}
         >
@@ -494,32 +511,36 @@ export function VerticalEditorToolbar({ editor, theme }: VerticalEditorToolbarPr
       {/* Lists & Blocks - 2 columns */}
       <div className="grid grid-cols-2 gap-2">
         <VerticalToolbarButton
-          onClick={() => editor.chain().focus().toggleBulletList().run()}
-          isActive={editor.isActive('bulletList')}
+          onClick={() => editor?.chain().focus().toggleBulletList().run()}
+          isActive={canEdit && (editor?.isActive('bulletList') ?? false)}
+          disabled={!canEdit}
           title="Bullet List"
           theme={theme}
         >
           <ListViewIcon className="w-4 h-4" />
         </VerticalToolbarButton>
         <VerticalToolbarButton
-          onClick={() => editor.chain().focus().toggleOrderedList().run()}
-          isActive={editor.isActive('orderedList')}
+          onClick={() => editor?.chain().focus().toggleOrderedList().run()}
+          isActive={canEdit && (editor?.isActive('orderedList') ?? false)}
+          disabled={!canEdit}
           title="Numbered List"
           theme={theme}
         >
           <LeftToRightListNumberIcon className="w-4 h-4" />
         </VerticalToolbarButton>
         <VerticalToolbarButton
-          onClick={() => editor.chain().focus().toggleBlockquote().run()}
-          isActive={editor.isActive('blockquote')}
+          onClick={() => editor?.chain().focus().toggleBlockquote().run()}
+          isActive={canEdit && (editor?.isActive('blockquote') ?? false)}
+          disabled={!canEdit}
           title="Quote"
           theme={theme}
         >
           <QuoteDownIcon className="w-4 h-4" />
         </VerticalToolbarButton>
         <VerticalToolbarButton
-          onClick={() => editor.chain().focus().toggleCodeBlock().run()}
-          isActive={editor.isActive('codeBlock')}
+          onClick={() => editor?.chain().focus().toggleCodeBlock().run()}
+          isActive={canEdit && (editor?.isActive('codeBlock') ?? false)}
+          disabled={!canEdit}
           title="Code Block"
           theme={theme}
         >
@@ -527,7 +548,8 @@ export function VerticalEditorToolbar({ editor, theme }: VerticalEditorToolbarPr
         </VerticalToolbarButton>
         <VerticalToolbarButton
           onClick={handleImageClick}
-          isActive={editor.isActive('polaroidImage')}
+          isActive={canEdit && (editor?.isActive('polaroidImage') ?? false)}
+          disabled={!canEdit}
           title="Insert Polaroid"
           theme={theme}
         >
@@ -540,24 +562,27 @@ export function VerticalEditorToolbar({ editor, theme }: VerticalEditorToolbarPr
       {/* Text Alignment - 3 columns */}
       <div className="grid grid-cols-3 gap-2">
         <VerticalToolbarButton
-          onClick={() => editor.chain().focus().setTextAlign('left').run()}
-          isActive={editor.isActive({ textAlign: 'left' })}
+          onClick={() => editor?.chain().focus().setTextAlign('left').run()}
+          isActive={canEdit && (editor?.isActive({ textAlign: 'left' }) ?? false)}
+          disabled={!canEdit}
           title="Align Left"
           theme={theme}
         >
           <TextAlignLeftIcon className="w-4 h-4" />
         </VerticalToolbarButton>
         <VerticalToolbarButton
-          onClick={() => editor.chain().focus().setTextAlign('center').run()}
-          isActive={editor.isActive({ textAlign: 'center' })}
+          onClick={() => editor?.chain().focus().setTextAlign('center').run()}
+          isActive={canEdit && (editor?.isActive({ textAlign: 'center' }) ?? false)}
+          disabled={!canEdit}
           title="Align Center"
           theme={theme}
         >
           <TextAlignCenterIcon className="w-4 h-4" />
         </VerticalToolbarButton>
         <VerticalToolbarButton
-          onClick={() => editor.chain().focus().setTextAlign('right').run()}
-          isActive={editor.isActive({ textAlign: 'right' })}
+          onClick={() => editor?.chain().focus().setTextAlign('right').run()}
+          isActive={canEdit && (editor?.isActive({ textAlign: 'right' }) ?? false)}
+          disabled={!canEdit}
           title="Align Right"
           theme={theme}
         >

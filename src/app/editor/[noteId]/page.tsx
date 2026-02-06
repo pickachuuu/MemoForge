@@ -535,8 +535,10 @@ export default function EditorPage() {
 
   // ========================================
   // Loading State
+  // Keep the spinner until both note AND pages are loaded to prevent
+  // the TOC from flashing an empty "No pages yet" state on fresh loads
   // ========================================
-  if (isLoadingNote && !isNewNote) {
+  if (!isNewNote && (isLoadingNote || (!!resolvedNoteId && isLoadingPages))) {
     return (
       <div className="h-screen flex items-center justify-center" style={{ backgroundColor: '#f9f9f6' }}>
         <div className="flex flex-col items-center gap-4">
@@ -817,7 +819,7 @@ export default function EditorPage() {
             <div
               className="rounded-2xl overflow-hidden"
               style={{
-                width: currentView === 'page' ? '160px' : '120px',
+                width: '160px',
                 background: 'linear-gradient(160deg, #f8f7f4 0%, #f0efec 50%, #e8e7e4 100%)',
                 boxShadow: '0 8px 32px rgba(0, 0, 0, 0.12), 0 4px 16px rgba(0, 0, 0, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.8)',
                 border: '1px solid rgba(0, 0, 0, 0.06)',
@@ -926,8 +928,8 @@ export default function EditorPage() {
                 </div>
               </div>
 
-              {/* Editor toolbar */}
-              {(currentView === 'page' || currentView === 'toc') && editor && (
+              {/* Editor toolbar - always visible on TOC and page views */}
+              {(currentView === 'page' || currentView === 'toc') && (
                 <div
                   className="p-3 overflow-y-auto"
                   style={{
