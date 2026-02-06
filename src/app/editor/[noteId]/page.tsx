@@ -3,6 +3,7 @@
 import { useEffect, useCallback, ReactNode, useRef } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
+import { useQueryClient } from '@tanstack/react-query';
 
 // UI Components
 import { VerticalEditorToolbar, Editor } from '@/component/ui/RichTextEditor';
@@ -42,6 +43,7 @@ import {
   useSavePage,
   useDeletePage,
   extractH1Title,
+  noteKeys,
 } from '@/hooks/useNotes';
 
 export default function EditorPage() {
@@ -132,6 +134,7 @@ export default function EditorPage() {
   // ========================================
   // TanStack Query Hooks
   // ========================================
+  const queryClient = useQueryClient();
   const { data: fetchedNote, isLoading: isLoadingNote } = useNote(noteIdOrSlug);
   const { data: pages = [], refetch: refetchPages } = useNotePages(noteId);
 
@@ -257,7 +260,7 @@ export default function EditorPage() {
     try {
       const pageId = await createPageMutation.mutateAsync({ noteId });
       if (pageId) {
-        await refetchPages();
+        // Single refetch to get updated page list (mutation already invalidated the cache)
         const updatedPages = (await refetchPages()).data || [];
         const newPageIndex = updatedPages.length - 1;
         setCurrentPageIndex(newPageIndex);
@@ -292,13 +295,23 @@ export default function EditorPage() {
           const pageTitle = extractH1Title(currentPageContent);
           await savePageMutation.mutateAsync({ pageId: page.id, title: pageTitle, content: currentPageContent });
           setLastSavedContent(currentPageContent);
+
+          // Optimistically update the cached pages so TOC shows fresh titles instantly
+          queryClient.setQueryData(noteKeys.pages(noteId!), (oldPages: NotePage[] | undefined) => {
+            if (!oldPages) return oldPages;
+            return oldPages.map((p, i) =>
+              i === currentPageIndex
+                ? { ...p, title: pageTitle, content: currentPageContent }
+                : p
+            );
+          });
         } catch (error) {
           console.error('Error saving page:', error);
         }
       }
     }
 
-    await refetchPages();
+    // Navigate immediately - no need to await a refetch, cache is already up to date
     navigateToTOC();
   };
 
@@ -307,7 +320,7 @@ export default function EditorPage() {
 
     try {
       await deletePageMutation.mutateAsync(pageId);
-      refetchPages();
+      // No manual refetch needed - useDeletePage already invalidates the pages cache
     } catch (error) {
       console.error('Error deleting page:', error);
     }
@@ -415,14 +428,25 @@ export default function EditorPage() {
         await savePageMutation.mutateAsync({ pageId: page.id, title: pageTitle, content: currentPageContent });
         setLastSavedContent(currentPageContent);
         setSaveStatus('saved');
-        refetchPages();
+
+        // Optimistically update cached pages so TOC titles stay in sync without a network roundtrip
+        if (noteId) {
+          queryClient.setQueryData(noteKeys.pages(noteId), (oldPages: NotePage[] | undefined) => {
+            if (!oldPages) return oldPages;
+            return oldPages.map((p, i) =>
+              i === currentPageIndex
+                ? { ...p, title: pageTitle, content: currentPageContent }
+                : p
+            );
+          });
+        }
       } catch {
         setSaveStatus('error');
       }
     }, 1500);
 
     return () => clearTimeout(timeoutId);
-  }, [currentPageContent, currentPageIndex, pages, lastSavedContent, currentView, setSaveStatus, setLastSavedContent]);
+  }, [currentPageContent, currentPageIndex, pages, lastSavedContent, currentView, setSaveStatus, setLastSavedContent, noteId, queryClient]);
 
   // ========================================
   // Auto-save note metadata

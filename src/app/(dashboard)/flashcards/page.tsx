@@ -2,7 +2,7 @@
 
 import { useState, useCallback, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
-import { ClayCard, ClayBadge } from '@/component/ui/Clay';
+import { ClayCard } from '@/component/ui/Clay';
 import {
   BookOpen01Icon,
   RefreshIcon,
@@ -247,47 +247,33 @@ export default function FlashcardDashboardPage() {
     <>
       <div className="space-y-6">
         {/* Hero Header */}
-        <ClayCard variant="elevated" padding="lg" className="rounded-3xl relative overflow-hidden">
-          {/* Background decoration */}
-          <div className="absolute inset-0 overflow-hidden pointer-events-none">
-            <div className="absolute -top-20 -right-20 w-72 h-72 bg-gradient-to-bl from-accent/10 via-accent/5 to-transparent rounded-full blur-3xl" />
-            <div className="absolute -bottom-24 -left-24 w-64 h-64 bg-gradient-to-tr from-purple-500/8 via-purple-500/4 to-transparent rounded-full blur-3xl" />
-          </div>
-
-          <div className="relative z-10">
-            <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
-              {/* Title area */}
-              <div className="flex items-start gap-4">
-                <div className="p-4 rounded-2xl bg-gradient-to-br from-accent/20 to-purple-500/20 shadow-lg shadow-accent/10">
-                  <BookOpen01Icon className="w-8 h-8 text-accent" />
-                </div>
-                <div>
-                  <div className="flex items-center gap-3 mb-1">
-                    <h1 className="text-2xl md:text-3xl font-bold tracking-tight text-foreground">
-                      Flashcards
-                    </h1>
-                    <ClayBadge variant="accent" className="text-xs px-2 py-1">
-                      <SparklesIcon className="w-3 h-3" />
-                      {totalSets} sets
-                    </ClayBadge>
-                  </div>
-                  <p className="text-foreground-muted">
-                    Study with AI-generated interactive flashcards
-                  </p>
-                </div>
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <div className="flex items-center gap-3">
+            <div className="p-2.5 rounded-xl bg-accent/8 border border-accent/10">
+              <BookOpen01Icon className="w-5 h-5 text-accent" />
+            </div>
+            <div>
+              <div className="flex items-center gap-2.5">
+                <h1 className="text-xl font-semibold tracking-tight text-foreground">
+                  Flashcards
+                </h1>
+                <span className="text-xs font-medium text-foreground-muted bg-gray-100 px-2 py-0.5 rounded-md">
+                  {totalSets} sets
+                </span>
               </div>
-
-              {/* CTA */}
-              <HeroActionButton
-                theme="accent"
-                icon={<SparklesIcon className="w-5 h-5" />}
-                onClick={() => setIsForgeModalOpen(true)}
-              >
-                Forge Flashcards
-              </HeroActionButton>
+              <p className="text-sm text-foreground-muted/70 mt-0.5">
+                Study with AI-generated interactive flashcards
+              </p>
             </div>
           </div>
-        </ClayCard>
+
+          <HeroActionButton
+            icon={<SparklesIcon className="w-4 h-4" />}
+            onClick={() => setIsForgeModalOpen(true)}
+          >
+            Forge Flashcards
+          </HeroActionButton>
+        </div>
 
         {/* Success/Error Message */}
         {saveSuccess && (
@@ -527,7 +513,7 @@ function FlashcardsSkeleton({ viewMode }: { viewMode: ViewMode }) {
     return (
       <div className="space-y-3">
         {Array.from({ length: 5 }).map((_, i) => (
-          <div key={i} className="h-24 rounded-2xl bg-gradient-to-r from-gray-100 to-gray-50 animate-pulse" />
+          <div key={i} className="h-[68px] rounded-xl bg-gray-100/60 animate-pulse" />
         ))}
       </div>
     );
@@ -537,20 +523,15 @@ function FlashcardsSkeleton({ viewMode }: { viewMode: ViewMode }) {
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
       {Array.from({ length: 6 }).map((_, i) => (
         <ClayCard key={i} variant="default" padding="none" className="rounded-2xl animate-pulse overflow-hidden">
+          <div className="h-1 w-full bg-gray-100" />
           <div className="p-5 space-y-4">
-            <div className="flex items-start justify-between">
-              <div className="h-6 w-2/3 bg-gray-200 rounded-lg" />
-              <div className="h-8 w-8 bg-gray-200 rounded-lg" />
+            <div className="h-5 w-3/4 bg-gray-100 rounded-md" />
+            <div className="h-3 w-1/2 bg-gray-100/60 rounded" />
+            <div className="space-y-2 pt-2">
+              <div className="h-3 w-32 bg-gray-100/60 rounded" />
+              <div className="h-1.5 w-full bg-gray-100 rounded-full" />
             </div>
-            <div className="h-2 w-full bg-gray-200 rounded-full" />
-            <div className="flex justify-between">
-              <div className="h-4 w-20 bg-gray-200 rounded" />
-              <div className="h-4 w-16 bg-gray-200 rounded" />
-            </div>
-          </div>
-          <div className="px-5 py-4 bg-gray-50 flex justify-between">
-            <div className="h-4 w-24 bg-gray-200 rounded" />
-            <div className="h-8 w-20 bg-gray-200 rounded-lg" />
+            <div className="h-3 w-16 bg-gray-50 rounded pt-2" />
           </div>
         </ClayCard>
       ))}
@@ -570,39 +551,33 @@ function EmptyState({
   totalSets: number;
 }) {
   return (
-    <ClayCard variant="elevated" padding="lg" className="rounded-3xl">
-      <div className="text-center py-16">
-        <div className="relative w-32 h-32 mx-auto mb-8">
-          {/* Decorative background */}
-          <div className="absolute inset-0 bg-gradient-to-br from-accent/20 to-accent/5 rounded-3xl rotate-6" />
-          <div className="absolute inset-0 bg-gradient-to-br from-purple-500/20 to-purple-500/5 rounded-3xl -rotate-6" />
-          <div className="relative w-full h-full rounded-3xl bg-gradient-to-br from-accent/20 to-purple-500/20 flex items-center justify-center shadow-lg">
-            <SparklesIcon className="w-16 h-16 text-accent" />
-          </div>
+    <ClayCard variant="default" padding="lg" className="rounded-2xl">
+      <div className="text-center py-12">
+        <div className="w-14 h-14 rounded-2xl bg-accent/8 border border-accent/10 flex items-center justify-center mx-auto mb-6">
+          <SparklesIcon className="w-7 h-7 text-accent" />
         </div>
 
         {hasFilters ? (
           <>
-            <h3 className="text-2xl font-bold text-foreground mb-3">No matching flashcard sets</h3>
-            <p className="text-foreground-muted mb-8 max-w-md mx-auto">
+            <h3 className="text-lg font-semibold text-foreground mb-2">No matching flashcard sets</h3>
+            <p className="text-sm text-foreground-muted mb-6 max-w-sm mx-auto">
               Try adjusting your search or filters to find what you&apos;re looking for
             </p>
             <button
               onClick={onClearFilters}
-              className="px-6 py-3 rounded-xl bg-gradient-to-r from-gray-100 to-gray-50 text-foreground font-semibold border border-gray-200/80 hover:shadow-md transition-all"
+              className="px-4 py-2 rounded-lg bg-white text-sm text-foreground font-medium border border-gray-200 hover:shadow-sm transition-all"
             >
               Clear filters
             </button>
           </>
         ) : totalSets === 0 ? (
           <>
-            <h3 className="text-2xl font-bold text-foreground mb-3">Start studying with flashcards</h3>
-            <p className="text-foreground-muted mb-8 max-w-md mx-auto">
-              Create flashcards from your notes to begin studying with AI-generated content
+            <h3 className="text-lg font-semibold text-foreground mb-2">Start studying with flashcards</h3>
+            <p className="text-sm text-foreground-muted mb-6 max-w-sm mx-auto">
+              Create flashcards from your notes to begin studying
             </p>
             <HeroActionButton
-              theme="accent"
-              icon={<SparklesIcon className="w-5 h-5" />}
+              icon={<SparklesIcon className="w-4 h-4" />}
               onClick={onCreateNew}
             >
               Forge Flashcards
@@ -610,13 +585,13 @@ function EmptyState({
           </>
         ) : (
           <>
-            <h3 className="text-2xl font-bold text-foreground mb-3">No results found</h3>
-            <p className="text-foreground-muted mb-8 max-w-md mx-auto">
+            <h3 className="text-lg font-semibold text-foreground mb-2">No results found</h3>
+            <p className="text-sm text-foreground-muted mb-6 max-w-sm mx-auto">
               No flashcard sets match your current filters
             </p>
             <button
               onClick={onClearFilters}
-              className="px-6 py-3 rounded-xl bg-gradient-to-r from-gray-100 to-gray-50 text-foreground font-semibold border border-gray-200/80 hover:shadow-md transition-all"
+              className="px-4 py-2 rounded-lg bg-white text-sm text-foreground font-medium border border-gray-200 hover:shadow-sm transition-all"
             >
               Clear filters
             </button>
@@ -645,103 +620,114 @@ function FlashcardGridItem({
   formatDate: (date: string) => string;
 }) {
   const progress = Math.round((set.mastered_cards / set.total_cards) * 100) || 0;
+  const isMastered = progress === 100;
 
   return (
     <div className="group cursor-pointer" onClick={onClick}>
       <ClayCard
         variant="default"
         padding="none"
-        className="rounded-2xl overflow-hidden h-full flex flex-col hover:scale-[1.02] transition-all duration-300"
+        className="rounded-2xl overflow-hidden h-full flex flex-col transition-all duration-200 hover:shadow-lg hover:-translate-y-0.5"
       >
-        {/* Card Header */}
-        <div className="p-5 flex-1">
-          <div className="flex items-start justify-between gap-3 mb-4">
-            <div className="flex-1 min-w-0">
-              <div className="flex items-center gap-2 mb-1">
-                <h3 className="font-semibold text-lg text-foreground group-hover:text-accent transition-colors truncate">
-                  {set.title}
-                </h3>
-                {set.is_public && (
-                  <ClayBadge variant="success" className="text-xs px-2 py-0.5 shrink-0">
-                    Public
-                  </ClayBadge>
-                )}
-              </div>
-              <p className="text-sm text-foreground-muted line-clamp-2">
-                {set.description || 'No description'}
-              </p>
-            </div>
-            <div className="p-2 rounded-xl bg-accent/10 shrink-0">
-              <BookOpen01Icon className="w-5 h-5 text-accent" />
-            </div>
-          </div>
-
-          {/* Progress Section */}
-          <div className="space-y-3">
-            <div className="flex justify-between text-sm">
-              <span className="text-foreground-muted">Progress</span>
-              <span className="font-semibold text-foreground">{progress}%</span>
-            </div>
-            <div className="w-full bg-gray-200 rounded-full h-2.5 overflow-hidden">
-              <div
-                className="bg-gradient-to-r from-accent to-purple-500 h-full rounded-full transition-all duration-500"
-                style={{ width: `${progress}%` }}
-              />
-            </div>
-            <div className="flex justify-between text-sm">
-              <div className="flex items-center gap-4">
-                <span className="text-foreground-muted">
-                  <span className="font-medium text-foreground">{set.total_cards}</span> cards
-                </span>
-                <span className="text-foreground-muted">
-                  <span className="font-medium text-green-600">{set.mastered_cards}</span> mastered
-                </span>
-              </div>
-            </div>
-          </div>
+        {/* Thin progress accent bar at top */}
+        <div className="h-1 w-full bg-gray-100">
+          <div
+            className={`h-full rounded-r-full transition-all duration-500 ${
+              isMastered ? 'bg-emerald-400' : 'bg-accent'
+            }`}
+            style={{ width: `${progress}%` }}
+          />
         </div>
 
-        {/* Card Footer */}
-        <div className="px-5 py-4 bg-gray-50 flex items-center justify-between gap-3 border-t border-gray-100">
-          <div className="flex items-center gap-1.5 text-xs text-foreground-muted">
-            <Clock01Icon className="w-3.5 h-3.5" />
-            <span>{set.updated_at ? formatDate(set.updated_at) : 'Never'}</span>
+        {/* Card body */}
+        <div className="p-5 flex-1 flex flex-col">
+          {/* Title + public badge */}
+          <div className="mb-1.5">
+            <div className="flex items-center gap-2">
+              <h3 className="font-semibold text-[15px] text-foreground group-hover:text-accent transition-colors line-clamp-2 leading-snug">
+                {set.title}
+              </h3>
+              {set.is_public && (
+                <span className="text-[10px] font-medium uppercase tracking-wide text-emerald-600 bg-emerald-50 px-1.5 py-0.5 rounded shrink-0">
+                  Public
+                </span>
+              )}
+            </div>
           </div>
 
-          <div className="flex gap-2">
-            <button
-              className={`p-2 rounded-lg transition-all duration-200 ${
-                shareLinkCopied
-                  ? 'bg-green-500 text-white'
-                  : 'bg-accent/10 hover:bg-accent text-accent hover:text-white'
+          {/* Description */}
+          {set.description && (
+            <p className="text-xs text-foreground-muted/70 line-clamp-1 mb-4">
+              {set.description}
+            </p>
+          )}
+
+          {/* Spacer */}
+          <div className="flex-1" />
+
+          {/* Stats row */}
+          <div className="flex items-center gap-3 text-xs text-foreground-muted mb-3">
+            <span>
+              <span className="font-medium text-foreground">{set.total_cards}</span> cards
+            </span>
+            <span className="text-gray-300">&middot;</span>
+            <span>
+              <span className={`font-medium ${isMastered ? 'text-emerald-600' : 'text-foreground'}`}>
+                {set.mastered_cards}
+              </span> mastered
+            </span>
+          </div>
+
+          {/* Progress bar */}
+          <div className="w-full bg-gray-100 rounded-full h-1.5 overflow-hidden">
+            <div
+              className={`h-full rounded-full transition-all duration-500 ${
+                isMastered ? 'bg-emerald-400' : 'bg-accent/70'
               }`}
-              title={shareLinkCopied ? 'Copied!' : 'Share'}
-              onClick={onShare}
-            >
-              <Share01Icon className="w-4 h-4" />
-            </button>
+              style={{ width: `${progress}%` }}
+            />
+          </div>
 
-            <button
-              className="p-2 rounded-lg bg-accent/10 hover:bg-accent text-accent hover:text-white transition-all duration-200"
-              title="Reforge flashcards"
-              onClick={(e) => {
-                e.stopPropagation();
-                onReforge();
-              }}
-            >
-              <RefreshIcon className="w-4 h-4" />
-            </button>
+          {/* Footer: timestamp + actions */}
+          <div className="flex items-center justify-between mt-4 pt-3 border-t border-gray-100/80">
+            <span className="text-[11px] text-foreground-muted/60">
+              {set.updated_at ? formatDate(set.updated_at) : 'Never'}
+            </span>
 
-            <button
-              className="p-2 rounded-lg bg-red-50 hover:bg-red-500 text-red-500 hover:text-white transition-all duration-200"
-              title="Delete set"
-              onClick={(e) => {
-                e.stopPropagation();
-                onDelete();
-              }}
-            >
-              <Delete01Icon className="w-4 h-4" />
-            </button>
+            {/* Actions - visible on hover */}
+            <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+              <button
+                className={`p-1.5 rounded-md transition-colors ${
+                  shareLinkCopied
+                    ? 'text-emerald-500'
+                    : 'text-foreground-muted/50 hover:text-accent hover:bg-accent/5'
+                }`}
+                title={shareLinkCopied ? 'Copied!' : 'Share'}
+                onClick={onShare}
+              >
+                <Share01Icon className="w-3.5 h-3.5" />
+              </button>
+              <button
+                className="p-1.5 rounded-md text-foreground-muted/50 hover:text-accent hover:bg-accent/5 transition-colors"
+                title="Reforge flashcards"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onReforge();
+                }}
+              >
+                <RefreshIcon className="w-3.5 h-3.5" />
+              </button>
+              <button
+                className="p-1.5 rounded-md text-foreground-muted/50 hover:text-red-500 hover:bg-red-50 transition-colors"
+                title="Delete set"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onDelete();
+                }}
+              >
+                <Delete01Icon className="w-3.5 h-3.5" />
+              </button>
+            </div>
           </div>
         </div>
       </ClayCard>
@@ -767,87 +753,90 @@ function FlashcardListItem({
   formatDate: (date: string) => string;
 }) {
   const progress = Math.round((set.mastered_cards / set.total_cards) * 100) || 0;
+  const isMastered = progress === 100;
 
   return (
     <div onClick={onClick} className="cursor-pointer">
-      <ClayCard variant="default" padding="none" className="rounded-2xl overflow-hidden group hover:shadow-lg transition-all">
-        <div className="flex items-center gap-4 p-4">
-          {/* Progress indicator */}
-          <div
-            className="w-2 h-16 rounded-full flex-shrink-0 bg-gradient-to-b from-accent to-purple-500"
-            style={{ opacity: Math.max(0.3, progress / 100) }}
-          />
-
-          {/* Icon */}
-          <div className="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0 bg-gradient-to-br from-accent/20 to-purple-500/20">
-            <BookOpen01Icon className="w-6 h-6 text-accent" />
+      <ClayCard variant="default" padding="none" className="rounded-xl overflow-hidden group transition-all duration-200 hover:shadow-md">
+        <div className="flex items-center gap-4 px-5 py-4">
+          {/* Progress ring / indicator */}
+          <div className="relative w-10 h-10 flex-shrink-0">
+            <svg className="w-10 h-10 -rotate-90" viewBox="0 0 36 36">
+              <circle
+                cx="18" cy="18" r="15"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2.5"
+                className="text-gray-100"
+              />
+              <circle
+                cx="18" cy="18" r="15"
+                fill="none"
+                strokeWidth="2.5"
+                strokeLinecap="round"
+                strokeDasharray={`${progress * 0.942} 100`}
+                className={isMastered ? 'text-emerald-400' : 'text-accent'}
+                style={{ transition: 'stroke-dasharray 0.5s ease' }}
+              />
+            </svg>
+            <span className="absolute inset-0 flex items-center justify-center text-[10px] font-semibold text-foreground-muted">
+              {progress}%
+            </span>
           </div>
 
           {/* Content */}
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2">
-              <h3 className="font-semibold text-foreground truncate group-hover:text-accent transition-colors">
+              <h3 className="font-medium text-sm text-foreground truncate group-hover:text-accent transition-colors">
                 {set.title}
               </h3>
               {set.is_public && (
-                <ClayBadge variant="success" className="text-xs px-2 py-0.5 shrink-0">
+                <span className="text-[10px] font-medium uppercase tracking-wide text-emerald-600 bg-emerald-50 px-1.5 py-0.5 rounded shrink-0">
                   Public
-                </ClayBadge>
+                </span>
               )}
             </div>
-            <div className="flex items-center gap-3 mt-1">
-              <span className="text-xs text-foreground-muted flex items-center gap-1">
-                <Clock01Icon className="w-3 h-3" />
-                {formatDate(set.updated_at || set.created_at)}
-              </span>
-              <span className="text-xs text-foreground-muted">
-                <span className="font-medium text-foreground">{set.total_cards}</span> cards
-              </span>
-              <span className="text-xs text-foreground-muted">
-                <span className="font-medium text-green-600">{set.mastered_cards}</span> mastered
-              </span>
-            </div>
-            {/* Progress bar */}
-            <div className="w-full max-w-xs bg-gray-200 rounded-full h-1.5 mt-2 overflow-hidden">
-              <div
-                className="bg-gradient-to-r from-accent to-purple-500 h-full rounded-full transition-all duration-500"
-                style={{ width: `${progress}%` }}
-              />
+            <div className="flex items-center gap-2 mt-0.5 text-xs text-foreground-muted/60">
+              <span>{set.total_cards} cards</span>
+              <span>&middot;</span>
+              <span className={isMastered ? 'text-emerald-600' : ''}>{set.mastered_cards} mastered</span>
+              <span>&middot;</span>
+              <span>{formatDate(set.updated_at || set.created_at)}</span>
             </div>
           </div>
 
-          {/* Actions */}
-          <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+          {/* Actions - appear on hover */}
+          <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
             <button
-              className={`p-2 rounded-lg transition-all duration-200 ${
+              className={`p-1.5 rounded-md transition-colors ${
                 shareLinkCopied
-                  ? 'bg-green-500 text-white'
-                  : 'bg-accent/10 hover:bg-accent text-accent hover:text-white'
+                  ? 'text-emerald-500'
+                  : 'text-foreground-muted/40 hover:text-accent hover:bg-accent/5'
               }`}
               title={shareLinkCopied ? 'Copied!' : 'Share'}
               onClick={onShare}
             >
-              <Share01Icon className="w-4 h-4" />
+              <Share01Icon className="w-3.5 h-3.5" />
             </button>
             <button
               onClick={(e) => {
                 e.stopPropagation();
                 onReforge();
               }}
-              className="p-2 rounded-lg bg-accent/10 text-accent hover:bg-accent/20 transition-colors"
+              className="p-1.5 rounded-md text-foreground-muted/40 hover:text-accent hover:bg-accent/5 transition-colors"
               title="Reforge flashcards"
             >
-              <RefreshIcon className="w-4 h-4" />
+              <RefreshIcon className="w-3.5 h-3.5" />
             </button>
             <button
               onClick={(e) => {
                 e.stopPropagation();
                 onDelete();
               }}
-              className="p-2 rounded-lg bg-red-500/10 text-red-500 hover:bg-red-500/20 transition-colors"
+              className="p-1.5 rounded-md text-foreground-muted/40 hover:text-red-500 hover:bg-red-50 transition-colors"
               title="Delete set"
             >
-              <Delete01Icon className="w-4 h-4" />
+              <Delete01Icon className="w-3.5 h-3.5" />
             </button>
           </div>
         </div>
