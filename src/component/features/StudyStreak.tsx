@@ -1,17 +1,20 @@
 'use client';
 
 import { ClayCard } from '@/component/ui/Clay';
-import { useStudyStreak } from '@/hooks/useDashboard';
+import { useStudyStreak, useWeeklyActivity } from '@/hooks/useDashboard';
 import { FireIcon, Target01Icon } from 'hugeicons-react';
 
 function StreakSkeleton() {
   return (
     <ClayCard variant="default" padding="md" className="rounded-2xl animate-pulse h-full">
-      <div className="flex items-center gap-4">
-        <div className="w-16 h-16 bg-gradient-to-br from-gray-100 to-gray-200 rounded-2xl" />
-        <div className="flex-1 space-y-2">
-          <div className="h-4 w-24 bg-gray-100 rounded-lg" />
-          <div className="h-8 w-16 bg-gray-100 rounded-lg" />
+      <div className="flex flex-col items-center gap-4 py-6">
+        <div className="w-20 h-20 bg-gradient-to-br from-gray-100 to-gray-200 rounded-full" />
+        <div className="h-8 w-16 bg-gray-100 rounded-lg" />
+        <div className="h-4 w-24 bg-gray-100 rounded-lg" />
+        <div className="flex gap-1.5 mt-4">
+          {Array.from({ length: 7 }).map((_, i) => (
+            <div key={i} className="w-8 h-8 bg-gray-100 rounded-lg" />
+          ))}
         </div>
       </div>
     </ClayCard>
@@ -19,115 +22,131 @@ function StreakSkeleton() {
 }
 
 export default function StudyStreak() {
-  const { data: streak, isLoading } = useStudyStreak();
+  const { data: streak, isLoading: streakLoading } = useStudyStreak();
+  const { data: weeklyData, isLoading: weeklyLoading } = useWeeklyActivity();
 
-  if (isLoading) {
+  if (streakLoading || weeklyLoading) {
     return <StreakSkeleton />;
   }
 
   const currentStreak = streak?.currentStreak || 0;
   const longestStreak = streak?.longestStreak || 0;
   const studiedToday = streak?.studiedToday || false;
+  const weekData = weeklyData || [];
 
-  // Determine streak status and styling - using Secondary (Coral) for streak/progress
-  const getStreakStyle = () => {
-    if (currentStreak >= 7) {
-      return {
-        bgGradient: 'bg-gradient-to-br from-secondary via-secondary to-orange-500',
-        shadowColor: 'shadow-secondary/30',
-        iconColor: 'text-white',
-        textColor: 'text-white',
-        ringColor: 'ring-secondary/20',
-      };
-    } else if (currentStreak >= 3) {
-      return {
-        bgGradient: 'bg-gradient-to-br from-secondary to-secondary-light',
-        shadowColor: 'shadow-secondary/25',
-        iconColor: 'text-white',
-        textColor: 'text-white',
-        ringColor: 'ring-secondary/15',
-      };
-    } else if (currentStreak > 0) {
-      return {
-        bgGradient: 'bg-gradient-to-br from-secondary/80 to-secondary',
-        shadowColor: 'shadow-secondary/20',
-        iconColor: 'text-white',
-        textColor: 'text-white',
-        ringColor: 'ring-secondary/10',
-      };
-    }
-    return {
-      bgGradient: 'bg-gradient-to-br from-gray-100 to-gray-200',
-      shadowColor: 'shadow-gray-200/50',
-      iconColor: 'text-gray-400',
-      textColor: 'text-gray-600',
-      ringColor: 'ring-gray-200/50',
-    };
-  };
+  // Flame intensity based on streak
+  const isOnFire = currentStreak >= 7;
+  const isWarm = currentStreak >= 3;
+  const isActive = currentStreak > 0;
 
-  const style = getStreakStyle();
+  const flameGradient = isOnFire
+    ? 'from-orange-500 via-red-500 to-amber-500'
+    : isWarm
+      ? 'from-secondary via-orange-500 to-amber-400'
+      : isActive
+        ? 'from-secondary/90 to-secondary-light'
+        : 'from-gray-200 to-gray-300';
 
   return (
-    <ClayCard variant="default" padding="md" className="rounded-2xl overflow-hidden h-full">
-      <div className="flex items-center gap-4">
-        {/* Streak Icon */}
-        <div className={`relative w-16 h-16 rounded-2xl ${style.bgGradient} flex items-center justify-center shadow-lg ${style.shadowColor} ${currentStreak > 0 ? 'ring-4 ' + style.ringColor : ''}`}>
-          <FireIcon className={`w-8 h-8 ${style.iconColor} ${currentStreak >= 3 ? 'animate-pulse' : ''}`} />
-          {currentStreak >= 7 && (
-            <div className="absolute -top-1.5 -right-1.5 w-6 h-6 bg-gradient-to-br from-yellow-300 to-amber-400 rounded-full flex items-center justify-center shadow-md">
+    <ClayCard variant="default" padding="none" className="rounded-2xl h-full overflow-hidden relative">
+      {/* Subtle gradient background for active streaks */}
+      {isActive && (
+        <div className={`absolute inset-0 bg-gradient-to-b ${
+          isOnFire ? 'from-orange-50/80 via-white to-white' :
+          isWarm ? 'from-secondary-muted/60 via-white to-white' :
+          'from-secondary-muted/30 to-white'
+        } pointer-events-none`} />
+      )}
+
+      <div className="relative z-10 p-6 flex flex-col items-center text-center h-full">
+        {/* Flame / Icon */}
+        <div className="relative mb-4">
+          {/* Glow ring */}
+          {isActive && (
+            <div className={`absolute inset-0 rounded-full bg-gradient-to-br ${flameGradient} opacity-20 blur-xl scale-150`} />
+          )}
+          <div className={`relative w-20 h-20 rounded-full bg-gradient-to-br ${flameGradient} flex items-center justify-center shadow-lg ${
+            isOnFire ? 'shadow-orange-300/40' : isWarm ? 'shadow-secondary/30' : isActive ? 'shadow-secondary/20' : 'shadow-gray-200/50'
+          }`}>
+            <FireIcon className={`w-10 h-10 text-white ${isOnFire ? 'animate-pulse' : ''}`} />
+          </div>
+          {/* Fire badge for 7+ */}
+          {isOnFire && (
+            <div className="absolute -top-1 -right-1 w-7 h-7 bg-gradient-to-br from-yellow-300 to-amber-400 rounded-full flex items-center justify-center shadow-md border-2 border-white">
               <span className="text-xs">🔥</span>
             </div>
           )}
         </div>
 
-        {/* Streak Info */}
-        <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-2 flex-wrap">
-            <p className="text-xs font-semibold text-foreground-muted uppercase tracking-wider">
-              Study Streak
-            </p>
-            {studiedToday && (
-              <span className="px-2 py-0.5 bg-gradient-to-r from-tertiary/10 to-tertiary/20 text-tertiary text-xs font-semibold rounded-full border border-tertiary/20">
-                Today ✓
-              </span>
-            )}
+        {/* Streak count */}
+        <p className="text-5xl font-extrabold text-foreground tracking-tight leading-none">
+          {currentStreak}
+        </p>
+        <p className="text-sm text-foreground-muted font-medium mt-1">
+          day {currentStreak === 1 ? '' : 's'} streak
+        </p>
+
+        {/* Studied today badge */}
+        {studiedToday && (
+          <span className="mt-3 px-3 py-1 bg-gradient-to-r from-tertiary/10 to-tertiary/20 text-tertiary text-xs font-bold rounded-full border border-tertiary/20">
+            Studied today ✓
+          </span>
+        )}
+
+        {/* Spacer */}
+        <div className="flex-1" />
+
+        {/* Mini 7-day heatmap */}
+        <div className="w-full mt-5 pt-5 border-t border-border/50">
+          <div className="flex items-center justify-between mb-3">
+            <span className="text-xs text-foreground-muted font-semibold">This week</span>
+            <div className="flex items-center gap-1.5 text-foreground-muted">
+              <Target01Icon className="w-3.5 h-3.5" />
+              <span className="text-xs font-bold">{longestStreak} best</span>
+            </div>
           </div>
-          <div className="flex items-baseline gap-2 mt-1">
-            <p className="text-4xl font-bold text-foreground tracking-tight">
-              {currentStreak}
-            </p>
-            <p className="text-base text-foreground-muted font-medium">
-              {currentStreak === 1 ? 'day' : 'days'}
-            </p>
+          <div className="grid grid-cols-7 gap-1.5">
+            {weekData.map((day, i) => {
+              const hasActivity = day.cardsStudied > 0 || day.sessions > 0;
+              const intensity = day.cardsStudied > 10 ? 'high' : day.cardsStudied > 3 ? 'med' : 'low';
+              const isToday = i === weekData.length - 1;
+
+              return (
+                <div key={day.date} className="flex flex-col items-center gap-1">
+                  <div
+                    className={`w-full aspect-square rounded-lg transition-all duration-300 ${
+                      hasActivity
+                        ? intensity === 'high'
+                          ? 'bg-gradient-to-br from-primary to-primary-light shadow-sm shadow-primary/20'
+                          : intensity === 'med'
+                            ? 'bg-gradient-to-br from-primary/60 to-primary-light/60'
+                            : 'bg-gradient-to-br from-primary/30 to-primary-light/30'
+                        : 'bg-gray-100'
+                    } ${isToday ? 'ring-2 ring-primary/30 ring-offset-1' : ''}`}
+                    title={`${day.shortDay}: ${day.cardsStudied} cards`}
+                  />
+                  <span className={`text-[10px] font-medium ${isToday ? 'text-primary font-bold' : 'text-foreground-muted'}`}>
+                    {day.shortDay}
+                  </span>
+                </div>
+              );
+            })}
           </div>
         </div>
 
-        {/* Best Streak */}
-        <div className="text-right flex-shrink-0">
-          <div className="flex items-center gap-1.5 text-foreground-muted justify-end">
-            <Target01Icon className="w-4 h-4" />
-            <span className="text-xs font-semibold uppercase tracking-wider">Best</span>
-          </div>
-          <p className="text-2xl font-bold text-foreground mt-0.5">{longestStreak}</p>
-        </div>
-      </div>
-
-      {/* Motivation Message */}
-      {!studiedToday && currentStreak > 0 && (
-        <div className="mt-4 pt-4 border-t border-border/50">
-          <p className="text-sm text-secondary font-semibold flex items-center gap-2">
+        {/* Motivation line */}
+        {!studiedToday && currentStreak > 0 && (
+          <p className="mt-4 text-xs text-secondary font-semibold flex items-center gap-1.5">
             <span className="w-1.5 h-1.5 rounded-full bg-secondary animate-pulse" />
-            Study today to keep your {currentStreak}-day streak alive!
+            Don&apos;t break your {currentStreak}-day streak!
           </p>
-        </div>
-      )}
-      {currentStreak === 0 && (
-        <div className="mt-4 pt-4 border-t border-border/50">
-          <p className="text-sm text-foreground-muted">
+        )}
+        {currentStreak === 0 && (
+          <p className="mt-4 text-xs text-foreground-muted">
             Start studying to begin your streak!
           </p>
-        </div>
-      )}
+        )}
+      </div>
     </ClayCard>
   );
 }

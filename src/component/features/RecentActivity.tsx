@@ -8,40 +8,51 @@ import { useRecentActivity, ActivityItem } from '@/hooks/useDashboard';
 interface ActivityItemComponentProps extends ActivityItem {
   icon: React.ReactNode;
   iconBg: string;
+  dotColor: string;
+  isLast: boolean;
 }
 
-function ActivityItemComponent({ type, title, description, time, icon, iconBg, href }: ActivityItemComponentProps) {
+function ActivityTimelineItem({ type, title, description, time, icon, iconBg, dotColor, href, isLast }: ActivityItemComponentProps) {
   const getTypeBadge = () => {
     switch (type) {
       case 'note':
-        return <ClayBadge variant="accent" className="text-xs px-2 py-0.5">Note</ClayBadge>;
+        return <ClayBadge variant="accent" className="text-[10px] px-2 py-0.5">Note</ClayBadge>;
       case 'flashcard':
-        return <ClayBadge variant="success" className="text-xs px-2 py-0.5">Flashcard</ClayBadge>;
+        return <ClayBadge variant="success" className="text-[10px] px-2 py-0.5">Flashcard</ClayBadge>;
       case 'exam':
-        return <ClayBadge variant="warning" className="text-xs px-2 py-0.5">Exam</ClayBadge>;
+        return <ClayBadge variant="warning" className="text-[10px] px-2 py-0.5">Exam</ClayBadge>;
       default:
         return null;
     }
   };
 
   const content = (
-    <div className="flex items-center gap-4 p-4 rounded-2xl bg-gradient-to-r from-gray-50/80 to-gray-100/50 hover:from-white hover:to-gray-50 border border-gray-100/80 hover:border-gray-200/80 transition-all duration-200 group cursor-pointer hover:shadow-md">
-      <div className={`p-3 rounded-xl ${iconBg} shadow-sm`}>
-        {icon}
-      </div>
-      <div className="flex-1 min-w-0">
-        <div className="flex items-center gap-2 mb-1 flex-wrap">
-          <h4 className="font-semibold text-foreground truncate group-hover:text-primary transition-colors">{title}</h4>
-          {getTypeBadge()}
+    <div className="flex gap-4 group cursor-pointer">
+      {/* Timeline dot + line */}
+      <div className="flex flex-col items-center">
+        <div className={`w-10 h-10 rounded-xl ${iconBg} flex items-center justify-center shadow-sm flex-shrink-0 group-hover:scale-105 transition-transform`}>
+          {icon}
         </div>
-        <p className="text-sm text-foreground-muted truncate">{description}</p>
+        {!isLast && (
+          <div className={`w-0.5 flex-1 mt-2 ${dotColor} opacity-30 rounded-full`} />
+        )}
       </div>
-      <div className="flex flex-col items-end gap-2 flex-shrink-0">
-        <div className="flex items-center gap-1.5 text-xs text-foreground-muted font-medium">
-          <Clock01Icon className="w-3.5 h-3.5" />
-          <span>{time}</span>
+
+      {/* Content */}
+      <div className={`flex-1 ${!isLast ? 'pb-5' : 'pb-1'}`}>
+        <div className="flex items-start justify-between gap-3">
+          <div className="min-w-0 flex-1">
+            <div className="flex items-center gap-2 mb-0.5 flex-wrap">
+              <h4 className="font-semibold text-foreground text-sm truncate group-hover:text-primary transition-colors">{title}</h4>
+              {getTypeBadge()}
+            </div>
+            <p className="text-xs text-foreground-muted truncate">{description}</p>
+          </div>
+          <div className="flex items-center gap-1.5 text-[10px] text-foreground-muted font-medium flex-shrink-0 mt-0.5">
+            <Clock01Icon className="w-3 h-3" />
+            <span>{time}</span>
+          </div>
         </div>
-        <ArrowRight01Icon className="w-4 h-4 text-primary opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all" />
       </div>
     </div>
   );
@@ -53,27 +64,29 @@ function ActivityItemComponent({ type, title, description, time, icon, iconBg, h
   return content;
 }
 
-function ActivityItemSkeleton() {
+function ActivityItemSkeleton({ isLast }: { isLast: boolean }) {
   return (
-    <div className="flex items-center gap-4 p-4 rounded-2xl bg-gradient-to-r from-gray-50 to-gray-100/50 animate-pulse">
-      <div className="w-12 h-12 rounded-xl bg-gray-200" />
-      <div className="flex-1 min-w-0 space-y-2">
-        <div className="h-4 w-40 bg-gray-200 rounded-lg" />
+    <div className="flex gap-4 animate-pulse">
+      <div className="flex flex-col items-center">
+        <div className="w-10 h-10 rounded-xl bg-gray-200 flex-shrink-0" />
+        {!isLast && <div className="w-0.5 flex-1 mt-2 bg-gray-200 rounded-full" />}
+      </div>
+      <div className={`flex-1 ${!isLast ? 'pb-5' : 'pb-1'}`}>
+        <div className="h-4 w-40 bg-gray-200 rounded-lg mb-2" />
         <div className="h-3 w-56 bg-gray-200 rounded-lg" />
       </div>
-      <div className="w-16 h-4 bg-gray-200 rounded-lg" />
     </div>
   );
 }
 
 function EmptyState() {
   return (
-    <div className="flex flex-col items-center justify-center py-12 text-center">
-      <div className="p-5 rounded-2xl bg-gradient-to-br from-gray-50 to-gray-100 mb-4 shadow-inner">
-        <Clock01Icon className="w-10 h-10 text-gray-400" />
+    <div className="flex flex-col items-center justify-center py-10 text-center">
+      <div className="p-4 rounded-2xl bg-gradient-to-br from-gray-50 to-gray-100 mb-4 shadow-inner">
+        <Clock01Icon className="w-8 h-8 text-gray-400" />
       </div>
-      <h4 className="font-semibold text-foreground mb-1">No recent activity</h4>
-      <p className="text-sm text-foreground-muted max-w-[220px]">
+      <h4 className="font-semibold text-foreground text-sm mb-1">No recent activity</h4>
+      <p className="text-xs text-foreground-muted max-w-[220px]">
         Start creating notes or flashcards to see your activity here
       </p>
     </div>
@@ -83,55 +96,71 @@ function EmptyState() {
 export default function RecentActivity() {
   const { data: activities = [], isLoading } = useRecentActivity();
 
-  // Map activities to include icons
-  const activitiesWithIcons: ActivityItemComponentProps[] = activities.map((activity) => {
-    const iconConfig = {
-      note: {
-        icon: <File01Icon className="w-5 h-5 text-primary" />,
-        iconBg: 'bg-gradient-to-br from-primary-muted to-primary-muted/70',
-      },
-      flashcard: {
-        icon: <BookOpen01Icon className="w-5 h-5 text-tertiary" />,
-        iconBg: 'bg-gradient-to-br from-tertiary-muted to-tertiary-muted/70',
-      },
-      exam: {
-        icon: <TestTube01Icon className="w-5 h-5 text-secondary" />,
-        iconBg: 'bg-gradient-to-br from-secondary-muted to-secondary-muted/70',
-      },
-    };
+  const iconConfigs = {
+    note: {
+      icon: <File01Icon className="w-4.5 h-4.5 text-primary" />,
+      iconBg: 'bg-gradient-to-br from-primary-muted to-primary-muted/70',
+      dotColor: 'bg-primary',
+    },
+    flashcard: {
+      icon: <BookOpen01Icon className="w-4.5 h-4.5 text-tertiary" />,
+      iconBg: 'bg-gradient-to-br from-tertiary-muted to-tertiary-muted/70',
+      dotColor: 'bg-tertiary',
+    },
+    exam: {
+      icon: <TestTube01Icon className="w-4.5 h-4.5 text-secondary" />,
+      iconBg: 'bg-gradient-to-br from-secondary-muted to-secondary-muted/70',
+      dotColor: 'bg-secondary',
+    },
+  };
 
-    const config = iconConfig[activity.type] || iconConfig.note;
-
+  const activitiesWithIcons: ActivityItemComponentProps[] = activities.map((activity, index) => {
+    const config = iconConfigs[activity.type] || iconConfigs.note;
     return {
       ...activity,
       icon: config.icon,
       iconBg: config.iconBg,
+      dotColor: config.dotColor,
+      isLast: index === activities.length - 1,
     };
   });
 
   return (
-    <ClayCard variant="elevated" padding="lg" className="rounded-3xl">
-      <div className="flex items-center justify-between mb-6">
-        <div>
-          <h3 className="text-lg font-semibold text-foreground">Recent Activity</h3>
-          <p className="text-sm text-foreground-muted">Your latest learning activities</p>
-        </div>
-        <Link href="/library" className="text-sm text-primary hover:text-primary-dark font-semibold flex items-center gap-1.5 transition-colors px-3 py-1.5 rounded-lg hover:bg-primary-muted/50">
-          View all
-          <ArrowRight01Icon className="w-4 h-4" />
-        </Link>
-      </div>
+    <ClayCard variant="elevated" padding="none" className="rounded-3xl overflow-hidden">
+      {/* Decorative top: subtle ruled-line accent */}
+      <div
+        className="h-2 opacity-[0.06]"
+        style={{
+          backgroundImage: 'repeating-linear-gradient(0deg, transparent, transparent 3px, #6366F1 3px, #6366F1 4px)',
+        }}
+      />
 
-      <div className="space-y-3">
-        {isLoading ? (
-          Array.from({ length: 3 }).map((_, i) => <ActivityItemSkeleton key={i} />)
-        ) : activitiesWithIcons.length > 0 ? (
-          activitiesWithIcons.map((activity) => (
-            <ActivityItemComponent key={activity.id} {...activity} />
-          ))
-        ) : (
-          <EmptyState />
-        )}
+      <div className="p-6 md:p-8">
+        <div className="flex items-center justify-between mb-6">
+          <div>
+            <h3 className="text-lg font-bold text-foreground">Recent Activity</h3>
+            <p className="text-xs text-foreground-muted mt-0.5">Your learning journal</p>
+          </div>
+          <Link href="/library" className="text-xs text-primary hover:text-primary-dark font-semibold flex items-center gap-1 transition-colors px-3 py-1.5 rounded-lg hover:bg-primary-muted/50">
+            View all
+            <ArrowRight01Icon className="w-3.5 h-3.5" />
+          </Link>
+        </div>
+
+        {/* Timeline */}
+        <div>
+          {isLoading ? (
+            Array.from({ length: 3 }).map((_, i) => (
+              <ActivityItemSkeleton key={i} isLast={i === 2} />
+            ))
+          ) : activitiesWithIcons.length > 0 ? (
+            activitiesWithIcons.map((activity) => (
+              <ActivityTimelineItem key={activity.id} {...activity} />
+            ))
+          ) : (
+            <EmptyState />
+          )}
+        </div>
       </div>
     </ClayCard>
   );

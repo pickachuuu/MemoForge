@@ -2,9 +2,8 @@
 
 import { ClayCard } from '@/component/ui/Clay';
 import { useWeeklyActivity } from '@/hooks/useDashboard';
-import { Activity03Icon } from 'hugeicons-react';
+import { Activity03Icon, BookOpen01Icon, Clock01Icon } from 'hugeicons-react';
 
-// Fixed heights for skeleton to avoid hydration mismatch
 const SKELETON_HEIGHTS = [45, 65, 30, 80, 55, 40, 70];
 
 function ChartSkeleton() {
@@ -23,6 +22,17 @@ function ChartSkeleton() {
   );
 }
 
+// Gradient colors for each day to add visual variety
+const BAR_COLORS = [
+  'from-indigo-300 to-primary',
+  'from-violet-300 to-indigo-500',
+  'from-primary-light to-primary',
+  'from-blue-300 to-indigo-500',
+  'from-violet-400 to-primary-dark',
+  'from-indigo-400 to-violet-500',
+  'from-primary to-primary-dark', // today - most vivid
+];
+
 export default function WeeklyActivityChart() {
   const { data: weeklyData, isLoading } = useWeeklyActivity();
 
@@ -37,62 +47,61 @@ export default function WeeklyActivityChart() {
   const activeDays = data.filter(d => d.cardsStudied > 0).length;
 
   return (
-    <ClayCard variant="default" padding="md" className="rounded-2xl h-full">
+    <ClayCard variant="default" padding="md" className="rounded-2xl h-full flex flex-col">
       {/* Header */}
-      <div className="flex items-center justify-between mb-5">
+      <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-3">
           <div className="p-2.5 rounded-xl bg-gradient-to-br from-primary-muted to-primary-muted/70">
             <Activity03Icon className="w-5 h-5 text-primary" />
           </div>
           <div>
-            <h3 className="font-semibold text-foreground">Weekly Activity</h3>
+            <h3 className="font-semibold text-foreground text-base">Weekly Activity</h3>
             <p className="text-xs text-foreground-muted">Last 7 days</p>
           </div>
         </div>
 
-        {/* Summary Stats */}
-        <div className="flex items-center gap-4 text-sm">
-          <div className="text-right px-3 py-2 rounded-xl bg-gradient-to-br from-gray-50 to-gray-100/50">
-            <p className="font-bold text-foreground">{totalCards}</p>
-            <p className="text-xs text-foreground-muted">cards</p>
+        {/* Stat pills */}
+        <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-gradient-to-br from-primary-muted/50 to-primary-muted/80 border border-primary/10">
+            <BookOpen01Icon className="w-3.5 h-3.5 text-primary" />
+            <span className="text-sm font-bold text-primary">{totalCards}</span>
           </div>
-          <div className="text-right px-3 py-2 rounded-xl bg-gradient-to-br from-gray-50 to-gray-100/50">
-            <p className="font-bold text-foreground">{totalMinutes}m</p>
-            <p className="text-xs text-foreground-muted">studied</p>
+          <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-gradient-to-br from-tertiary-muted/50 to-tertiary-muted/80 border border-tertiary/10">
+            <Clock01Icon className="w-3.5 h-3.5 text-tertiary" />
+            <span className="text-sm font-bold text-tertiary">{totalMinutes}m</span>
           </div>
         </div>
       </div>
 
       {/* Bar Chart */}
-      <div className="flex items-end justify-between gap-3 h-32 mb-3 px-1">
+      <div className="flex-1 flex items-end justify-between gap-3 mb-3 px-1 min-h-[140px]">
         {data.map((day, index) => {
           const heightPercent = maxCards > 0 ? (day.cardsStudied / maxCards) * 100 : 0;
           const isToday = index === data.length - 1;
           const hasActivity = day.cardsStudied > 0;
+          const barColor = BAR_COLORS[index] || BAR_COLORS[BAR_COLORS.length - 1];
 
           return (
-            <div key={day.date} className="flex-1 flex flex-col items-center group">
+            <div key={day.date} className="flex-1 flex flex-col items-center group relative">
               {/* Tooltip */}
-              <div className="relative mb-1">
-                <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-3 py-1.5 bg-foreground text-white text-xs rounded-xl opacity-0 group-hover:opacity-100 transition-all whitespace-nowrap pointer-events-none z-10 shadow-lg">
-                  {day.cardsStudied} cards
-                  {day.minutesStudied > 0 && ` · ${day.minutesStudied}m`}
-                </div>
+              <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-3 py-2 bg-foreground text-white text-xs rounded-xl opacity-0 group-hover:opacity-100 transition-all whitespace-nowrap pointer-events-none z-10 shadow-lg">
+                <p className="font-bold">{day.cardsStudied} cards</p>
+                {day.minutesStudied > 0 && (
+                  <p className="opacity-70">{day.minutesStudied}m studied</p>
+                )}
               </div>
 
               {/* Bar */}
               <div className="w-full flex-1 flex items-end">
                 <div
-                  className={`w-full rounded-xl transition-all duration-300 cursor-pointer ${
+                  className={`w-full rounded-xl transition-all duration-500 cursor-pointer hover:opacity-90 ${
                     hasActivity
-                      ? isToday
-                        ? 'bg-gradient-to-t from-primary to-primary-light shadow-md shadow-primary/20'
-                        : 'bg-gradient-to-t from-primary/40 to-primary/60 hover:from-primary/50 hover:to-primary/70'
+                      ? `bg-gradient-to-t ${barColor} ${isToday ? 'shadow-lg shadow-primary/25 ring-2 ring-primary/20 ring-offset-2' : 'shadow-sm'}`
                       : 'bg-gradient-to-t from-gray-100 to-gray-50'
                   }`}
                   style={{
-                    height: hasActivity ? `${Math.max(heightPercent, 10)}%` : '6px',
-                    minHeight: hasActivity ? '12px' : '6px'
+                    height: hasActivity ? `${Math.max(heightPercent, 12)}%` : '8px',
+                    minHeight: hasActivity ? '16px' : '8px',
                   }}
                 />
               </div>
@@ -107,7 +116,7 @@ export default function WeeklyActivityChart() {
           const isToday = index === data.length - 1;
           return (
             <div key={day.date} className="flex-1 text-center">
-              <span className={`text-xs font-medium ${isToday ? 'text-primary font-semibold' : 'text-foreground-muted'}`}>
+              <span className={`text-xs font-medium ${isToday ? 'text-primary font-bold' : 'text-foreground-muted'}`}>
                 {day.shortDay}
               </span>
             </div>
@@ -115,17 +124,19 @@ export default function WeeklyActivityChart() {
         })}
       </div>
 
-      {/* Active Days Indicator */}
+      {/* Active Days Footer */}
       <div className="mt-5 pt-4 border-t border-border/50">
         <div className="flex items-center justify-between">
-          <span className="text-sm text-foreground-muted font-medium">Active days this week</span>
+          <span className="text-xs text-foreground-muted font-medium">
+            {activeDays}/7 active days
+          </span>
           <div className="flex items-center gap-1.5">
             {Array.from({ length: 7 }).map((_, i) => (
               <div
                 key={i}
-                className={`w-3 h-3 rounded-full transition-all duration-300 ${
+                className={`w-2.5 h-2.5 rounded-full transition-all duration-300 ${
                   i < activeDays
-                    ? 'bg-gradient-to-br from-primary-light to-primary shadow-sm shadow-primary/30'
+                    ? 'bg-gradient-to-br from-primary-light to-primary shadow-sm shadow-primary/20'
                     : 'bg-gray-200'
                 }`}
               />

@@ -28,6 +28,7 @@ import {
   Calendar03Icon
 } from 'hugeicons-react';
 import HeroActionButton from '@/component/ui/HeroActionButton';
+import ExamStats from '@/component/features/ExamStats';
 import { clsx } from 'clsx';
 
 type ViewMode = 'grid' | 'list';
@@ -209,6 +210,9 @@ export default function ExamsPage() {
           Create Exam
         </HeroActionButton>
       </div>
+
+      {/* Performance Overview */}
+      <ExamStats />
 
       {/* Search and Filters */}
       <ClayCard variant="default" padding="md" className="rounded-2xl">

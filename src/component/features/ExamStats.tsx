@@ -27,17 +27,25 @@ function ExamStatsSkeleton() {
   );
 }
 
-function ScoreRing({ percentage, size = 48 }: { percentage: number; size?: number }) {
+function getGrade(score: number) {
+  if (score >= 90) return { letter: 'A', color: 'text-tertiary', bg: 'bg-tertiary-muted', border: 'border-tertiary/20' };
+  if (score >= 80) return { letter: 'B', color: 'text-tertiary', bg: 'bg-tertiary-muted', border: 'border-tertiary/20' };
+  if (score >= 70) return { letter: 'C', color: 'text-primary', bg: 'bg-primary-muted', border: 'border-primary/20' };
+  if (score >= 60) return { letter: 'D', color: 'text-secondary', bg: 'bg-secondary-muted', border: 'border-secondary/20' };
+  return { letter: 'F', color: 'text-error', bg: 'bg-red-50', border: 'border-error/20' };
+}
+
+function ScoreRing({ percentage, size = 44 }: { percentage: number; size?: number }) {
   const strokeWidth = 5;
   const radius = (size - strokeWidth) / 2;
   const circumference = radius * 2 * Math.PI;
   const offset = circumference - (percentage / 100) * circumference;
 
   const getColor = () => {
-    if (percentage >= 80) return '#14B8A6'; // teal/tertiary
-    if (percentage >= 60) return '#F97316'; // coral/secondary
-    if (percentage >= 40) return '#6366F1'; // indigo/primary
-    return '#94A3B8'; // gray
+    if (percentage >= 80) return '#14B8A6';
+    if (percentage >= 60) return '#F97316';
+    if (percentage >= 40) return '#6366F1';
+    return '#94A3B8';
   };
 
   return (
@@ -82,102 +90,120 @@ export default function ExamStats() {
   if (totalExams === 0) {
     return (
       <ClayCard variant="default" padding="md" className="rounded-2xl h-full">
-        <div className="text-center py-6">
-          <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center shadow-inner">
+        <div className="flex items-center gap-6 py-4">
+          <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center shadow-inner flex-shrink-0">
             <TestTube01Icon className="w-8 h-8 text-gray-400" />
           </div>
-          <h3 className="font-semibold text-foreground mb-1">No exams yet</h3>
-          <p className="text-sm text-foreground-muted">Create an exam to track your performance</p>
-          <Link
-            href="/exams"
-            className="inline-flex items-center gap-1.5 mt-4 text-sm text-primary hover:text-primary-dark font-semibold transition-colors"
-          >
-            Go to Exams
-            <ArrowRight01Icon className="w-4 h-4" />
-          </Link>
+          <div>
+            <h3 className="font-semibold text-foreground mb-1">No exams yet</h3>
+            <p className="text-sm text-foreground-muted mb-2">Create an exam to track your performance</p>
+            <Link
+              href="/exams"
+              className="inline-flex items-center gap-1.5 text-sm text-primary hover:text-primary-dark font-semibold transition-colors"
+            >
+              Go to Exams
+              <ArrowRight01Icon className="w-4 h-4" />
+            </Link>
+          </div>
         </div>
       </ClayCard>
     );
   }
 
+  const grade = getGrade(averageScore);
+
   return (
-    <ClayCard variant="default" padding="md" className="rounded-2xl h-full">
-      {/* Header */}
-      <div className="flex items-center justify-between mb-5">
-        <div className="flex items-center gap-3">
-          <div className="p-2.5 rounded-xl bg-gradient-to-br from-secondary-muted to-secondary-muted/70">
-            <TestTube01Icon className="w-5 h-5 text-secondary" />
-          </div>
-          <div>
-            <h3 className="font-semibold text-foreground">Exam Performance</h3>
-            <p className="text-xs text-foreground-muted">{totalExams} exam{totalExams !== 1 ? 's' : ''} created</p>
-          </div>
-        </div>
-        <Link
-          href="/exams"
-          className="text-sm text-primary hover:text-primary-dark font-semibold flex items-center gap-1.5 transition-colors px-3 py-1.5 rounded-lg hover:bg-primary-muted/50"
-        >
-          View all
-          <ArrowRight01Icon className="w-4 h-4" />
-        </Link>
-      </div>
+    <ClayCard variant="default" padding="none" className="rounded-2xl h-full overflow-hidden">
+      {/* Top accent */}
+      <div className="h-1 bg-gradient-to-r from-secondary via-orange-400 to-amber-400" />
 
-      {/* Stats Grid */}
-      <div className="grid grid-cols-3 gap-3 mb-5">
-        <div className="p-3 rounded-xl bg-gradient-to-br from-gray-50 to-gray-100/50 text-center">
-          <p className="text-2xl font-bold text-foreground">{totalAttempts}</p>
-          <p className="text-xs text-foreground-muted font-medium">Attempts</p>
-        </div>
-        <div className="p-3 rounded-xl bg-gradient-to-br from-gray-50 to-gray-100/50 text-center">
-          <div className="flex items-center justify-center gap-1.5">
-            <Target01Icon className="w-4 h-4 text-secondary" />
-            <p className="text-2xl font-bold text-foreground">{averageScore}%</p>
+      <div className="p-5">
+        {/* Header */}
+        <div className="flex items-center justify-between mb-5">
+          <div className="flex items-center gap-3">
+            <div className="p-2.5 rounded-xl bg-gradient-to-br from-secondary-muted to-secondary-muted/70">
+              <TestTube01Icon className="w-5 h-5 text-secondary" />
+            </div>
+            <div>
+              <h3 className="font-semibold text-foreground text-sm">Exam Performance</h3>
+              <p className="text-[10px] text-foreground-muted">{totalExams} exam{totalExams !== 1 ? 's' : ''} created</p>
+            </div>
           </div>
-          <p className="text-xs text-foreground-muted font-medium">Average</p>
+          <Link
+            href="/exams"
+            className="text-xs text-primary hover:text-primary-dark font-semibold flex items-center gap-1 transition-colors px-2.5 py-1.5 rounded-lg hover:bg-primary-muted/50"
+          >
+            View all
+            <ArrowRight01Icon className="w-3.5 h-3.5" />
+          </Link>
         </div>
-        <div className="p-3 rounded-xl bg-gradient-to-br from-gray-50 to-gray-100/50 text-center">
-          <div className="flex items-center justify-center gap-1.5">
-            <Award02Icon className="w-4 h-4 text-tertiary" />
-            <p className="text-2xl font-bold text-foreground">{bestScore}%</p>
-          </div>
-          <p className="text-xs text-foreground-muted font-medium">Best</p>
-        </div>
-      </div>
 
-      {/* Recent Attempts */}
-      {recentAttempts.length > 0 && (
-        <div className="pt-4 border-t border-border/50">
-          <p className="text-xs font-semibold text-foreground-muted uppercase tracking-wider mb-3">Recent Attempts</p>
-          <div className="space-y-2.5">
-            {recentAttempts.slice(0, 3).map((attempt) => (
-              <Link
-                key={attempt.id}
-                href={`/exams/${attempt.examId}/results/${attempt.id}`}
-                className="flex items-center gap-3 p-2.5 rounded-xl hover:bg-gray-50 transition-colors group"
-              >
-                <ScoreRing percentage={attempt.percentage} size={40} />
-                <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium text-foreground truncate group-hover:text-primary transition-colors">
-                    {attempt.examTitle}
-                  </p>
-                  <p className="text-xs text-foreground-muted">
-                    {new Date(attempt.completedAt).toLocaleDateString(undefined, {
-                      month: 'short',
-                      day: 'numeric',
-                    })}
-                  </p>
-                </div>
-                <ClayBadge
-                  variant={attempt.percentage >= 80 ? 'success' : attempt.percentage >= 60 ? 'warning' : 'error'}
-                  className="text-xs px-2 py-0.5"
+        {/* Stats row with grade */}
+        <div className="flex items-center gap-4 mb-5">
+          {/* Letter Grade */}
+          <div className={`w-16 h-16 rounded-2xl ${grade.bg} border ${grade.border} flex flex-col items-center justify-center flex-shrink-0`}>
+            <span className={`text-2xl font-extrabold ${grade.color} leading-none`}>{grade.letter}</span>
+            <span className="text-[9px] text-foreground-muted font-medium mt-0.5">Grade</span>
+          </div>
+
+          {/* Stat pills */}
+          <div className="flex-1 grid grid-cols-3 gap-2">
+            <div className="text-center py-2 px-1 rounded-xl bg-gray-50 border border-gray-100">
+              <p className="text-lg font-bold text-foreground leading-none">{totalAttempts}</p>
+              <p className="text-[10px] text-foreground-muted font-medium mt-1">Attempts</p>
+            </div>
+            <div className="text-center py-2 px-1 rounded-xl bg-gray-50 border border-gray-100">
+              <div className="flex items-center justify-center gap-1">
+                <Target01Icon className="w-3.5 h-3.5 text-secondary" />
+                <p className="text-lg font-bold text-foreground leading-none">{averageScore}%</p>
+              </div>
+              <p className="text-[10px] text-foreground-muted font-medium mt-1">Avg</p>
+            </div>
+            <div className="text-center py-2 px-1 rounded-xl bg-gray-50 border border-gray-100">
+              <div className="flex items-center justify-center gap-1">
+                <Award02Icon className="w-3.5 h-3.5 text-tertiary" />
+                <p className="text-lg font-bold text-foreground leading-none">{bestScore}%</p>
+              </div>
+              <p className="text-[10px] text-foreground-muted font-medium mt-1">Best</p>
+            </div>
+          </div>
+        </div>
+
+        {/* Recent Attempts */}
+        {recentAttempts.length > 0 && (
+          <div className="pt-4 border-t border-border/50">
+            <p className="text-[10px] font-semibold text-foreground-muted uppercase tracking-wider mb-3">Recent</p>
+            <div className="space-y-2">
+              {recentAttempts.slice(0, 3).map((attempt) => (
+                <Link
+                  key={attempt.id}
+                  href={`/exams/${attempt.examId}/results/${attempt.id}`}
+                  className="flex items-center gap-3 p-2 rounded-xl hover:bg-gray-50 transition-colors group"
                 >
-                  {attempt.percentage}%
-                </ClayBadge>
-              </Link>
-            ))}
+                  <ScoreRing percentage={attempt.percentage} size={36} />
+                  <div className="flex-1 min-w-0">
+                    <p className="text-xs font-semibold text-foreground truncate group-hover:text-primary transition-colors">
+                      {attempt.examTitle}
+                    </p>
+                    <p className="text-[10px] text-foreground-muted">
+                      {new Date(attempt.completedAt).toLocaleDateString(undefined, {
+                        month: 'short',
+                        day: 'numeric',
+                      })}
+                    </p>
+                  </div>
+                  <ClayBadge
+                    variant={attempt.percentage >= 80 ? 'success' : attempt.percentage >= 60 ? 'warning' : 'error'}
+                    className="text-[10px] px-2 py-0.5"
+                  >
+                    {attempt.percentage}%
+                  </ClayBadge>
+                </Link>
+              ))}
+            </div>
           </div>
-        </div>
-      )}
+        )}
+      </div>
     </ClayCard>
   );
 }
