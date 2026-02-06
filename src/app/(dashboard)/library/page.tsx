@@ -52,12 +52,7 @@ export default function LibraryPage() {
 
   // Filter and sort notes
   const processedNotes = useMemo(() => {
-    let filtered = notes.filter(
-      (note) =>
-        (note.title && note.title.trim() !== '') ||
-        (note.content && note.content.trim() !== '') ||
-        (Array.isArray(note.tags) && note.tags.length > 0)
-    );
+    let filtered = [...notes];
 
     // Search filter
     if (searchQuery.trim()) {

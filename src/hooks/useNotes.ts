@@ -68,7 +68,13 @@ async function fetchUserNotes(): Promise<Note[]> {
     throw error;
   }
 
-  return data || [];
+  // Filter out orphaned/empty notes (failed creations that never got a title or content)
+  return (data || []).filter(
+    (note) =>
+      (note.title && note.title.trim() !== '') ||
+      (note.content && note.content.trim() !== '') ||
+      (Array.isArray(note.tags) && note.tags.length > 0)
+  );
 }
 
 async function fetchNoteBySlug(slug: string): Promise<Note | null> {
@@ -123,28 +129,42 @@ async function fetchNotePages(noteId: string): Promise<NotePage[]> {
 // ============================================
 
 interface CreateNoteParams {
+  title: string;
   coverColor?: NotebookColorKey;
 }
 
-async function createNote({ coverColor = 'lavender' }: CreateNoteParams = {}): Promise<string> {
+async function createNote({ title, coverColor = 'lavender' }: CreateNoteParams): Promise<{ id: string; slug: string }> {
+  if (!title.trim()) throw new Error('Title is required');
+
   const session = await getSession();
   if (!session?.user?.id) throw new Error('Not authenticated');
 
+  // Insert with title + slug in one step so we never leave an empty row behind
   const { data, error } = await supabase
     .from('notes')
     .insert([{
-      title: '',
+      title: title.trim(),
       content: '',
       tags: [],
       cover_color: coverColor,
       user_id: session.user.id,
-      slug: null,
+      slug: null, // placeholder — updated below
     }])
     .select('id')
     .single();
 
   if (error) throw error;
-  return data.id;
+
+  // Generate slug using the note ID and update the row
+  const slug = generateUniqueSlug(title, data.id);
+  const { error: slugError } = await supabase
+    .from('notes')
+    .update({ slug, updated_at: new Date().toISOString() })
+    .eq('id', data.id);
+
+  if (slugError) throw slugError;
+
+  return { id: data.id, slug };
 }
 
 interface SaveNoteParams {

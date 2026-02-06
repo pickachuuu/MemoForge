@@ -241,37 +241,33 @@ export default function EditorPage() {
 
     if (!noteId && isNewNote) {
       try {
-        const newId = await createNoteMutation.mutateAsync({ coverColor });
-        if (newId) {
-          setId(newId);
-          setSaveStatus('saved');
-          const newSlug = await saveNoteMutation.mutateAsync({ id: newId, title, tags: [], coverColor });
+        // createNote now inserts with title + slug atomically — no orphan risk
+        const { id: newId, slug: newSlug } = await createNoteMutation.mutateAsync({ title, coverColor });
+        setId(newId);
+        setSaveStatus('saved');
 
-          // Trigger the flip animation FIRST - this must happen before any
-          // router navigation which could re-mount the component and reset animation state
-          setCurrentView('toc');
+        // Trigger the flip animation FIRST - this must happen before any
+        // router navigation which could re-mount the component and reset animation state
+        setCurrentView('toc');
 
-          // Then seed the query cache and defer the URL change to after the
-          // flip animation completes (500ms), preventing both the spinner flash
-          // and animation interference
-          if (newSlug) {
-            setSlug(newSlug);
-            queryClient.setQueryData(noteKeys.detail(newSlug), {
-              id: newId,
-              title,
-              content: '',
-              tags: [] as string[],
-              cover_color: coverColor,
-              slug: newSlug,
-              user_id: '',
-              created_at: new Date().toISOString(),
-              updated_at: new Date().toISOString(),
-            });
-            setTimeout(() => {
-              router.replace(`/editor/${newSlug}`, { scroll: false });
-            }, 600);
-          }
-        }
+        // Then seed the query cache and defer the URL change to after the
+        // flip animation completes (500ms), preventing both the spinner flash
+        // and animation interference
+        setSlug(newSlug);
+        queryClient.setQueryData(noteKeys.detail(newSlug), {
+          id: newId,
+          title,
+          content: '',
+          tags: [] as string[],
+          cover_color: coverColor,
+          slug: newSlug,
+          user_id: '',
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString(),
+        });
+        setTimeout(() => {
+          router.replace(`/editor/${newSlug}`, { scroll: false });
+        }, 600);
       } catch (error) {
         setSaveStatus('error');
         return;
