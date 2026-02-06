@@ -12,13 +12,15 @@ export interface NotePage {
   updated_at: string;
 }
 
-interface TableOfContentsProps {
+export interface TableOfContentsProps {
   notebookTitle: string;
   pages: NotePage[];
   onPageClick: (pageIndex: number) => void;
   onAddPage: () => void;
   onDeletePage?: (pageId: string) => void;
   theme: 'light' | 'dark';
+  /** When true, shows skeleton placeholders instead of the empty state */
+  isLoading?: boolean;
 }
 
 /**
@@ -31,6 +33,7 @@ export default function TableOfContents({
   onAddPage,
   onDeletePage,
   theme,
+  isLoading = false,
 }: TableOfContentsProps) {
   const isDark = theme === 'dark';
 
@@ -48,7 +51,49 @@ export default function TableOfContents({
 
       {/* Page list */}
       <div className="toc-page__content">
-        {pages.length === 0 ? (
+        {isLoading ? (
+          /* Skeleton loading state - prevents flash of empty "No pages yet" */
+          <ul className="toc-page__list">
+            {[...Array(3)].map((_, index) => (
+              <li key={index} className="toc-page__item">
+                <div className="toc-page__link" style={{ pointerEvents: 'none' }}>
+                  <span className="toc-page__page-number" style={{ opacity: 0.3 }}>{index + 1}</span>
+                  <span
+                    className="toc-page__page-title"
+                    style={{ opacity: 0 }}
+                  >
+                    {/* Invisible placeholder to maintain height */}
+                    Loading
+                  </span>
+                  <span
+                    className="toc-page__dots"
+                    style={{
+                      opacity: 0.15,
+                      animation: 'pulse 1.5s ease-in-out infinite',
+                      animationDelay: `${index * 0.15}s`,
+                    }}
+                  />
+                  <span
+                    className="toc-page__page-indicator"
+                    style={{ opacity: 0.15 }}
+                  >
+                    <span
+                      className="inline-block rounded"
+                      style={{
+                        width: '3rem',
+                        height: '0.75rem',
+                        backgroundColor: 'currentColor',
+                        opacity: 0.4,
+                        animation: 'pulse 1.5s ease-in-out infinite',
+                        animationDelay: `${index * 0.15}s`,
+                      }}
+                    />
+                  </span>
+                </div>
+              </li>
+            ))}
+          </ul>
+        ) : pages.length === 0 ? (
           <div className="toc-page__empty">
             <File01Icon className="w-12 h-12 opacity-30" />
             <p>No pages yet</p>
@@ -87,13 +132,13 @@ export default function TableOfContents({
 
       {/* Add page button */}
       <div className="toc-page__footer">
-        <button className="toc-page__add-button" onClick={onAddPage}>
+        <button className="toc-page__add-button" onClick={onAddPage} disabled={isLoading}>
           <Add01Icon className="w-5 h-5" />
           <span>Add New Page</span>
         </button>
 
         <div className="toc-page__page-count">
-          {pages.length} {pages.length === 1 ? 'page' : 'pages'}
+          {isLoading ? '\u00A0' : `${pages.length} ${pages.length === 1 ? 'page' : 'pages'}`}
         </div>
       </div>
     </div>

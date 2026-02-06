@@ -136,7 +136,11 @@ export default function EditorPage() {
   // ========================================
   const queryClient = useQueryClient();
   const { data: fetchedNote, isLoading: isLoadingNote } = useNote(noteIdOrSlug);
-  const { data: pages = [], refetch: refetchPages } = useNotePages(noteId);
+
+  // Use fetchedNote?.id directly so pages start fetching in the same render cycle
+  // as the note data arrives, instead of waiting for Zustand store to update
+  const resolvedNoteId = fetchedNote?.id ?? noteId;
+  const { data: pages = [], isLoading: isLoadingPages, refetch: refetchPages } = useNotePages(resolvedNoteId);
 
   const createNoteMutation = useCreateNote();
   const saveNoteMutation = useSaveNote();
@@ -535,6 +539,7 @@ export default function EditorPage() {
       onAddPage={handleAddPage}
       onDeletePage={handleDeletePage}
       theme={theme}
+      isLoading={isLoadingPages}
     />
   );
 
