@@ -245,8 +245,32 @@ export default function EditorPage() {
         if (newId) {
           setId(newId);
           setSaveStatus('saved');
-          await saveNoteMutation.mutateAsync({ id: newId, title, tags: [], coverColor });
+          const newSlug = await saveNoteMutation.mutateAsync({ id: newId, title, tags: [], coverColor });
+
+          // Trigger the flip animation FIRST - this must happen before any
+          // router navigation which could re-mount the component and reset animation state
           setCurrentView('toc');
+
+          // Then seed the query cache and defer the URL change to after the
+          // flip animation completes (500ms), preventing both the spinner flash
+          // and animation interference
+          if (newSlug) {
+            setSlug(newSlug);
+            queryClient.setQueryData(noteKeys.detail(newSlug), {
+              id: newId,
+              title,
+              content: '',
+              tags: [] as string[],
+              cover_color: coverColor,
+              slug: newSlug,
+              user_id: '',
+              created_at: new Date().toISOString(),
+              updated_at: new Date().toISOString(),
+            });
+            setTimeout(() => {
+              router.replace(`/editor/${newSlug}`, { scroll: false });
+            }, 600);
+          }
         }
       } catch (error) {
         setSaveStatus('error');
@@ -463,6 +487,21 @@ export default function EditorPage() {
         const newSlug = await saveNoteMutation.mutateAsync({ id: noteId, title, content: '', tags, coverColor });
         if (newSlug && newSlug !== slug) {
           setSlug(newSlug);
+
+          // Seed the query cache before changing the URL so useNote(slug) has
+          // data immediately and doesn't flash the loading spinner
+          queryClient.setQueryData(noteKeys.detail(newSlug), {
+            id: noteId,
+            title,
+            content: '',
+            tags,
+            cover_color: coverColor,
+            slug: newSlug,
+            user_id: '',
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString(),
+          });
+
           router.replace(`/editor/${newSlug}`, { scroll: false });
         }
       } catch {
@@ -471,7 +510,7 @@ export default function EditorPage() {
     }, 1500);
 
     return () => clearTimeout(timeoutId);
-  }, [noteId, title, tags, coverColor, slug, router, currentView, setSlug]);
+  }, [noteId, title, tags, coverColor, slug, router, currentView, setSlug, queryClient]);
 
   // ========================================
   // Tag Handlers
