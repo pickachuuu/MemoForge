@@ -1,7 +1,7 @@
 // app/layout.tsx or app/layout.ts (Next.js App Router)
 
 import type { Metadata } from "next";
-import { Geist, Geist_Mono, Just_Another_Hand, Varela_Round } from "next/font/google";
+import { Geist, Geist_Mono, Just_Another_Hand, Varela_Round, Cinzel } from "next/font/google";
 import { Cormorant_Garamond } from "next/font/google";
 import { QueryProvider } from "@/lib/queryClient";
 import "./globals.css";
@@ -35,6 +35,13 @@ const varelaRound = Varela_Round({
   weight: "400",
 });
 
+const cinzel = Cinzel({
+  variable: "--font-cinzel",
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700", "800", "900"],
+  display: "swap",
+});
+
 // Metadata
 export const metadata: Metadata = {
   title: "MemoForge - Smart Learning Platform",
@@ -50,7 +57,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} ${cormorant.variable} ${justAnotherHand.variable} ${varelaRound.variable} antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} ${cormorant.variable} ${justAnotherHand.variable} ${varelaRound.variable} ${cinzel.variable} antialiased`}
       >
         <QueryProvider>
           {children}
