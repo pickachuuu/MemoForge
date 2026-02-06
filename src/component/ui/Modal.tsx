@@ -13,10 +13,33 @@ interface ModalProps {
 }
 
 /**
+ * Counter-based body scroll lock.
+ *
+ * Each open modal increments the counter; each closing modal decrements it.
+ * Overflow is only restored when the counter reaches 0, so nested modals
+ * and race-condition unmounts can never leave the body locked.
+ */
+let lockCount = 0;
+
+function lockBodyScroll() {
+  lockCount++;
+  if (lockCount === 1) {
+    document.body.style.overflow = 'hidden';
+  }
+}
+
+function unlockBodyScroll() {
+  lockCount = Math.max(0, lockCount - 1);
+  if (lockCount === 0) {
+    document.body.style.overflow = '';
+  }
+}
+
+/**
  * Reusable modal component.
  *
  * - Single fixed-inset element guarantees full viewport coverage (no white gaps)
- * - Locks body scroll while open
+ * - Locks body scroll while open (counter-based, safe for nested modals)
  * - ESC key closes the modal
  * - Clicking the backdrop (outside modal content) closes the modal
  */
@@ -30,10 +53,9 @@ export default function Modal({
   // Lock body scroll
   useEffect(() => {
     if (!isOpen) return;
-    const prev = document.body.style.overflow;
-    document.body.style.overflow = 'hidden';
+    lockBodyScroll();
     return () => {
-      document.body.style.overflow = prev;
+      unlockBodyScroll();
     };
   }, [isOpen]);
 
