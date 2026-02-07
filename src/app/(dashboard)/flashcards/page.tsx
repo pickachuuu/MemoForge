@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useCallback, useMemo } from 'react';
-import { useRouter } from 'next/navigation';
 import { ClayCard, ClayBadge } from '@/component/ui/Clay';
 import {
   RefreshIcon,
@@ -23,6 +22,7 @@ import { FlashcardSet } from '@/lib/database.types';
 import ReforgeModal from '@/component/features/modal/ReforgeModal';
 import ConfirmDeleteModal from '@/component/features/modal/ConfirmDeleteModal';
 import ForgeFlashcardsModal from '@/component/features/modal/ForgeFlashcardsModal';
+import FlashcardSetInfoModal from '@/component/features/modal/FlashcardSetInfoModal';
 import { GeminiResponse } from '@/lib/gemini';
 import {
   useFlashcardSets,
@@ -36,12 +36,11 @@ type SortOption = 'recent' | 'alphabetical' | 'oldest';
 type MasteryFilter = 'all' | 'learning' | 'mastered';
 
 export default function FlashcardDashboardPage() {
-  const router = useRouter();
-
   // Modal state
   const [isReforgeModalOpen, setIsReforgeModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [isForgeModalOpen, setIsForgeModalOpen] = useState(false);
+  const [isInfoModalOpen, setIsInfoModalOpen] = useState(false);
   const [selectedSet, setSelectedSet] = useState<FlashcardSet | null>(null);
   const [existingFlashcards, setExistingFlashcards] = useState<{ question: string; answer: string; difficulty: 'easy' | 'medium' | 'hard' }[]>([]);
   const [saveSuccess, setSaveSuccess] = useState<string | undefined>(undefined);
@@ -60,7 +59,7 @@ export default function FlashcardDashboardPage() {
   const togglePublicMutation = useTogglePublicStatus();
 
   // Keep the old hook for utility functions not yet migrated
-  const { getFirstCardInSet, getFlashcardsBySet } = useFlashcardActions();
+  const { getFlashcardsBySet } = useFlashcardActions();
 
   const saving = saveFlashcardsMutation.isPending || reforgeMutation.isPending;
 
@@ -108,16 +107,10 @@ export default function FlashcardDashboardPage() {
   const totalSets = flashcardSets.length;
   const totalCards = flashcardSets.reduce((sum, s) => sum + s.total_cards, 0);
 
-  const handleCardClick = useCallback(async (setId: string) => {
-    try {
-      const firstCard = await getFirstCardInSet(setId);
-      if (firstCard) {
-        router.push(`/flashcards/${firstCard.id}`);
-      }
-    } catch (error) {
-      console.error('Error navigating to first card:', error);
-    }
-  }, [getFirstCardInSet, router]);
+  const handleCardClick = useCallback((set: FlashcardSet) => {
+    setSelectedSet(set);
+    setIsInfoModalOpen(true);
+  }, []);
 
   const handleReforgeFlashcards = async (set: FlashcardSet) => {
     setSelectedSet(set);
@@ -402,7 +395,7 @@ export default function FlashcardDashboardPage() {
                 <FlashcardListItem
                   key={set.id}
                   set={set}
-                  onClick={() => handleCardClick(set.id)}
+                  onClick={() => handleCardClick(set)}
                   onReforge={() => handleReforgeFlashcards(set)}
                   onDelete={() => handleDeleteFlashcardSet(set)}
                   onShare={(e) => handleCopyShareLink(set, e)}
@@ -438,6 +431,12 @@ export default function FlashcardDashboardPage() {
         onClose={() => setIsForgeModalOpen(false)}
         onFlashcardsGenerated={handleForgeFlashcards}
         saving={saving}
+      />
+
+      <FlashcardSetInfoModal
+        isOpen={isInfoModalOpen}
+        onClose={() => setIsInfoModalOpen(false)}
+        set={selectedSet}
       />
     </>
   );
