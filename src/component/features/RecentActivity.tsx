@@ -1,7 +1,8 @@
 'use client';
 
 import { ClayCard, ClayBadge } from '@/component/ui/Clay';
-import { File01Icon, BookOpen01Icon, Clock01Icon, ArrowRight01Icon, TestTube01Icon } from 'hugeicons-react';
+import { File01Icon, Clock01Icon, ArrowRight01Icon } from 'hugeicons-react';
+import { NotebookIcon, FlashcardIcon, ExamIcon } from '@/component/icons';
 import Link from 'next/link';
 import { useRecentActivity, ActivityItem } from '@/hooks/useDashboard';
 
@@ -98,17 +99,17 @@ export default function RecentActivity() {
 
   const iconConfigs = {
     note: {
-      icon: <File01Icon className="w-4.5 h-4.5 text-primary" />,
+      icon: <NotebookIcon className="w-4.5 h-4.5 text-primary" />,
       iconBg: 'bg-gradient-to-br from-primary-muted to-primary-muted/70',
       dotColor: 'bg-primary',
     },
     flashcard: {
-      icon: <BookOpen01Icon className="w-4.5 h-4.5 text-tertiary" />,
+      icon: <FlashcardIcon className="w-4.5 h-4.5 text-tertiary" />,
       iconBg: 'bg-gradient-to-br from-tertiary-muted to-tertiary-muted/70',
       dotColor: 'bg-tertiary',
     },
     exam: {
-      icon: <TestTube01Icon className="w-4.5 h-4.5 text-secondary" />,
+      icon: <ExamIcon className="w-4.5 h-4.5 text-secondary" />,
       iconBg: 'bg-gradient-to-br from-secondary-muted to-secondary-muted/70',
       dotColor: 'bg-secondary',
     },

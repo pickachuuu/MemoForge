@@ -11,10 +11,10 @@ import {
   Award01Icon,
   Clock01Icon,
   Target01Icon,
-  TestTube01Icon,
   SparklesIcon,
   RotateClockwiseIcon
 } from "hugeicons-react";
+import { ExamIcon } from '@/component/icons';
 import { clsx } from "clsx";
 
 // Question type styles

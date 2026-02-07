@@ -13,7 +13,6 @@ import {
   ExamListItem
 } from '@/hooks/useExams';
 import {
-  TestTube01Icon,
   SparklesIcon,
   Clock01Icon,
   Target01Icon,
@@ -27,6 +26,7 @@ import {
   SortingAZ01Icon,
   Calendar03Icon
 } from 'hugeicons-react';
+import { ExamIcon, ExamAddIcon } from '@/component/icons';
 import HeroActionButton from '@/component/ui/HeroActionButton';
 import ExamStats from '@/component/features/ExamStats';
 import { clsx } from 'clsx';
@@ -186,7 +186,7 @@ export default function ExamsPage() {
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div className="flex items-center gap-3">
           <div className="p-2.5 rounded-xl bg-accent/8 border border-accent/10">
-            <TestTube01Icon className="w-5 h-5 text-accent" />
+            <ExamIcon className="w-5 h-5 text-accent" />
           </div>
           <div>
             <div className="flex items-center gap-2.5">
@@ -204,7 +204,7 @@ export default function ExamsPage() {
         </div>
 
         <HeroActionButton
-          icon={<Add01Icon className="w-4 h-4" />}
+          icon={<ExamAddIcon className="w-5 h-5" />}
           onClick={() => setIsModalOpen(true)}
         >
           Create Exam
@@ -518,7 +518,7 @@ function EmptyState({
     <ClayCard variant="default" padding="lg" className="rounded-2xl">
       <div className="text-center py-12">
         <div className="w-14 h-14 rounded-2xl bg-accent/8 border border-accent/10 flex items-center justify-center mx-auto mb-6">
-          <TestTube01Icon className="w-7 h-7 text-accent" />
+          <ExamIcon className="w-7 h-7 text-accent" />
         </div>
 
         {hasFilters ? (
@@ -542,7 +542,7 @@ function EmptyState({
             </p>
 
             <HeroActionButton
-              icon={<SparklesIcon className="w-4 h-4" />}
+              icon={<ExamAddIcon className="w-5 h-5" />}
               onClick={onCreateNew}
             >
               Create Your First Exam

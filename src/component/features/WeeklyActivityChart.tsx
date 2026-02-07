@@ -2,7 +2,8 @@
 
 import { ClayCard } from '@/component/ui/Clay';
 import { useWeeklyActivity } from '@/hooks/useDashboard';
-import { Activity03Icon, BookOpen01Icon, Clock01Icon } from 'hugeicons-react';
+import { Activity03Icon, Clock01Icon } from 'hugeicons-react';
+import { FlashcardIcon } from '@/component/icons';
 
 const SKELETON_HEIGHTS = [45, 65, 30, 80, 55, 40, 70];
 
@@ -63,7 +64,7 @@ export default function WeeklyActivityChart() {
         {/* Stat pills */}
         <div className="flex items-center gap-2">
           <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-gradient-to-br from-primary-muted/50 to-primary-muted/80 border border-primary/10">
-            <BookOpen01Icon className="w-3.5 h-3.5 text-primary" />
+            <FlashcardIcon className="w-3.5 h-3.5 text-primary" />
             <span className="text-sm font-bold text-primary">{totalCards}</span>
           </div>
           <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-gradient-to-br from-tertiary-muted/50 to-tertiary-muted/80 border border-tertiary/10">

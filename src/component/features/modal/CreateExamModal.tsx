@@ -10,16 +10,15 @@ import {
   Cancel01Icon,
   ArrowRight01Icon,
   ArrowLeft01Icon,
-  BookOpen01Icon,
   Tick01Icon,
   SparklesIcon,
   Settings02Icon,
   File01Icon,
   CheckmarkCircle01Icon,
-  TestTube01Icon,
   Clock01Icon,
   MultiplicationSignIcon
 } from 'hugeicons-react';
+import { NotebookIcon, ExamIcon } from '@/component/icons';
 import { clsx } from 'clsx';
 
 // ============================================
@@ -60,7 +59,7 @@ interface FormData {
 type Step = 1 | 2 | 3;
 
 const STEPS = [
-  { number: 1, title: 'Select Notes', icon: BookOpen01Icon },
+  { number: 1, title: 'Select Notes', icon: NotebookIcon },
   { number: 2, title: 'Configure', icon: Settings02Icon },
   { number: 3, title: 'Generate', icon: SparklesIcon },
 ];
@@ -416,7 +415,7 @@ export default function CreateExamModal({
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-secondary to-orange-500 flex items-center justify-center">
-                  <TestTube01Icon className="w-5 h-5 text-white" />
+                  <ExamIcon className="w-5 h-5 text-white" />
                 </div>
                 <div>
                   <h2 className="text-xl font-bold text-foreground">Create Exam</h2>
@@ -458,7 +457,7 @@ export default function CreateExamModal({
                 ) : notes.length === 0 ? (
                   <div className="text-center py-12">
                     <div className="w-16 h-16 rounded-2xl bg-gray-100 flex items-center justify-center mx-auto mb-4">
-                      <BookOpen01Icon className="w-8 h-8 text-gray-400" />
+                      <NotebookIcon className="w-8 h-8 text-gray-400" />
                     </div>
                     <p className="text-foreground-muted">No notes found. Create some notes first!</p>
                   </div>
@@ -682,7 +681,7 @@ export default function CreateExamModal({
                 {!generatedExam && !isGenerating && (
                   <div className="text-center py-8">
                     <div className="w-20 h-20 rounded-3xl bg-gradient-to-br from-secondary/20 to-orange-500/20 flex items-center justify-center mx-auto mb-4">
-                      <TestTube01Icon className="w-10 h-10 text-secondary" />
+                      <ExamIcon className="w-10 h-10 text-secondary" />
                     </div>
                     <p className="text-foreground-muted mb-6">
                       Ready to generate your exam? Click the button below to start!

@@ -6,12 +6,12 @@ import {
   PlayIcon,
   Clock01Icon,
   Add01Icon,
-  BookOpen01Icon,
   ArrowRight01Icon,
   SparklesIcon,
   PencilEdit01Icon,
   Bookmark01Icon,
 } from 'hugeicons-react';
+import { FlashcardIcon } from '@/component/icons';
 import Link from 'next/link';
 
 function ContinueSkeleton() {
@@ -64,7 +64,7 @@ export default function ContinueLearning() {
         return {
           title: 'Start New Set',
           subtitle: 'Begin studying a new set',
-          icon: <BookOpen01Icon className="w-6 h-6" />,
+          icon: <FlashcardIcon className="w-6 h-6" />,
           href: '/flashcards',
           gradient: 'from-tertiary via-teal-500 to-emerald-500',
           accentColor: 'tertiary',
@@ -169,7 +169,7 @@ export default function ContinueLearning() {
             <div className="p-3 rounded-xl bg-gradient-to-br from-gray-50 to-gray-100/50 hover:from-tertiary-muted/30 hover:to-tertiary-muted/50 border border-gray-100 hover:border-tertiary/20 transition-all cursor-pointer group">
               <div className="flex items-center gap-2">
                 <div className="p-1.5 rounded-lg bg-gradient-to-br from-tertiary-muted to-tertiary-muted/70">
-                  <BookOpen01Icon className="w-3.5 h-3.5 text-tertiary" />
+                  <FlashcardIcon className="w-3.5 h-3.5 text-tertiary" />
                 </div>
                 <div className="min-w-0">
                   <p className="font-semibold text-xs text-foreground group-hover:text-tertiary transition-colors">Browse Sets</p>

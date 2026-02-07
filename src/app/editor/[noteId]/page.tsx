@@ -21,7 +21,6 @@ import {
   Home01Icon,
   Cancel01Icon,
   Tag01Icon,
-  Book02Icon,
   Menu01Icon,
   ArrowRight01Icon,
   ArrowLeft01Icon,
@@ -29,6 +28,7 @@ import {
   ArrowDownLeft01Icon,
   Add01Icon,
 } from 'hugeicons-react';
+import { NotebookIcon } from '@/component/icons';
 
 // Stores
 import { useEditorStore, useNoteStore, useUIStore } from '@/stores/editorStore';
@@ -626,7 +626,7 @@ export default function EditorPage() {
             )}
 
             <div className="p-1 rounded bg-amber-100/50">
-              <Book02Icon
+              <NotebookIcon
                 className="w-4 h-4"
                 style={{ color: '#8b6914' }}
               />

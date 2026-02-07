@@ -2,7 +2,8 @@
 
 import { ClayCard } from '@/component/ui/Clay';
 import { useCardsDue } from '@/hooks/useDashboard';
-import { Clock01Icon, AlertCircleIcon, BookOpen01Icon, ArrowRight01Icon, Notification03Icon } from 'hugeicons-react';
+import { Clock01Icon, AlertCircleIcon, ArrowRight01Icon, Notification03Icon } from 'hugeicons-react';
+import { FlashcardIcon } from '@/component/icons';
 import Link from 'next/link';
 
 function CardsDueSkeleton() {
@@ -103,7 +104,7 @@ export default function CardsDueToday() {
           <Link href={`/flashcards/${nextReviewSet.id}/study`}>
             <div className="flex items-center gap-3 p-3 rounded-xl bg-gradient-to-r from-primary-muted/40 to-primary-muted/60 hover:from-primary-muted/60 hover:to-primary-muted/80 transition-all group cursor-pointer border border-primary/10">
               <div className="p-1.5 rounded-lg bg-white/80 shadow-sm">
-                <BookOpen01Icon className="w-3.5 h-3.5 text-primary" />
+                <FlashcardIcon className="w-3.5 h-3.5 text-primary" />
               </div>
               <div className="flex-1 min-w-0">
                 <p className="font-semibold text-foreground text-xs truncate">{nextReviewSet.title}</p>

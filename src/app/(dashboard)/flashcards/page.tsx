@@ -4,7 +4,6 @@ import { useState, useCallback, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { ClayCard } from '@/component/ui/Clay';
 import {
-  BookOpen01Icon,
   RefreshIcon,
   Share01Icon,
   Delete01Icon,
@@ -19,6 +18,7 @@ import {
   CheckmarkCircle01Icon,
   Loading01Icon
 } from 'hugeicons-react';
+import { FlashcardIcon, FlashcardAddIcon } from '@/component/icons';
 import HeroActionButton from '@/component/ui/HeroActionButton';
 import CardsDueToday from '@/component/features/CardsDueToday';
 import MasteryProgress from '@/component/features/MasteryProgress';
@@ -252,7 +252,7 @@ export default function FlashcardDashboardPage() {
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div className="flex items-center gap-3">
             <div className="p-2.5 rounded-xl bg-accent/8 border border-accent/10">
-              <BookOpen01Icon className="w-5 h-5 text-accent" />
+              <FlashcardIcon className="w-5 h-5 text-accent" />
             </div>
             <div>
               <div className="flex items-center gap-2.5">
@@ -270,7 +270,7 @@ export default function FlashcardDashboardPage() {
           </div>
 
           <HeroActionButton
-            icon={<SparklesIcon className="w-4 h-4" />}
+            icon={<FlashcardAddIcon className="w-5 h-5" />}
             onClick={() => setIsForgeModalOpen(true)}
           >
             Forge Flashcards
@@ -585,7 +585,7 @@ function EmptyState({
               Create flashcards from your notes to begin studying
             </p>
             <HeroActionButton
-              icon={<SparklesIcon className="w-4 h-4" />}
+              icon={<FlashcardAddIcon className="w-5 h-5" />}
               onClick={onCreateNew}
             >
               Forge Flashcards

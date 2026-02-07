@@ -1,7 +1,8 @@
 'use client';
 
 import { ClayCard, ClayButton } from '@/component/ui/Clay';
-import { BookOpen01Icon, File01Icon, Target01Icon, Add01Icon, ArrowRight01Icon } from 'hugeicons-react';
+import { File01Icon, Target01Icon, Add01Icon, ArrowRight01Icon } from 'hugeicons-react';
+import { FlashcardIcon } from '@/component/icons';
 import Link from 'next/link';
 
 interface ActionItemProps {
@@ -85,7 +86,7 @@ export default function QuickActions() {
     {
       title: 'Flashcard Sets',
       description: 'Manage your flashcards',
-      icon: <BookOpen01Icon className="w-5 h-5 text-tertiary" />,
+      icon: <FlashcardIcon className="w-5 h-5 text-tertiary" />,
       href: '/flashcards',
       variant: 'default',
     },
@@ -115,7 +116,7 @@ export default function QuickActions() {
               <Target01Icon className="w-4 h-4 text-secondary" />
             </div>
             <div className="w-8 h-8 rounded-full bg-tertiary-muted flex items-center justify-center border-2 border-surface">
-              <BookOpen01Icon className="w-4 h-4 text-tertiary" />
+              <FlashcardIcon className="w-4 h-4 text-tertiary" />
             </div>
           </div>
           <p className="text-foreground-muted">

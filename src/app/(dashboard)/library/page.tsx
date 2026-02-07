@@ -6,8 +6,6 @@ import { ClayCard, ClayBadge } from '@/component/ui/Clay';
 import ClayNotebookCover, { NotebookColorKey, NOTEBOOK_COLORS } from '@/component/ui/ClayNotebookCover';
 import CreateNoteButton from '@/component/features/CreateNoteButton';
 import {
-  Book02Icon,
-  BookOpen01Icon,
   Search01Icon,
   FilterIcon,
   GridViewIcon,
@@ -17,6 +15,7 @@ import {
   SortingAZ01Icon,
   Calendar03Icon
 } from 'hugeicons-react';
+import { NotebookIcon } from '@/component/icons';
 import { useFlashcardActions } from '@/hook/useFlashcardActions';
 import GenerateFlashCardModal from '@/component/features/modal/GenerateFlashCardModal';
 import ConfirmDeleteModal from '@/component/features/modal/ConfirmDeleteModal';
@@ -157,7 +156,7 @@ export default function LibraryPage() {
         <ClayCard variant="elevated" padding="lg" className="rounded-3xl">
           <div className="text-center py-12">
             <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-red-100 to-red-200 flex items-center justify-center mx-auto mb-6">
-              <Book02Icon className="w-10 h-10 text-red-500" />
+              <NotebookIcon className="w-10 h-10 text-red-500" />
             </div>
             <h3 className="text-xl font-semibold text-foreground mb-2">Error loading notebooks</h3>
             <p className="text-foreground-muted mb-6">
@@ -404,7 +403,7 @@ function LibraryHeader({ totalNotes }: { totalNotes: number }) {
           {/* Title area */}
           <div className="flex items-start gap-4">
             <div className="p-4 rounded-2xl bg-gradient-to-br from-primary-muted to-primary-muted/60 shadow-lg shadow-primary/10">
-              <Book02Icon className="w-8 h-8 text-primary" />
+              <NotebookIcon className="w-8 h-8 text-primary" />
             </div>
             <div>
               <div className="flex items-center gap-3 mb-1">
@@ -465,7 +464,7 @@ function EmptyState({
           <div className="absolute inset-0 bg-gradient-to-br from-primary/20 to-primary/5 rounded-3xl rotate-6" />
           <div className="absolute inset-0 bg-gradient-to-br from-secondary/20 to-secondary/5 rounded-3xl -rotate-6" />
           <div className="relative w-full h-full rounded-3xl bg-gradient-to-br from-primary-muted to-primary-muted/60 flex items-center justify-center shadow-lg">
-            <BookOpen01Icon className="w-16 h-16 text-primary" />
+            <NotebookIcon className="w-16 h-16 text-primary" />
           </div>
         </div>
 
@@ -535,7 +534,7 @@ function NotebookListItem({
             className="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0"
             style={{ background: `linear-gradient(135deg, ${colorTheme.accent}40, ${colorTheme.primary}20)` }}
           >
-            <Book02Icon className="w-6 h-6" style={{ color: colorTheme.primary }} />
+            <NotebookIcon className="w-6 h-6" style={{ color: colorTheme.primary }} />
           </div>
 
           {/* Content */}

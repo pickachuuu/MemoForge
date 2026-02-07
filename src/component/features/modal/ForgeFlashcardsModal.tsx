@@ -10,7 +10,6 @@ import {
   Cancel01Icon,
   ArrowRight01Icon,
   ArrowLeft01Icon,
-  BookOpen01Icon,
   Tick01Icon,
   SparklesIcon,
   Settings02Icon,
@@ -18,6 +17,7 @@ import {
   CheckmarkCircle01Icon,
   Loading01Icon
 } from 'hugeicons-react';
+import { NotebookIcon } from '@/component/icons';
 import { clsx } from 'clsx';
 
 // ============================================
@@ -46,7 +46,7 @@ interface FormData {
 type Step = 1 | 2 | 3;
 
 const STEPS = [
-  { number: 1, title: 'Select Notes', icon: BookOpen01Icon },
+  { number: 1, title: 'Select Notes', icon: NotebookIcon },
   { number: 2, title: 'Configure', icon: Settings02Icon },
   { number: 3, title: 'Generate', icon: SparklesIcon },
 ];
@@ -362,7 +362,7 @@ export default function ForgeFlashcardsModal({
                 ) : notes.length === 0 ? (
                   <div className="text-center py-12">
                     <div className="w-16 h-16 rounded-2xl bg-gray-100 flex items-center justify-center mx-auto mb-4">
-                      <BookOpen01Icon className="w-8 h-8 text-gray-400" />
+                      <NotebookIcon className="w-8 h-8 text-gray-400" />
                     </div>
                     <p className="text-foreground-muted">No notes found. Create some notes first!</p>
                   </div>

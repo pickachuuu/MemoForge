@@ -16,8 +16,8 @@ import {
   Clock01Icon,
   Home01Icon,
   Loading03Icon,
-  TestTube01Icon,
 } from "hugeicons-react";
+import { ExamIcon } from '@/component/icons';
 
 export default function TakeExamPage() {
   const params = useParams();
@@ -242,7 +242,7 @@ export default function TakeExamPage() {
           </Link>
 
           <div className="p-1 rounded bg-amber-100/50">
-            <TestTube01Icon className="w-4 h-4 text-amber-700" />
+            <ExamIcon className="w-4 h-4 text-amber-700" />
           </div>
 
           <div className="flex-1 min-w-0">

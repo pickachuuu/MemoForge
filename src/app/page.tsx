@@ -12,11 +12,11 @@ import {
   ArrowRight01Icon,
   SparklesIcon,
   Target01Icon,
-  BookOpen01Icon,
   Clock01Icon,
   Idea01Icon,
 } from 'hugeicons-react';
 import { ClayCard, ClayButton, ClayBadge, ClayIconBox, ClaySection } from '@/component/ui/Clay';
+import { FlashcardIcon } from '@/component/icons';
 import { MultipleChoicePreview, EssayPreview } from '@/component/ui/ExamPreviewCards';
 import {
   fadeIn,
@@ -402,7 +402,7 @@ export default function LandingPage() {
                 </li>
                 <li className="flex items-start gap-3">
                   <ClayIconBox size="sm" variant="accent" className="mt-0.5">
-                    <BookOpen01Icon className="w-4 h-4 text-accent" />
+                    <FlashcardIcon className="w-4 h-4 text-accent" />
                   </ClayIconBox>
                   <div>
                     <span className="font-medium text-foreground">Essay Questions</span>

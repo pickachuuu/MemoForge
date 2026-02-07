@@ -102,10 +102,6 @@ body {
   font-family: var(--font-sans), Arial, Helvetica, sans-serif;
 }
 
-/* Only apply stable scrollbar gutter to main content area, not navbar */
-.main-content {
-  scrollbar-gutter: stable;
-}
 
 /* Markdown/Prose Styles */
 .prose h1 {
@@ -839,7 +835,10 @@ body {
   position: relative;
   isolation: isolate;
   min-height: 100vh;
-  background: var(--background);
+  /* Subtle radial vignette on the base for depth - center is brighter */
+  background:
+    radial-gradient(ellipse 70% 60% at 50% 40%, transparent 0%, rgba(0, 0, 0, 0.03) 100%),
+    var(--background);
   background-attachment: fixed;
 }
 
@@ -861,19 +860,24 @@ body {
   z-index: -1;
 }
 
-/* Subtle grid pattern for depth */
+/* Graph-paper grid with depth */
 .memoforge-bg::after {
   content: '';
   position: fixed;
   inset: 0;
   background-image:
-    linear-gradient(rgba(99, 102, 241, 0.02) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(99, 102, 241, 0.02) 1px, transparent 1px);
-  background-size: 60px 60px;
+    /* Major grid lines */
+    linear-gradient(rgba(0, 0, 0, 0.06) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 0, 0, 0.06) 1px, transparent 1px),
+    /* Minor grid lines (subdivisions) */
+    linear-gradient(rgba(0, 0, 0, 0.025) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 0, 0, 0.025) 1px, transparent 1px);
+  background-size: 60px 60px, 60px 60px, 12px 12px, 12px 12px;
   pointer-events: none;
   z-index: -1;
-  mask-image: radial-gradient(ellipse 80% 60% at 50% 30%, black 20%, transparent 70%);
-  -webkit-mask-image: radial-gradient(ellipse 80% 60% at 50% 30%, black 20%, transparent 70%);
+  /* Soft vignette - grid fades out towards edges for depth */
+  mask-image: radial-gradient(ellipse 90% 85% at 50% 45%, black 40%, transparent 100%);
+  -webkit-mask-image: radial-gradient(ellipse 90% 85% at 50% 45%, black 40%, transparent 100%);
 }
 
 /* Legacy forge-bg alias */

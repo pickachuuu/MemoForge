@@ -1,7 +1,8 @@
 'use client';
 
 import { ClayCard } from '@/component/ui/Clay';
-import { File01Icon, BookOpen01Icon, Target01Icon, TickDouble01Icon } from 'hugeicons-react';
+import { File01Icon, Target01Icon, TickDouble01Icon } from 'hugeicons-react';
+import { FlashcardIcon } from '@/component/icons';
 import { useDashboardStats } from '@/hooks/useDashboard';
 
 interface StatCardProps {
@@ -62,7 +63,7 @@ export default function DashboardStats() {
     {
       title: 'Flashcards',
       value: stats?.totalFlashcards || 0,
-      icon: <BookOpen01Icon className="w-6 h-6" />,
+      icon: <FlashcardIcon className="w-6 h-6" />,
       description: 'Cards created',
       colorClass: 'bg-secondary-muted',
       iconColorClass: 'text-secondary',

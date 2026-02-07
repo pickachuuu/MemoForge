@@ -1,7 +1,8 @@
 'use client';
 
 import { ClayCard, ClayButton, ClayIconBox } from '@/component/ui/Clay';
-import { CheckmarkCircle02Icon, BookOpen01Icon } from 'hugeicons-react';
+import { CheckmarkCircle02Icon } from 'hugeicons-react';
+import { FlashcardIcon } from '@/component/icons';
 
 interface MultipleChoiceOption {
   label: string;
@@ -104,7 +105,7 @@ export function EssayPreview({
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-2">
           <ClayIconBox size="sm" variant="accent">
-            <BookOpen01Icon className="w-4 h-4 text-accent" />
+            <FlashcardIcon className="w-4 h-4 text-accent" />
           </ClayIconBox>
           <span className="font-semibold text-foreground text-sm">{title}</span>
         </div>

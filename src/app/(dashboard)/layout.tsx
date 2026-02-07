@@ -15,9 +15,9 @@ export default function DashboardLayout({ children }: Readonly<{
   }, [pathname]);
 
   return (
-    <div className="min-h-screen memoforge-bg">
+    <div className="min-h-screen memoforge-bg flex flex-col">
       <Navbar />
-      <main className="container mx-auto px-4 sm:px-6 lg:px-8 py-4 max-w-7xl main-content relative">
+      <main className="container mx-auto px-4 sm:px-6 lg:px-8 pt-2 pb-4 max-w-7xl relative flex-1">
         {children}
       </main>
     </div>

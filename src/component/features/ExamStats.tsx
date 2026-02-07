@@ -2,7 +2,8 @@
 
 import { ClayCard, ClayBadge } from '@/component/ui/Clay';
 import { useExamStats } from '@/hooks/useDashboard';
-import { TestTube01Icon, ArrowRight01Icon, Award02Icon, Target01Icon } from 'hugeicons-react';
+import { ArrowRight01Icon, Award02Icon, Target01Icon } from 'hugeicons-react';
+import { ExamIcon } from '@/component/icons';
 import Link from 'next/link';
 
 function ExamStatsSkeleton() {
@@ -92,7 +93,7 @@ export default function ExamStats() {
       <ClayCard variant="default" padding="md" className="rounded-2xl h-full">
         <div className="flex items-center gap-6 py-4">
           <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center shadow-inner flex-shrink-0">
-            <TestTube01Icon className="w-8 h-8 text-gray-400" />
+            <ExamIcon className="w-8 h-8 text-gray-400" />
           </div>
           <div>
             <h3 className="font-semibold text-foreground mb-1">No exams yet</h3>
@@ -122,7 +123,7 @@ export default function ExamStats() {
         <div className="flex items-center justify-between mb-5">
           <div className="flex items-center gap-3">
             <div className="p-2.5 rounded-xl bg-gradient-to-br from-secondary-muted to-secondary-muted/70">
-              <TestTube01Icon className="w-5 h-5 text-secondary" />
+              <ExamIcon className="w-5 h-5 text-secondary" />
             </div>
             <div>
               <h3 className="font-semibold text-foreground text-sm">Exam Performance</h3>
