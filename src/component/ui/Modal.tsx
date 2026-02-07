@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, ReactNode } from 'react';
+import { createPortal } from 'react-dom';
 
 interface ModalProps {
   isOpen: boolean;
@@ -71,7 +72,7 @@ export default function Modal({
 
   if (!isOpen) return null;
 
-  return (
+  return createPortal(
     <div
       className={`fixed inset-0 ${nested ? 'z-[120]' : 'z-[100]'} bg-black/40 backdrop-blur-sm`}
       onClick={onClose}
@@ -84,6 +85,7 @@ export default function Modal({
           {children}
         </div>
       </div>
-    </div>
+    </div>,
+    document.body,
   );
 }

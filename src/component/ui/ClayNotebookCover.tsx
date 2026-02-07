@@ -158,21 +158,33 @@ function EditorCover({
         '--clay-shadow': colorTheme.shadow,
       } as React.CSSProperties}
     >
-      {/* 3D perspective wrapper */}
-      <div className="clay-notebook-cover__3d-wrapper">
-        {/* Page edges on right side */}
-        <div className="clay-notebook-cover__edge-stack">
-          <div className="clay-notebook-cover__edge clay-notebook-cover__edge--1" />
-          <div className="clay-notebook-cover__edge clay-notebook-cover__edge--2" />
-          <div className="clay-notebook-cover__edge clay-notebook-cover__edge--3" />
-          <div className="clay-notebook-cover__edge clay-notebook-cover__edge--4" />
-        </div>
+      {/* Wrapper with page layers behind the cover */}
+      <div style={{ position: 'relative', width: '100%', height: '100%', flex: 1, minHeight: 0 }}>
+        {/* Stacked page layers — only visible on right + bottom behind the cover */}
+        <div style={{
+          position: 'absolute', top: 8, left: 8, right: 0, bottom: 0,
+          borderRadius: 20,
+          background: 'linear-gradient(135deg, #d5d2cc, #c8c5bf)',
+          boxShadow: '2px 2px 6px rgba(0,0,0,0.15)',
+        }} />
+        <div style={{
+          position: 'absolute', top: 6, left: 6, right: 2, bottom: 2,
+          borderRadius: 20,
+          background: 'linear-gradient(135deg, #dddad4, #d0cdc7)',
+        }} />
+        <div style={{
+          position: 'absolute', top: 4, left: 4, right: 4, bottom: 4,
+          borderRadius: 20,
+          background: 'linear-gradient(135deg, #e8e5e0, #dbd8d2)',
+        }} />
+        <div style={{
+          position: 'absolute', top: 2, left: 2, right: 6, bottom: 6,
+          borderRadius: 20,
+          background: 'linear-gradient(135deg, #f0ede8, #e5e2dc)',
+        }} />
 
-        {/* Bottom edge for thickness */}
-        <div className="clay-notebook-cover__bottom-edge" />
-
-        {/* Main cover body */}
-        <div className="clay-notebook-cover__body">
+        {/* Main cover body — sits on top, inset from right+bottom to reveal pages */}
+        <div className="clay-notebook-cover__body" style={{ position: 'absolute', top: 0, left: 0, right: 8, bottom: 8, width: 'auto', height: 'auto' }}>
           {/* Glossy highlight overlay */}
           <div className="clay-notebook-cover__gloss" />
 
@@ -338,9 +350,6 @@ function EditorCover({
           </div>
         </div>
       </div>
-
-      {/* Ambient shadow below notebook */}
-      <div className="clay-notebook-cover__ambient-shadow" />
     </div>
   );
 }

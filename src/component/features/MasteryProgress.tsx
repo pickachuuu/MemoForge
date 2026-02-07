@@ -7,11 +7,11 @@ function MasterySkeleton() {
   return (
     <ClayCard variant="default" padding="md" className="rounded-2xl animate-pulse h-full">
       <div className="flex flex-col items-center gap-4 py-4">
-        <div className="w-24 h-24 bg-gradient-to-br from-surface to-surface-elevated rounded-full" />
-        <div className="h-4 w-32 bg-surface rounded-lg" />
+        <div className="w-24 h-24 bg-surface-elevated rounded-full" />
+        <div className="h-4 w-32 bg-surface-elevated rounded-lg" />
         <div className="w-full space-y-2">
-          <div className="h-3 w-full bg-surface rounded-lg" />
-          <div className="h-3 w-3/4 bg-surface rounded-lg" />
+          <div className="h-3 w-full bg-surface-elevated rounded-lg" />
+          <div className="h-3 w-3/4 bg-surface-elevated rounded-lg" />
         </div>
       </div>
     </ClayCard>
@@ -30,10 +30,10 @@ function ProgressRing({ percentage, size = 120, strokeWidth = 10 }: ProgressRing
   const offset = circumference - (percentage / 100) * circumference;
 
   const getColor = () => {
-    if (percentage >= 80) return { stroke: '#22C55E', bg: 'rgba(34, 197, 94, 0.1)', glow: 'rgba(34, 197, 94, 0.15)' };
-    if (percentage >= 50) return { stroke: '#F68048', bg: 'rgba(246, 128, 72, 0.1)', glow: 'rgba(246, 128, 72, 0.15)' };
-    if (percentage >= 25) return { stroke: '#2845D6', bg: 'rgba(40, 69, 214, 0.1)', glow: 'rgba(40, 69, 214, 0.15)' };
-    return { stroke: '#94A3B8', bg: 'rgba(148, 163, 184, 0.08)', glow: 'rgba(148, 163, 184, 0.08)' };
+    if (percentage >= 80) return { stroke: '#5B7BF0', trackStroke: 'rgba(91, 123, 240, 0.12)', glow: 'rgba(91, 123, 240, 0.10)' };
+    if (percentage >= 50) return { stroke: '#5B7BF0', trackStroke: 'rgba(91, 123, 240, 0.10)', glow: 'rgba(91, 123, 240, 0.08)' };
+    if (percentage >= 25) return { stroke: '#5B7BF0', trackStroke: 'rgba(91, 123, 240, 0.08)', glow: 'rgba(91, 123, 240, 0.06)' };
+    return { stroke: '#64748B', trackStroke: 'rgba(100, 116, 139, 0.10)', glow: 'rgba(100, 116, 139, 0.06)' };
   };
 
   const color = getColor();
@@ -47,7 +47,7 @@ function ProgressRing({ percentage, size = 120, strokeWidth = 10 }: ProgressRing
       <svg width={size} height={size} className="transform -rotate-90 relative z-10">
         <circle
           cx={size / 2} cy={size / 2} r={radius}
-          fill="none" stroke={color.bg} strokeWidth={strokeWidth}
+          fill="none" stroke={color.trackStroke} strokeWidth={strokeWidth}
         />
         <circle
           cx={size / 2} cy={size / 2} r={radius}
@@ -55,7 +55,7 @@ function ProgressRing({ percentage, size = 120, strokeWidth = 10 }: ProgressRing
           strokeLinecap="round"
           strokeDasharray={circumference} strokeDashoffset={offset}
           className="transition-all duration-700 ease-out"
-          style={{ filter: 'drop-shadow(0 2px 6px rgba(0,0,0,0.12))' }}
+          style={{ filter: 'drop-shadow(0 0 6px rgba(91, 123, 240, 0.3))' }}
         />
       </svg>
       <div className="absolute inset-0 flex flex-col items-center justify-center z-20">
@@ -66,9 +66,9 @@ function ProgressRing({ percentage, size = 120, strokeWidth = 10 }: ProgressRing
 }
 
 function getLevel(percentage: number) {
-  if (percentage >= 80) return { label: 'Master', emoji: '👑', color: 'text-tertiary' };
-  if (percentage >= 50) return { label: 'Scholar', emoji: '📖', color: 'text-secondary' };
-  if (percentage >= 25) return { label: 'Learner', emoji: '✏️', color: 'text-primary' };
+  if (percentage >= 80) return { label: 'Master', emoji: '👑', color: 'text-primary-light' };
+  if (percentage >= 50) return { label: 'Scholar', emoji: '📖', color: 'text-primary-light' };
+  if (percentage >= 25) return { label: 'Learner', emoji: '✏️', color: 'text-primary-light' };
   return { label: 'Novice', emoji: '🌱', color: 'text-foreground-muted' };
 }
 
@@ -92,7 +92,7 @@ export default function MasteryProgress() {
     return (
       <ClayCard variant="default" padding="md" className="rounded-2xl h-full">
         <div className="text-center py-6">
-          <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-gradient-to-br from-surface to-surface-elevated flex items-center justify-center shadow-inner">
+          <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-surface-elevated flex items-center justify-center border border-border/40">
             <span className="text-2xl">📚</span>
           </div>
           <h3 className="font-semibold text-foreground mb-1 text-sm">No flashcards yet</h3>
@@ -106,22 +106,14 @@ export default function MasteryProgress() {
 
   // Status segments for horizontal bar
   const segments = [
-    { label: 'New', count: newCards, color: 'bg-border-light' },
+    { label: 'New', count: newCards, color: 'bg-slate-500' },
     { label: 'Learning', count: learningCards, color: 'bg-primary' },
     { label: 'Review', count: reviewCards, color: 'bg-secondary' },
-    { label: 'Mastered', count: masteredCards, color: 'bg-tertiary' },
+    { label: 'Mastered', count: masteredCards, color: 'bg-primary-light' },
   ];
 
   return (
     <ClayCard variant="default" padding="none" className="rounded-2xl h-full overflow-hidden">
-      {/* Colored top accent */}
-      <div className={`h-1 ${
-        masteryPercentage >= 80 ? 'bg-gradient-to-r from-tertiary via-tertiary-light to-tertiary' :
-        masteryPercentage >= 50 ? 'bg-gradient-to-r from-secondary via-secondary-light to-secondary' :
-        masteryPercentage >= 25 ? 'bg-gradient-to-r from-primary via-primary-light to-primary' :
-        'bg-gradient-to-r from-border to-border-light'
-      }`} />
-
       <div className="p-5 flex flex-col items-center text-center h-full">
         {/* Ring */}
         <ProgressRing percentage={masteryPercentage} size={100} strokeWidth={9} />
@@ -139,7 +131,7 @@ export default function MasteryProgress() {
 
         {/* Stacked bar */}
         <div className="w-full mt-4">
-          <div className="h-3 rounded-full overflow-hidden flex bg-surface shadow-inner">
+          <div className="h-2.5 rounded-full overflow-hidden flex bg-surface-elevated border border-border/30">
             {segments.map((seg) => {
               const width = totalCards > 0 ? (seg.count / totalCards) * 100 : 0;
               return width > 0 ? (
