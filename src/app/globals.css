@@ -1385,9 +1385,9 @@ body {
   text-align: right;
 }
 
-/* Selection styling */
+/* Selection styling — light blue so text stays readable on light paper */
 .tiptap-editor ::selection {
-  background-color: var(--accent-muted);
+  background-color: rgba(40, 69, 214, 0.25);
 }
 
 /* Focus state for the editor */
