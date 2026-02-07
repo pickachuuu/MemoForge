@@ -15,6 +15,7 @@ import NotebookPage from '@/component/ui/NotebookPage';
 
 // Hooks
 import { useNotebookScale, NOTEBOOK_WIDTH, NOTEBOOK_HEIGHT } from '@/hooks/useNotebookScale';
+import { useAutoPageBreak } from '@/hooks/useAutoPageBreak';
 
 // Icons
 import {
@@ -538,6 +539,51 @@ export default function EditorPage() {
       console.error('Error creating page:', error);
     }
   };
+
+  // ========================================
+  // Auto page-break (overflow → new page)
+  // ========================================
+  const handleAutoPageBreak = useCallback(async (overflowHTML: string, trimmedHTML: string) => {
+    if (!noteId) return;
+
+    // 1. Update the current page to only the fitting content
+    setCurrentPageContent(trimmedHTML);
+
+    if (currentPageIndex !== null && pages[currentPageIndex]) {
+      const page = pages[currentPageIndex];
+      const pageTitle = extractH1Title(trimmedHTML);
+      try {
+        await savePageMutation.mutateAsync({ pageId: page.id, title: pageTitle, content: trimmedHTML });
+        setLastSavedContent(trimmedHTML);
+      } catch (error) {
+        console.error('Auto page-break: error saving trimmed page', error);
+      }
+    }
+
+    // 2. Create a new page and save the overflow content to it
+    try {
+      const pageId = await createPageMutation.mutateAsync({ noteId });
+      if (pageId) {
+        const overflowTitle = extractH1Title(overflowHTML);
+        await savePageMutation.mutateAsync({ pageId, title: overflowTitle, content: overflowHTML });
+        const updatedPages = (await refetchPages()).data || [];
+        const newPageIndex = updatedPages.length - 1;
+
+        // 3. Navigate to the new page
+        setCurrentPageIndex(newPageIndex);
+        setCurrentPageContent(overflowHTML);
+        setLastSavedContent(overflowHTML);
+      }
+    } catch (error) {
+      console.error('Auto page-break: error creating overflow page', error);
+    }
+  }, [noteId, currentPageIndex, pages, savePageMutation, createPageMutation, refetchPages, setCurrentPageContent, setLastSavedContent, setCurrentPageIndex]);
+
+  useAutoPageBreak({
+    editor,
+    enabled: currentView === 'page',
+    onOverflow: handleAutoPageBreak,
+  });
 
   // ========================================
   // Auto-save page content

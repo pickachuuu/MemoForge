@@ -2807,6 +2807,18 @@ body {
   height: 100%;
 }
 
+/* In notebook mode, clip content to the page boundary instead of scrolling.
+   The auto-page-break system will create new pages for overflow content. */
+.notebook-editor-wrapper .tiptap-editor-wrapper {
+  overflow-y: hidden;
+}
+
+/* Ensure ProseMirror is a positioned element so child offsetTop
+   measurements are relative to it (needed by auto-page-break). */
+.notebook-editor-wrapper .ProseMirror {
+  position: relative;
+}
+
 /* Force dark text inside the notebook editor (it lives on light paper)
    This overrides the global .prose rules that use var(--foreground) */
 .notebook-editor-wrapper .tiptap-editor,
