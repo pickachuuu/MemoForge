@@ -12,6 +12,9 @@ import ClayNotebookCover, { NotebookColorKey } from '@/component/ui/ClayNotebook
 import TableOfContents, { NotePage } from '@/component/ui/TableOfContents';
 import NotebookPage from '@/component/ui/NotebookPage';
 
+// Hooks
+import { useNotebookScale, NOTEBOOK_WIDTH, NOTEBOOK_HEIGHT } from '@/hooks/useNotebookScale';
+
 // Icons
 import {
   ArrowLeft02Icon,
@@ -57,6 +60,10 @@ export default function EditorPage() {
 
   // Track if we've initialized this session
   const initializedRef = useRef<string | null>(null);
+
+  // Notebook scaling – keeps a fixed number of grid lines on every screen size
+  const notebookContainerRef = useRef<HTMLDivElement>(null);
+  const scale = useNotebookScale(notebookContainerRef);
 
   // ========================================
   // Zustand Stores
@@ -771,50 +778,63 @@ export default function EditorPage() {
           }}
         />
 
-        {/* Main notebook area */}
-        <div className="flex-1 overflow-hidden py-8 px-4 relative z-10 flex items-center justify-center">
+        {/* Main notebook area — ref used by useNotebookScale to measure available space */}
+        <div
+          ref={notebookContainerRef}
+          className="flex-1 overflow-hidden py-8 px-4 relative z-10 flex items-center justify-center"
+        >
+          {/* Outer wrapper sized to the *scaled* dimensions so surrounding
+              layout (right-side panel, centering) flows correctly */}
           <div
-            className="relative"
             style={{
-              width: '100%',
-              maxWidth: '56rem',
-              height: currentView === 'cover' ? 'calc(100vh - 64px)' : 'calc(100vh - 140px)',
-              minHeight: '500px',
+              width: NOTEBOOK_WIDTH * scale,
+              height: NOTEBOOK_HEIGHT * scale,
             }}
           >
-            {/* Page stack effect */}
-            {currentView === 'page' && pages.length > 1 && (
-              <>
-                {[...Array(Math.min(pages.length - 1, 4))].map((_, i) => (
-                  <div
-                    key={i}
-                    className="absolute rounded-lg"
-                    style={{
-                      top: `${(i + 1) * 3}px`,
-                      right: `${-(i + 1) * 3}px`,
-                      bottom: `${-(i + 1) * 3}px`,
-                      left: `${(i + 1) * 3}px`,
-                      background: `linear-gradient(135deg, ${i % 2 === 0 ? '#1E293B' : '#1A2438'} 0%, ${i % 2 === 0 ? '#172033' : '#151E30'} 100%)`,
-                      boxShadow: `0 ${2 + i}px ${4 + i * 2}px rgba(0,0,0,${0.25 - i * 0.03})`,
-                      zIndex: -i - 1,
-                    }}
-                  />
-                ))}
-              </>
-            )}
+            {/* Inner notebook at canonical (fixed) size, then scaled down */}
+            <div
+              className="relative"
+              style={{
+                width: NOTEBOOK_WIDTH,
+                height: NOTEBOOK_HEIGHT,
+                transform: `scale(${scale})`,
+                transformOrigin: 'top left',
+              }}
+            >
+              {/* Page stack effect */}
+              {currentView === 'page' && pages.length > 1 && (
+                <>
+                  {[...Array(Math.min(pages.length - 1, 4))].map((_, i) => (
+                    <div
+                      key={i}
+                      className="absolute rounded-lg"
+                      style={{
+                        top: `${(i + 1) * 3}px`,
+                        right: `${-(i + 1) * 3}px`,
+                        bottom: `${-(i + 1) * 3}px`,
+                        left: `${(i + 1) * 3}px`,
+                        background: `linear-gradient(135deg, ${i % 2 === 0 ? '#1E293B' : '#1A2438'} 0%, ${i % 2 === 0 ? '#172033' : '#151E30'} 100%)`,
+                        boxShadow: `0 ${2 + i}px ${4 + i * 2}px rgba(0,0,0,${0.25 - i * 0.03})`,
+                        zIndex: -i - 1,
+                      }}
+                    />
+                  ))}
+                </>
+              )}
 
-            {/* Main notebook */}
-            <div className="relative h-full rounded-lg shadow-xl">
-              <PageFlipContainer
-                currentView={currentView}
-                currentPageIndex={currentPageIndex}
-                totalPages={pages.length}
-                cover={coverComponent}
-                toc={tocComponent}
-                pageContent={pageComponent}
-                previousContent={getPreviousContentComponent()}
-                theme={theme}
-              />
+              {/* Main notebook */}
+              <div className="relative h-full rounded-lg shadow-xl">
+                <PageFlipContainer
+                  currentView={currentView}
+                  currentPageIndex={currentPageIndex}
+                  totalPages={pages.length}
+                  cover={coverComponent}
+                  toc={tocComponent}
+                  pageContent={pageComponent}
+                  previousContent={getPreviousContentComponent()}
+                  theme={theme}
+                />
+              </div>
             </div>
           </div>
         </div>
@@ -823,7 +843,7 @@ export default function EditorPage() {
         {(currentView === 'toc' || currentView === 'page') && (
           <div
             className="absolute right-0 top-0 bottom-0 flex items-center justify-center z-20"
-            style={{ width: 'calc((100% - 56rem) / 2)', minWidth: '220px' }}
+            style={{ width: `calc((100% - ${NOTEBOOK_WIDTH * scale}px) / 2)`, minWidth: '220px' }}
           >
             <div
               className="rounded-2xl overflow-hidden flex flex-col"
