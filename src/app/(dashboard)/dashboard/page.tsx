@@ -11,14 +11,21 @@ export default function Dashboard() {
   const { data: user } = useUserProfile();
 
   return (
-    <div className="pb-10 max-w-3xl mx-auto">
+    <div className="pb-10">
       {/* Header */}
       <DashboardHeader user={user ?? undefined} />
 
-      {/* Single column layout - 1 widget per row */}
       <div className="mt-6 space-y-5">
-        <StudyStreak />
-        <WeeklyActivityChart />
+        {/* Streak (1/3) + Weekly Activity (2/3) row */}
+        <div className="flex flex-col md:flex-row gap-5">
+          <div className="w-full md:w-1/3">
+            <StudyStreak />
+          </div>
+          <div className="w-full md:w-2/3">
+            <WeeklyActivityChart />
+          </div>
+        </div>
+
         <ContinueLearning />
         <RecentActivity />
       </div>

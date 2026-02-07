@@ -599,55 +599,50 @@ export default function EditorPage() {
   // ========================================
   return (
     <div className="h-screen flex flex-col overflow-hidden" style={{ backgroundColor: bgColor }}>
-      {/* Header — dark claymorphism */}
+      {/* Header — seamless dark bar */}
       {showHeader && (
         <header
-          className="flex-shrink-0"
+          className="flex-shrink-0 relative z-30"
           style={{
-            background: 'linear-gradient(180deg, #1E293B 0%, #172033 100%)',
-            borderBottom: '1px solid rgba(255, 255, 255, 0.06)',
-            boxShadow: '0 4px 16px rgba(0, 0, 0, 0.3), 0 2px 4px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.06)',
+            background: 'linear-gradient(180deg, rgba(15, 23, 42, 0.95) 0%, rgba(12, 18, 34, 0.9) 100%)',
+            backdropFilter: 'blur(12px)',
+            borderBottom: '1px solid rgba(255, 255, 255, 0.05)',
           }}
         >
-          {/* Top row - Title and Actions */}
-          <div
-            className="flex items-center gap-2 px-4 py-2"
-            style={{ borderBottom: '1px solid rgba(255, 255, 255, 0.04)' }}
-          >
+          <div className="flex items-center gap-3 px-5 h-12">
+            {/* Left: navigation */}
             {currentView === 'page' ? (
               <button
                 onClick={handleBackToContents}
-                className="p-1.5 rounded-lg transition-colors flex items-center gap-1.5 hover:bg-white/10"
+                className="h-8 px-2.5 rounded-lg transition-all flex items-center gap-1.5"
+                style={{
+                  backgroundColor: 'rgba(255,255,255,0.05)',
+                  border: '1px solid rgba(255,255,255,0.06)',
+                }}
                 title="Back to Contents"
               >
-                <Menu01Icon className="w-5 h-5" style={{ color: iconColor }} />
-                <span className="text-xs font-medium" style={{ color: textColor }}>Contents</span>
+                <Menu01Icon className="w-4 h-4" style={{ color: '#94A3B8' }} />
+                <span className="text-xs font-medium" style={{ color: '#94A3B8' }}>Contents</span>
               </button>
             ) : (
               <Link
                 href="/library"
-                className="p-1.5 rounded-lg transition-colors hover:bg-white/10"
+                className="h-8 w-8 rounded-lg transition-all flex items-center justify-center"
+                style={{
+                  backgroundColor: 'rgba(255,255,255,0.05)',
+                  border: '1px solid rgba(255,255,255,0.06)',
+                }}
                 title="Back to Library"
               >
-                <ArrowLeft02Icon className="w-5 h-5" style={{ color: iconColor }} />
+                <ArrowLeft02Icon className="w-4 h-4" style={{ color: '#94A3B8' }} />
               </Link>
             )}
 
-            <div className="p-1 rounded-lg" style={{ backgroundColor: 'rgba(246, 128, 72, 0.15)' }}>
-              <NotebookIcon
-                className="w-4 h-4"
-                style={{ color: '#F68048' }}
-              />
-            </div>
+            {/* Separator dot */}
+            <div className="w-1 h-1 rounded-full" style={{ backgroundColor: 'rgba(255,255,255,0.15)' }} />
 
-            {currentView === 'page' && currentPageIndex !== null && (
-              <span className="text-xs font-medium px-2 py-1 rounded-lg" style={{
-                color: '#94A3B8',
-                backgroundColor: 'rgba(255,255,255,0.06)'
-              }}>
-                Page {currentPageIndex + 1} of {pages.length}
-              </span>
-            )}
+            {/* Notebook icon + title */}
+            <NotebookIcon className="w-4 h-4 flex-shrink-0" style={{ color: '#F68048' }} />
 
             <div className="flex-1 min-w-0">
               <input
@@ -655,28 +650,64 @@ export default function EditorPage() {
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
                 placeholder="Untitled notebook"
-                className="w-full text-sm font-normal bg-transparent border-none focus:outline-none focus:ring-0 placeholder:text-slate-500"
-                style={{ color: '#F1F5F9' }}
+                className="w-full text-sm font-medium bg-transparent border-none focus:outline-none focus:ring-0 placeholder:text-slate-600"
+                style={{ color: '#E2E8F0' }}
               />
             </div>
 
-            {/* Save status */}
-            <div className="flex items-center gap-2 flex-shrink-0">
+            {/* Page indicator (inline) */}
+            {currentView === 'page' && currentPageIndex !== null && (
+              <span className="text-xs font-medium flex-shrink-0" style={{ color: '#64748B' }}>
+                {currentPageIndex + 1} / {pages.length}
+              </span>
+            )}
+
+            {/* Tags inline */}
+            {tags.length > 0 && (
+              <div className="flex items-center gap-1.5 flex-shrink-0 overflow-x-auto max-w-[200px]">
+                {tags.map((tag) => (
+                  <span
+                    key={tag}
+                    className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-medium whitespace-nowrap"
+                    style={{
+                      backgroundColor: 'rgba(40, 69, 214, 0.15)',
+                      color: '#5B7BF0',
+                    }}
+                  >
+                    {tag}
+                    <button
+                      type="button"
+                      onClick={() => removeTag(tag)}
+                      className="rounded transition-colors hover:bg-white/10"
+                    >
+                      <Cancel01Icon className="w-2.5 h-2.5" />
+                    </button>
+                  </span>
+                ))}
+              </div>
+            )}
+
+            {/* Separator dot */}
+            <div className="w-1 h-1 rounded-full" style={{ backgroundColor: 'rgba(255,255,255,0.15)' }} />
+
+            {/* Right actions */}
+            <div className="flex items-center gap-1 flex-shrink-0">
+              {/* Save status */}
               {saveStatus === 'saving' && (
-                <div className="flex items-center gap-1.5 text-xs" style={{ color: textColor }}>
-                  <Loading03Icon className="w-3.5 h-3.5 animate-spin" style={{ color: textColor }} />
-                  <span>Saving...</span>
+                <div className="flex items-center gap-1 text-xs px-2" style={{ color: '#64748B' }}>
+                  <Loading03Icon className="w-3 h-3 animate-spin" />
+                  <span>Saving</span>
                 </div>
               )}
               {saveStatus === 'saved' && (
-                <div className="flex items-center gap-1.5 text-xs" style={{ color: '#22C55E' }}>
-                  <Tick01Icon className="w-3.5 h-3.5" style={{ color: '#22C55E' }} />
+                <div className="flex items-center gap-1 text-xs px-2" style={{ color: '#22C55E' }}>
+                  <Tick01Icon className="w-3 h-3" />
                   <span>Saved</span>
                 </div>
               )}
               {saveStatus === 'error' && (
-                <div className="flex items-center gap-1.5 text-red-400 text-xs">
-                  <AlertCircleIcon className="w-3.5 h-3.5" />
+                <div className="flex items-center gap-1 text-xs px-2 text-red-400">
+                  <AlertCircleIcon className="w-3 h-3" />
                   <span>Error</span>
                 </div>
               )}
@@ -696,7 +727,7 @@ export default function EditorPage() {
                     placeholder="Add tag..."
                     className="w-24 px-2 py-1 text-xs rounded-lg focus:outline-none focus:ring-1 focus:ring-primary/50"
                     style={{
-                      backgroundColor: '#1E293B',
+                      backgroundColor: 'rgba(255,255,255,0.06)',
                       border: '1px solid rgba(255,255,255,0.1)',
                       color: '#F1F5F9',
                     }}
@@ -706,59 +737,23 @@ export default function EditorPage() {
                   <button
                     type="button"
                     onClick={() => setShowTagInput(true)}
-                    className="p-1.5 rounded-lg transition-colors flex items-center gap-1 hover:bg-white/10"
+                    className="h-8 w-8 rounded-lg transition-all flex items-center justify-center hover:bg-white/8"
                     title="Add tags"
                   >
-                    <Tag01Icon className="w-4 h-4" style={{ color: iconColor }} />
-                    {tags.length > 0 && (
-                      <span className="text-xs px-1.5 rounded-md" style={{
-                        backgroundColor: 'rgba(40, 69, 214, 0.2)',
-                        color: '#5B7BF0',
-                      }}>
-                        {tags.length}
-                      </span>
-                    )}
+                    <Tag01Icon className="w-4 h-4" style={{ color: '#64748B' }} />
                   </button>
                 )}
               </div>
 
               <Link
                 href="/dashboard"
-                className="p-1.5 rounded-lg transition-colors hover:bg-white/10"
+                className="h-8 w-8 rounded-lg transition-all flex items-center justify-center hover:bg-white/8"
                 title="Dashboard"
               >
-                <Home01Icon className="w-5 h-5" style={{ color: iconColor }} />
+                <Home01Icon className="w-4 h-4" style={{ color: '#64748B' }} />
               </Link>
             </div>
           </div>
-
-          {/* Tags row */}
-          {tags.length > 0 && (
-            <div
-              className="flex items-center gap-2 px-4 py-1.5 overflow-x-auto"
-              style={{ borderBottom: '1px solid rgba(255, 255, 255, 0.04)' }}
-            >
-              {tags.map((tag) => (
-                <span
-                  key={tag}
-                  className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-xs font-medium whitespace-nowrap"
-                  style={{
-                    backgroundColor: 'rgba(40, 69, 214, 0.15)',
-                    color: '#5B7BF0',
-                  }}
-                >
-                  {tag}
-                  <button
-                    type="button"
-                    onClick={() => removeTag(tag)}
-                    className="rounded p-0.5 transition-colors hover:bg-white/10"
-                  >
-                    <Cancel01Icon className="w-3 h-3" />
-                  </button>
-                </span>
-              ))}
-            </div>
-          )}
         </header>
       )}
 
@@ -824,136 +819,88 @@ export default function EditorPage() {
           </div>
         </div>
 
-        {/* Right side control panel — dark claymorphism */}
+        {/* Right side control panel — centered in the right gutter, fills space */}
         {(currentView === 'toc' || currentView === 'page') && (
           <div
             className="absolute right-0 top-0 bottom-0 flex items-center justify-center z-20"
-            style={{ width: 'calc((100% - 56rem) / 2 + 60px)', minWidth: '220px' }}
+            style={{ width: 'calc((100% - 56rem) / 2)', minWidth: '220px' }}
           >
             <div
-              className="rounded-2xl overflow-hidden"
+              className="rounded-2xl overflow-hidden flex flex-col"
               style={{
-                width: '160px',
-                background: 'linear-gradient(160deg, #1E293B 0%, #172033 50%, #131B2E 100%)',
-                boxShadow: '0 8px 32px rgba(0, 0, 0, 0.35), 0 4px 16px rgba(0, 0, 0, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.06)',
+                width: 'calc(100% - 40px)',
+                maxWidth: '230px',
+                maxHeight: 'calc(100vh - 140px)',
+                background: 'linear-gradient(160deg, rgba(30, 41, 59, 0.85) 0%, rgba(23, 32, 51, 0.9) 100%)',
+                backdropFilter: 'blur(12px)',
+                boxShadow: '0 8px 32px rgba(0, 0, 0, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.05)',
                 border: '1px solid rgba(255, 255, 255, 0.06)',
               }}
             >
-              {/* Page indicator */}
+              {/* Page indicator + nav */}
               <div
-                className="p-3 flex items-center justify-center"
-                style={{
-                  borderBottom: '1px solid rgba(255,255,255,0.04)',
-                }}
+                className="p-3 flex items-center justify-between flex-shrink-0"
+                style={{ borderBottom: '1px solid rgba(255,255,255,0.04)' }}
               >
-                <div
-                  className="px-4 py-2 rounded-xl flex items-center gap-2 text-sm font-medium"
-                  style={{
-                    backgroundColor: 'rgba(255,255,255,0.05)',
-                    color: '#94A3B8',
-                    boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.2)',
-                  }}
-                >
-                  {currentView === 'toc' ? (
-                    <>
-                      <Menu01Icon className="w-4 h-4" />
-                      <span>Contents</span>
-                    </>
-                  ) : (
-                    <>
-                      <span className="text-lg font-bold" style={{ fontFamily: 'var(--font-handwritten)', color: '#F1F5F9' }}>
-                        {(currentPageIndex ?? 0) + 1}
-                      </span>
-                      <span style={{ opacity: 0.5, color: '#94A3B8' }}>/ {pages.length}</span>
-                    </>
-                  )}
-                </div>
-              </div>
-
-              {/* Navigation controls */}
-              <div
-                className="p-3"
-                style={{
-                  borderBottom: '1px solid rgba(255,255,255,0.04)',
-                }}
-              >
-                <div className="grid grid-cols-2 gap-2">
-                  <button
-                    onClick={handleFirstPage}
-                    disabled={currentView === 'toc'}
-                    className={`w-full h-9 rounded-xl flex items-center justify-center transition-all ${
-                      currentView === 'toc'
-                        ? 'opacity-30 cursor-not-allowed'
-                        : 'text-slate-300 hover:text-white'
-                    }`}
-                    style={{
-                      backgroundColor: currentView === 'toc' ? 'transparent' : 'rgba(255,255,255,0.06)',
-                      boxShadow: currentView === 'toc' ? 'none' : '0 2px 4px rgba(0,0,0,0.3)',
-                    }}
-                    title="Back to Contents"
-                  >
-                    <ArrowDownLeft01Icon className="w-4 h-4" />
-                  </button>
-
-                  <button
-                    onClick={handleLastPage}
-                    disabled={currentView === 'page' && currentPageIndex === pages.length - 1}
-                    className={`w-full h-9 rounded-xl flex items-center justify-center transition-all ${
-                      currentView === 'page' && currentPageIndex === pages.length - 1
-                        ? 'opacity-30 cursor-not-allowed'
-                        : 'text-slate-300 hover:text-white'
-                    }`}
-                    style={{
-                      backgroundColor: (currentView === 'page' && currentPageIndex === pages.length - 1) ? 'transparent' : 'rgba(255,255,255,0.06)',
-                      boxShadow: (currentView === 'page' && currentPageIndex === pages.length - 1) ? 'none' : '0 2px 4px rgba(0,0,0,0.3)',
-                    }}
-                    title="Last page"
-                  >
-                    <ArrowUpRight01Icon className="w-4 h-4" />
-                  </button>
-
+                <div className="flex items-center gap-2">
                   <button
                     onClick={handlePrevPage}
                     disabled={currentView === 'toc'}
-                    className={`w-full h-9 rounded-xl flex items-center justify-center transition-all ${
-                      currentView === 'toc'
-                        ? 'opacity-30 cursor-not-allowed'
-                        : 'text-slate-300 hover:text-white'
-                    }`}
+                    className="h-8 w-8 rounded-lg flex items-center justify-center transition-all disabled:opacity-25 disabled:cursor-not-allowed text-slate-400 hover:text-white"
                     style={{
                       backgroundColor: currentView === 'toc' ? 'transparent' : 'rgba(255,255,255,0.06)',
-                      boxShadow: currentView === 'toc' ? 'none' : '0 2px 4px rgba(0,0,0,0.3)',
                     }}
                     title={currentView === 'page' && currentPageIndex === 0 ? 'Back to Contents' : 'Previous page'}
                   >
                     <ArrowLeft01Icon className="w-4 h-4" />
                   </button>
 
+                  <span className="text-sm font-medium select-none" style={{ color: '#94A3B8' }}>
+                    {currentView === 'toc' ? (
+                      'Contents'
+                    ) : (
+                      <><span style={{ color: '#E2E8F0', fontWeight: 700 }}>{(currentPageIndex ?? 0) + 1}</span> / {pages.length}</>
+                    )}
+                  </span>
+
                   <button
                     onClick={handleNextPage}
                     disabled={currentView === 'page' && currentPageIndex === pages.length - 1}
-                    className={`w-full h-9 rounded-xl flex items-center justify-center transition-all ${
-                      currentView === 'page' && currentPageIndex === pages.length - 1
-                        ? 'opacity-30 cursor-not-allowed'
-                        : 'text-slate-300 hover:text-white'
-                    }`}
+                    className="h-8 w-8 rounded-lg flex items-center justify-center transition-all disabled:opacity-25 disabled:cursor-not-allowed text-slate-400 hover:text-white"
                     style={{
                       backgroundColor: (currentView === 'page' && currentPageIndex === pages.length - 1) ? 'transparent' : 'rgba(255,255,255,0.06)',
-                      boxShadow: (currentView === 'page' && currentPageIndex === pages.length - 1) ? 'none' : '0 2px 4px rgba(0,0,0,0.3)',
                     }}
                     title={currentView === 'toc' ? 'Go to first page' : 'Next page'}
                   >
                     <ArrowRight01Icon className="w-4 h-4" />
                   </button>
                 </div>
+
+                <div className="flex items-center gap-1">
+                  <button
+                    onClick={handleFirstPage}
+                    disabled={currentView === 'toc'}
+                    className="h-8 w-8 rounded-lg flex items-center justify-center transition-all disabled:opacity-25 disabled:cursor-not-allowed text-slate-500 hover:text-white"
+                    title="Back to Contents"
+                  >
+                    <ArrowDownLeft01Icon className="w-4 h-4" />
+                  </button>
+                  <button
+                    onClick={handleLastPage}
+                    disabled={currentView === 'page' && currentPageIndex === pages.length - 1}
+                    className="h-8 w-8 rounded-lg flex items-center justify-center transition-all disabled:opacity-25 disabled:cursor-not-allowed text-slate-500 hover:text-white"
+                    title="Last page"
+                  >
+                    <ArrowUpRight01Icon className="w-4 h-4" />
+                  </button>
+                </div>
               </div>
 
-              {/* Editor toolbar - always visible on TOC and page views */}
+              {/* Editor toolbar - scrollable, takes all remaining vertical space */}
               {(currentView === 'page' || currentView === 'toc') && (
                 <div
-                  className="p-3 overflow-y-auto"
+                  className="p-3 overflow-y-auto flex-1 min-h-0"
                   style={{
-                    maxHeight: 'calc(100vh - 400px)',
                     borderBottom: '1px solid rgba(255,255,255,0.04)',
                   }}
                 >
@@ -962,12 +909,12 @@ export default function EditorPage() {
               )}
 
               {/* Add new page */}
-              <div className="p-3">
+              <div className="p-3 flex-shrink-0">
                 <button
                   onClick={handleAddPageFromEditor}
                   className="w-full h-9 rounded-xl flex items-center justify-center gap-2 transition-all text-sm font-medium bg-primary/90 hover:bg-primary text-white"
                   style={{
-                    boxShadow: '0 2px 8px rgba(40, 69, 214, 0.4)',
+                    boxShadow: '0 2px 8px rgba(40, 69, 214, 0.3)',
                   }}
                   title="Add new page"
                 >
