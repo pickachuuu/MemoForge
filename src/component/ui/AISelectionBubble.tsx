@@ -1,6 +1,7 @@
 'use client';
 
-import { BubbleMenu, Editor } from '@tiptap/react';
+import { BubbleMenu } from '@tiptap/react/menus';
+import { Editor } from '@tiptap/react';
 import { useState, useCallback } from 'react';
 import {
   GoogleGeminiIcon,
@@ -8,7 +9,7 @@ import {
   BookOpen01Icon,
   TextWrapIcon,
   SummationCircleIcon,
-  EasyIcon,
+  StarIcon,
   CheckmarkCircle03Icon,
   FlashIcon,
 } from 'hugeicons-react';
@@ -49,7 +50,7 @@ const AI_ACTIONS: Record<AIAction, AIActionConfig> = {
   },
   simplify: {
     label: 'Simplify',
-    icon: <EasyIcon className="w-3.5 h-3.5" />,
+    icon: <StarIcon className="w-3.5 h-3.5" />,
     systemPrompt:
       'You are a study assistant. Rewrite the following text in simpler, easier-to-understand language. Keep all the key information but use shorter sentences and simpler words. Return only the simplified text.',
     mode: 'insert_below',
@@ -185,12 +186,10 @@ export default function AISelectionBubble({ editor, onGenerateFlashcards }: AISe
   return (
     <BubbleMenu
       editor={editor}
-      tippyOptions={{
-        duration: 150,
+      options={{
         placement: 'top',
-        maxWidth: 'none',
       }}
-      shouldShow={({ editor: ed }) => {
+      shouldShow={({ editor: ed }: { editor: Editor }) => {
         // Only show when there's a text selection (not empty)
         const { from, to } = ed.state.selection;
         if (from === to) return false;

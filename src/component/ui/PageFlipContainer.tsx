@@ -154,8 +154,19 @@ export default function PageFlipContainer({
     backgroundRepeat: 'no-repeat, repeat, no-repeat',
   } : { background: paperBg };
 
+  // Warm glow around notebook to soften paper-to-background edge
+  const notebookGlow: React.CSSProperties = !isDark
+    ? {
+        boxShadow: `
+          0 0 60px 10px rgba(200, 180, 140, 0.12),
+          0 0 120px 30px rgba(180, 160, 120, 0.06),
+          0 8px 30px rgba(0, 0, 0, 0.15)
+        `,
+      }
+    : {};
+
   return (
-    <div className="w-full h-full relative" style={{ perspective: '2000px' }}>
+    <div className="w-full h-full relative" style={{ perspective: '2000px', ...notebookGlow }}>
       {/* Left stack */}
       {leftCount > 0 && [...Array(leftCount)].map((_, i) => {
         // i=0 is the back of the cover (stays plain), i>0 are notebook page backs (ruled lines)

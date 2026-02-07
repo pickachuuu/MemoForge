@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useCallback, ReactNode, useRef } from 'react';
+import { useEffect, useCallback, ReactNode, useRef, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useQueryClient } from '@tanstack/react-query';
@@ -239,6 +239,100 @@ export default function EditorPage() {
   const handleEditorReady = useCallback((editorInstance: Editor) => {
     setEditor(editorInstance);
   }, [setEditor]);
+
+  // ========================================
+  // AI Sidebar Actions
+  // ========================================
+  const [aiLoading, setAiLoading] = useState<string | null>(null);
+
+  const callAI = useCallback(async (systemPrompt: string, userContent: string): Promise<string> => {
+    const geminiKey = process.env.NEXT_PUBLIC_GEMINI_API_KEY;
+    if (geminiKey) {
+      const res = await fetch(
+        'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-lite:generateContent',
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'x-goog-api-key': geminiKey },
+          body: JSON.stringify({
+            contents: [{ parts: [{ text: `${systemPrompt}\n\n${userContent}` }] }],
+            generationConfig: { temperature: 0.5, maxOutputTokens: 2048 },
+          }),
+        }
+      );
+      if (!res.ok) throw new Error(`Gemini error: ${res.status}`);
+      const data = await res.json();
+      return data?.candidates?.[0]?.content?.parts?.[0]?.text || '';
+    }
+
+    const perplexityKey = process.env.NEXT_PUBLIC_PERPLEXITY_API_KEY;
+    if (!perplexityKey) throw new Error('No API key configured');
+    const res = await fetch('https://api.perplexity.ai/chat/completions', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${perplexityKey}` },
+      body: JSON.stringify({
+        model: 'sonar',
+        messages: [
+          { role: 'system', content: systemPrompt },
+          { role: 'user', content: userContent },
+        ],
+        max_tokens: 2048,
+      }),
+    });
+    if (!res.ok) throw new Error(`Perplexity error: ${res.status}`);
+    const data = await res.json();
+    return data?.choices?.[0]?.message?.content || '';
+  }, []);
+
+  const handleAIAction = useCallback(async (action: string) => {
+    if (!editor || aiLoading) return;
+
+    const pageContent = editor.getHTML();
+    const textContent = editor.getText();
+    setAiLoading(action);
+
+    try {
+      let result = '';
+
+      switch (action) {
+        case 'continue_writing': {
+          result = await callAI(
+            'You are a helpful writing assistant. Continue writing from where the user left off. Match the tone, style, and topic of the existing content. Return only the continuation text, no introductory phrases.',
+            textContent || 'This is an empty page. Write an engaging opening paragraph on a general study topic.'
+          );
+          // Insert at end of document
+          editor.chain().focus('end').insertContent(`\n${result}`).run();
+          break;
+        }
+        case 'generate_outline': {
+          result = await callAI(
+            'You are a study assistant. Based on the following content, generate a structured outline using headings (H2 and H3). Return as HTML with <h2> and <h3> tags. Include brief placeholder text under each heading. Return only the HTML, no wrapping code blocks.',
+            textContent || 'Generate a general study outline for a student notebook page.'
+          );
+          editor.chain().focus('end').insertContent(`\n${result}`).run();
+          break;
+        }
+        case 'summarize_page': {
+          result = await callAI(
+            'You are a study assistant. Summarize the following note content into a concise, well-structured summary. Use bullet points for key ideas. Return as HTML. Return only the HTML, no wrapping code blocks.',
+            textContent
+          );
+          editor.chain().focus('end').insertContent(`\n<h2>Summary</h2>\n${result}`).run();
+          break;
+        }
+        case 'generate_flashcards': {
+          // Use the existing flashcard generation flow
+          // Navigate to the flashcard forge modal
+          // For now, extract content and could open a modal
+          alert('To generate flashcards, select specific text in the editor or use the Flashcards page with this note.');
+          break;
+        }
+      }
+    } catch (err) {
+      console.error('AI sidebar action error:', err);
+    } finally {
+      setAiLoading(null);
+    }
+  }, [editor, aiLoading, callAI]);
 
   // ========================================
   // Note Actions
@@ -556,7 +650,7 @@ export default function EditorPage() {
   // ========================================
   // Dark blue theme styles (matching app theme)
   // ========================================
-  const bgColor = '#0F172A';
+  const bgColor = '#141420';
   const borderColor = 'rgba(255, 255, 255, 0.08)';
   const textColor = '#94A3B8';
   const iconColor = '#94A3B8';
@@ -611,7 +705,7 @@ export default function EditorPage() {
         <header
           className="flex-shrink-0 relative z-30"
           style={{
-            background: 'linear-gradient(180deg, rgba(15, 23, 42, 0.95) 0%, rgba(12, 18, 34, 0.9) 100%)',
+            background: 'linear-gradient(180deg, rgba(20, 20, 32, 0.95) 0%, rgba(18, 17, 30, 0.9) 100%)',
             backdropFilter: 'blur(12px)',
             borderBottom: '1px solid rgba(255, 255, 255, 0.05)',
           }}
@@ -767,14 +861,15 @@ export default function EditorPage() {
       {/* Content Area */}
       <div
         className="flex-1 overflow-hidden flex relative"
-        style={{ backgroundColor: '#0C1222' }}
+        style={{ backgroundColor: '#12111E' }}
       >
         {/* Gradient background */}
         <div
           className="absolute inset-0 pointer-events-none"
           style={{
-            backgroundImage: `radial-gradient(ellipse 80% 50% at 20% 80%, rgba(40, 69, 214, 0.06) 0%, transparent 50%),
-                 radial-gradient(ellipse 60% 40% at 80% 20%, rgba(26, 44, 163, 0.04) 0%, transparent 50%)`,
+            backgroundImage: `radial-gradient(ellipse 70% 60% at 50% 50%, rgba(180, 150, 110, 0.06) 0%, transparent 60%),
+                 radial-gradient(ellipse 80% 50% at 20% 80%, rgba(40, 50, 120, 0.04) 0%, transparent 50%),
+                 radial-gradient(ellipse 60% 40% at 80% 20%, rgba(30, 30, 80, 0.03) 0%, transparent 50%)`,
           }}
         />
 
@@ -851,9 +946,9 @@ export default function EditorPage() {
                 width: 'calc(100% - 40px)',
                 maxWidth: '230px',
                 maxHeight: 'calc(100vh - 140px)',
-                background: 'linear-gradient(160deg, rgba(30, 41, 59, 0.85) 0%, rgba(23, 32, 51, 0.9) 100%)',
+                background: 'linear-gradient(160deg, rgba(28, 28, 42, 0.88) 0%, rgba(22, 21, 35, 0.92) 100%)',
                 backdropFilter: 'blur(12px)',
-                boxShadow: '0 8px 32px rgba(0, 0, 0, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.05)',
+                boxShadow: '0 8px 32px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.05)',
                 border: '1px solid rgba(255, 255, 255, 0.06)',
               }}
             >
@@ -924,7 +1019,7 @@ export default function EditorPage() {
                     borderBottom: '1px solid rgba(255,255,255,0.04)',
                   }}
                 >
-                  <VerticalEditorToolbar editor={editor} theme={toolbarTheme} />
+                  <VerticalEditorToolbar editor={editor} theme={toolbarTheme} onAIAction={handleAIAction} aiLoading={aiLoading} />
                 </div>
               )}
 

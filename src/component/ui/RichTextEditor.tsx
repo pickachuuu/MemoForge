@@ -9,6 +9,7 @@ import Highlight from '@tiptap/extension-highlight';
 import { Color } from '@tiptap/extension-color';
 import { PolaroidImage } from './PolaroidImage';
 import { TextStyle } from '@tiptap/extension-text-style';
+import AISelectionBubble from './AISelectionBubble';
 import { useEffect, useState, useImperativeHandle, forwardRef, useRef } from 'react';
 import {
   TextBoldIcon,
@@ -33,6 +34,12 @@ import {
   Moon01Icon,
   Image01Icon,
   TextColorIcon,
+  GoogleGeminiIcon,
+  Loading03Icon,
+  PencilEdit02Icon,
+  NoteIcon,
+  SummationCircleIcon,
+  FlashIcon,
 } from 'hugeicons-react';
 
 // Preset colors for text and highlighting
@@ -136,6 +143,8 @@ function ToolbarDivider({ vertical }: { vertical?: boolean }) {
 interface VerticalEditorToolbarProps {
   editor: Editor | null;
   theme: 'light' | 'dark';
+  onAIAction?: (action: string) => void;
+  aiLoading?: string | null;
 }
 
 function VerticalToolbarButton({
@@ -197,7 +206,7 @@ function VerticalToolbarDivider({ theme }: { theme: 'light' | 'dark' }) {
   );
 }
 
-export function VerticalEditorToolbar({ editor, theme }: VerticalEditorToolbarProps) {
+export function VerticalEditorToolbar({ editor, theme, onAIAction, aiLoading }: VerticalEditorToolbarProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const textColorRef = useRef<HTMLDivElement>(null);
   const highlightColorRef = useRef<HTMLDivElement>(null);
@@ -589,6 +598,123 @@ export function VerticalEditorToolbar({ editor, theme }: VerticalEditorToolbarPr
           <TextAlignRightIcon className="w-4 h-4" />
         </VerticalToolbarButton>
       </div>
+
+      {/* AI Section */}
+      {onAIAction && (
+        <>
+          <VerticalToolbarDivider theme={theme} />
+
+          {/* AI Header */}
+          <div className="flex items-center gap-2 px-1">
+            <GoogleGeminiIcon className="w-3.5 h-3.5 text-blue-400" />
+            <span className={`text-[10px] font-semibold uppercase tracking-wider ${isDark ? 'text-blue-400/70' : 'text-blue-500/70'}`}>
+              AI Assist
+            </span>
+          </div>
+
+          <div className="grid grid-cols-1 gap-2">
+            <button
+              type="button"
+              onClick={() => onAIAction('continue_writing')}
+              disabled={!canEdit || aiLoading === 'continue_writing'}
+              title="AI continues writing from cursor position"
+              className={`
+                w-full h-9 rounded-xl flex items-center justify-center gap-2 transition-all text-xs font-medium
+                disabled:opacity-30 disabled:cursor-not-allowed
+                ${isDark
+                  ? 'bg-blue-900/30 hover:bg-blue-800/40 text-blue-300 border border-blue-700/30'
+                  : 'bg-blue-100 hover:bg-blue-200 text-blue-700 border border-blue-200'
+                }
+              `}
+              style={{
+                boxShadow: isDark ? '0 2px 4px rgba(0,0,0,0.3)' : '0 2px 4px rgba(0,0,0,0.08)',
+              }}
+            >
+              {aiLoading === 'continue_writing' ? (
+                <Loading03Icon className="w-3.5 h-3.5 animate-spin" />
+              ) : (
+                <PencilEdit02Icon className="w-3.5 h-3.5" />
+              )}
+              <span>Continue Writing</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => onAIAction('generate_outline')}
+              disabled={!canEdit || aiLoading === 'generate_outline'}
+              title="Generate heading structure for this page"
+              className={`
+                w-full h-9 rounded-xl flex items-center justify-center gap-2 transition-all text-xs font-medium
+                disabled:opacity-30 disabled:cursor-not-allowed
+                ${isDark
+                  ? 'bg-blue-900/30 hover:bg-blue-800/40 text-blue-300 border border-blue-700/30'
+                  : 'bg-blue-100 hover:bg-blue-200 text-blue-700 border border-blue-200'
+                }
+              `}
+              style={{
+                boxShadow: isDark ? '0 2px 4px rgba(0,0,0,0.3)' : '0 2px 4px rgba(0,0,0,0.08)',
+              }}
+            >
+              {aiLoading === 'generate_outline' ? (
+                <Loading03Icon className="w-3.5 h-3.5 animate-spin" />
+              ) : (
+                <NoteIcon className="w-3.5 h-3.5" />
+              )}
+              <span>Outline</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => onAIAction('summarize_page')}
+              disabled={!canEdit || aiLoading === 'summarize_page'}
+              title="Summarize the entire page"
+              className={`
+                w-full h-9 rounded-xl flex items-center justify-center gap-2 transition-all text-xs font-medium
+                disabled:opacity-30 disabled:cursor-not-allowed
+                ${isDark
+                  ? 'bg-blue-900/30 hover:bg-blue-800/40 text-blue-300 border border-blue-700/30'
+                  : 'bg-blue-100 hover:bg-blue-200 text-blue-700 border border-blue-200'
+                }
+              `}
+              style={{
+                boxShadow: isDark ? '0 2px 4px rgba(0,0,0,0.3)' : '0 2px 4px rgba(0,0,0,0.08)',
+              }}
+            >
+              {aiLoading === 'summarize_page' ? (
+                <Loading03Icon className="w-3.5 h-3.5 animate-spin" />
+              ) : (
+                <SummationCircleIcon className="w-3.5 h-3.5" />
+              )}
+              <span>Summarize</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => onAIAction('generate_flashcards')}
+              disabled={!canEdit || aiLoading === 'generate_flashcards'}
+              title="Generate flashcards from page content"
+              className={`
+                w-full h-9 rounded-xl flex items-center justify-center gap-2 transition-all text-xs font-medium
+                disabled:opacity-30 disabled:cursor-not-allowed
+                ${isDark
+                  ? 'bg-orange-900/30 hover:bg-orange-800/40 text-orange-300 border border-orange-700/30'
+                  : 'bg-orange-100 hover:bg-orange-200 text-orange-700 border border-orange-200'
+                }
+              `}
+              style={{
+                boxShadow: isDark ? '0 2px 4px rgba(0,0,0,0.3)' : '0 2px 4px rgba(0,0,0,0.08)',
+              }}
+            >
+              {aiLoading === 'generate_flashcards' ? (
+                <Loading03Icon className="w-3.5 h-3.5 animate-spin" />
+              ) : (
+                <FlashIcon className="w-3.5 h-3.5" />
+              )}
+              <span>Flashcards</span>
+            </button>
+          </div>
+        </>
+      )}
     </div>
   );
 }
@@ -866,6 +992,7 @@ interface RichTextEditorProps {
   fullscreen?: boolean;
   hideToolbar?: boolean;
   onEditorReady?: (editor: Editor) => void;
+  onGenerateFlashcards?: (text: string) => void;
 }
 
 export const RichTextEditor = forwardRef<RichTextEditorHandle, RichTextEditorProps>(function RichTextEditor({
@@ -878,6 +1005,7 @@ export const RichTextEditor = forwardRef<RichTextEditorHandle, RichTextEditorPro
   fullscreen = false,
   hideToolbar = false,
   onEditorReady,
+  onGenerateFlashcards,
 }, ref) {
   const editor = useEditor({
     extensions: [
@@ -1057,6 +1185,12 @@ export const RichTextEditor = forwardRef<RichTextEditorHandle, RichTextEditorPro
               }}
             >
               <EditorContent editor={editor} />
+              {editor && (
+                <AISelectionBubble
+                  editor={editor}
+                  onGenerateFlashcards={onGenerateFlashcards}
+                />
+              )}
             </div>
           </div>
         </div>
@@ -1070,6 +1204,12 @@ export const RichTextEditor = forwardRef<RichTextEditorHandle, RichTextEditorPro
       {!hideToolbar && <EditorToolbar editor={editor} />}
       <div className="tiptap-editor-wrapper">
         <EditorContent editor={editor} />
+        {editor && (
+          <AISelectionBubble
+            editor={editor}
+            onGenerateFlashcards={onGenerateFlashcards}
+          />
+        )}
       </div>
     </div>
   );
