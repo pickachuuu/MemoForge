@@ -9,49 +9,49 @@
    ============================================ */
 
 :root {
-  /* Base tones - Blue-first: everything lives in blue */
-  --background: #EEF2FF;             /* Soft blue base (like blue-50) */
-  --background-muted: #E0E7FF;       /* Deeper blue for recessed areas */
-  --background-glow: #C7D2FE;        /* Rich blue glow for accents */
-  --foreground: #0D1A63;             /* Deep navy for text */
-  --foreground-muted: #4B5E99;       /* Muted navy-blue */
+  /* Base tones - Dark blue backdrop (Quizlet-inspired) */
+  --background: #0F172A;             /* Deep navy base */
+  --background-muted: #1E293B;       /* Slightly lighter navy for recessed areas */
+  --background-glow: #1A2CA3;        /* Blue glow for accents */
+  --foreground: #F1F5F9;             /* Light gray for text */
+  --foreground-muted: #94A3B8;       /* Muted slate-gray */
 
   /* Primary - Royal Blue */
   --primary: #2845D6;                /* Bold Royal Blue */
   --primary-light: #5B7BF0;          /* Lighter blue */
   --primary-dark: #1A2CA3;           /* Darker blue for hover */
-  --primary-muted: #DBEAFE;          /* Softest blue tint */
+  --primary-muted: #1A2744;          /* Dark blue tint */
 
   /* Secondary - Warm Coral/Orange */
   --secondary: #F68048;              /* Warm Coral/Orange */
   --secondary-light: #F9A07A;        /* Lighter coral */
-  --secondary-muted: #FEF0E7;        /* Softest coral tint */
+  --secondary-muted: #2A1F18;        /* Dark warm tint */
 
-  /* Tertiary - Maps to Primary (blue-first system) */
+  /* Tertiary - Maps to Primary */
   --tertiary: #2845D6;
   --tertiary-light: #5B7BF0;
-  --tertiary-muted: #DBEAFE;
+  --tertiary-muted: #1A2744;
 
   /* Legacy accent (maps to primary for backwards compat) */
   --accent: var(--primary);
   --accent-light: var(--primary-light);
   --accent-muted: var(--primary-muted);
 
-  /* Borders / Surfaces - blue-tinted */
-  --surface: #F8FAFF;                /* Blue-white for cards */
-  --surface-elevated: #FFFFFF;       /* Pure white for max-elevated items */
-  --border: #C7D2F0;                 /* Blue-gray border */
-  --border-light: #DDE4FF;           /* Light blue border */
+  /* Borders / Surfaces - dark mode */
+  --surface: #1E293B;                /* Dark card surface */
+  --surface-elevated: #283548;       /* Elevated surface */
+  --border: #334155;                 /* Slate-700 border */
+  --border-light: #475569;           /* Slate-600 border */
 
   /* Semantic colors */
   --success: #22C55E;
   --warning: #F59E0B;
   --error: #EF4444;
 
-  /* Claymorphism specific - blue tinted */
-  --clay-shadow-light: rgba(240, 245, 255, 0.95);
-  --clay-shadow-dark: rgba(40, 69, 214, 0.08);
-  --clay-highlight: rgba(245, 248, 255, 0.98);
+  /* Claymorphism specific - dark mode */
+  --clay-shadow-light: rgba(255, 255, 255, 0.04);
+  --clay-shadow-dark: rgba(0, 0, 0, 0.4);
+  --clay-highlight: rgba(255, 255, 255, 0.06);
 }
 
 /* 🖥️ Tailwind Theme Bridge */
@@ -253,101 +253,94 @@ body {
   mix-blend-mode: multiply;
 }
 
-/* Clay Card Variants - Enhanced for light backgrounds */
+/* Clay Card Variants - Dark blue backgrounds */
 .clay-card {
-  background: linear-gradient(145deg, #f8faff 0%, #f0f4ff 100%);
+  background: linear-gradient(145deg, #1E293B 0%, #172033 100%);
   position: relative;
   border-radius: 24px;
   box-shadow:
-    /* Main shadow for depth */
-    0 4px 6px -1px rgba(0, 0, 0, 0.05),
-    0 10px 20px -2px rgba(0, 0, 0, 0.04),
-    /* Inner highlight for puffy top edge */
-    inset 0 2px 0 rgba(248, 250, 255, 1),
-    /* Subtle inner shadow at bottom for 3D effect */
-    inset 0 -2px 6px rgba(0, 0, 0, 0.02);
-  border: 1px solid rgba(199, 210, 240, 0.6);
+    0 4px 6px -1px rgba(0, 0, 0, 0.45),
+    0 10px 20px -2px rgba(0, 0, 0, 0.35),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06),
+    inset 0 -2px 6px rgba(0, 0, 0, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.06);
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .clay-card:hover {
   box-shadow:
-    0 6px 12px -2px rgba(0, 0, 0, 0.08),
-    0 16px 32px -4px rgba(0, 0, 0, 0.06),
-    inset 0 2px 0 rgba(248, 250, 255, 1),
-    inset 0 -2px 6px rgba(0, 0, 0, 0.02);
+    0 6px 12px -2px rgba(0, 0, 0, 0.5),
+    0 16px 32px -4px rgba(0, 0, 0, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08),
+    inset 0 -2px 6px rgba(0, 0, 0, 0.15);
   transform: translateY(-2px);
 }
 
 /* Elevated card - More prominent shadow for hero sections */
 .clay-card-elevated {
-  background: linear-gradient(165deg, #f8faff 0%, #f0f4ff 100%);
+  background: linear-gradient(165deg, #1E293B 0%, #172033 100%);
   position: relative;
   border-radius: 28px;
   box-shadow:
-    /* Soft ambient shadow */
-    0 0 0 1px rgba(0, 0, 0, 0.02),
-    /* Layered depth shadows */
-    0 8px 16px -4px rgba(0, 0, 0, 0.06),
-    0 20px 40px -8px rgba(0, 0, 0, 0.08),
-    /* Colorful accent glow */
-    0 32px 64px -16px rgba(40, 69, 214, 0.08),
-    /* Inner highlights */
-    inset 0 2px 0 rgba(248, 250, 255, 1),
-    inset 0 -3px 8px rgba(0, 0, 0, 0.02);
-  border: 1px solid rgba(199, 210, 240, 0.6);
+    0 0 0 1px rgba(255, 255, 255, 0.04),
+    0 8px 16px -4px rgba(0, 0, 0, 0.5),
+    0 20px 40px -8px rgba(0, 0, 0, 0.4),
+    0 32px 64px -16px rgba(40, 69, 214, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06),
+    inset 0 -3px 8px rgba(0, 0, 0, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.06);
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .clay-card-elevated:hover {
   box-shadow:
-    0 0 0 1px rgba(0, 0, 0, 0.02),
-    0 12px 24px -6px rgba(0, 0, 0, 0.08),
-    0 28px 56px -12px rgba(0, 0, 0, 0.1),
-    0 40px 80px -20px rgba(40, 69, 214, 0.12),
-    inset 0 2px 0 rgba(248, 250, 255, 1),
-    inset 0 -3px 8px rgba(0, 0, 0, 0.02);
+    0 0 0 1px rgba(255, 255, 255, 0.06),
+    0 12px 24px -6px rgba(0, 0, 0, 0.55),
+    0 28px 56px -12px rgba(0, 0, 0, 0.45),
+    0 40px 80px -20px rgba(40, 69, 214, 0.15),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08),
+    inset 0 -3px 8px rgba(0, 0, 0, 0.15);
   transform: translateY(-4px);
 }
 
 /* Pressed/Inset card style */
 .clay-card-pressed {
-  background: linear-gradient(145deg, #e0e7ff 0%, #d4dcf5 100%);
+  background: linear-gradient(145deg, #131B2E 0%, #0F172A 100%);
   position: relative;
   border-radius: 20px;
   box-shadow:
-    inset 0 3px 8px rgba(0, 0, 0, 0.06),
-    inset 0 1px 2px rgba(0, 0, 0, 0.04),
-    inset 0 -2px 0 rgba(255, 255, 255, 0.8);
-  border: 1px solid rgba(199, 210, 240, 0.5);
+    inset 0 3px 8px rgba(0, 0, 0, 0.35),
+    inset 0 1px 2px rgba(0, 0, 0, 0.25),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.03);
   transition: all 0.2s ease;
 }
 
 /* Floating card - Maximum elevation */
 .clay-card-floating {
-  background: linear-gradient(165deg, #f8faff 0%, #f5f7ff 100%);
+  background: linear-gradient(165deg, #1E293B 0%, #1A2540 100%);
   position: relative;
   border-radius: 32px;
   box-shadow:
-    0 12px 24px -6px rgba(0, 0, 0, 0.1),
-    0 32px 64px -12px rgba(0, 0, 0, 0.12),
+    0 12px 24px -6px rgba(0, 0, 0, 0.55),
+    0 32px 64px -12px rgba(0, 0, 0, 0.45),
     0 48px 96px -24px rgba(40, 69, 214, 0.15),
-    inset 0 2px 0 rgba(248, 250, 255, 1),
-    inset 0 -4px 12px rgba(0, 0, 0, 0.02);
-  border: 1px solid rgba(255, 255, 255, 0.8);
+    inset 0 1px 0 rgba(255, 255, 255, 0.06),
+    inset 0 -4px 12px rgba(0, 0, 0, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.08);
   transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 /* Glassmorphism variant for overlays */
 .clay-card-glass {
-  background: rgba(240, 244, 255, 0.88);
+  background: rgba(30, 41, 59, 0.88);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
   border-radius: 24px;
   box-shadow:
-    0 8px 32px rgba(0, 0, 0, 0.08),
-    inset 0 1px 0 rgba(255, 255, 255, 0.9);
-  border: 1px solid rgba(255, 255, 255, 0.6);
+    0 8px 32px rgba(0, 0, 0, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.06);
 }
 
 /* Clay Button Variants - Enhanced for light backgrounds */
@@ -374,14 +367,14 @@ body {
 }
 
 .clay-button-secondary {
-  background: linear-gradient(145deg, #f8faff 0%, #f0f4ff 100%);
+  background: linear-gradient(145deg, #1E293B 0%, #172033 100%);
   color: var(--foreground);
   box-shadow:
-    0 2px 8px rgba(0, 0, 0, 0.06),
-    0 4px 12px rgba(0, 0, 0, 0.04),
-    inset 0 1px 0 rgba(248, 250, 255, 1),
-    inset 0 -1px 0 rgba(0, 0, 0, 0.02);
-  border: 1px solid rgba(199, 210, 240, 0.8);
+    0 2px 8px rgba(0, 0, 0, 0.35),
+    0 4px 12px rgba(0, 0, 0, 0.25),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.06);
   transition: all 0.2s ease;
 }
 
@@ -390,18 +383,18 @@ body {
 }
 
 .clay-button-secondary:hover {
-  background: linear-gradient(145deg, #f5f7ff 0%, #e8eeff 100%);
+  background: linear-gradient(145deg, #253352 0%, #1E293B 100%);
   box-shadow:
-    0 4px 12px rgba(0, 0, 0, 0.08),
-    0 8px 20px rgba(0, 0, 0, 0.06),
-    inset 0 1px 0 rgba(248, 250, 255, 1),
-    inset 0 -1px 0 rgba(0, 0, 0, 0.03);
+    0 4px 12px rgba(0, 0, 0, 0.4),
+    0 8px 20px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.15);
   transform: translateY(-1px);
-  color: var(--primary);
+  color: var(--primary-light);
 }
 
 .clay-button-secondary:hover svg {
-  color: var(--primary);
+  color: var(--primary-light);
 }
 
 .clay-button-ghost {
@@ -417,11 +410,11 @@ body {
 }
 
 .clay-button-ghost:hover {
-  background: linear-gradient(145deg, #eef2ff 0%, #e0e7ff 100%);
+  background: linear-gradient(145deg, #1E293B 0%, #172033 100%);
   box-shadow:
-    0 2px 6px rgba(0, 0, 0, 0.04),
-    inset 0 1px 0 rgba(255, 255, 255, 0.9);
-  border: 1px solid rgba(199, 210, 240, 0.6);
+    0 2px 6px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.06);
   color: var(--foreground);
 }
 
@@ -429,134 +422,134 @@ body {
   color: inherit;
 }
 
-/* Clay Badge Variants - Enhanced for light backgrounds */
+/* Clay Badge Variants - Dark mode */
 .clay-badge {
-  background: linear-gradient(145deg, #f8faff 0%, #f0f4ff 100%);
+  background: linear-gradient(145deg, #1E293B 0%, #172033 100%);
   color: var(--foreground-muted);
   box-shadow:
-    0 2px 4px rgba(0, 0, 0, 0.04),
-    inset 0 1px 0 rgba(248, 250, 255, 1),
-    inset 0 -1px 0 rgba(0, 0, 0, 0.02);
-  border: 1px solid rgba(199, 210, 240, 0.8);
+    0 2px 4px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.06);
 }
 
 .clay-badge-accent {
-  background: linear-gradient(145deg, #EFF6FF 0%, #DBEAFE 100%);
-  color: var(--primary);
+  background: linear-gradient(145deg, rgba(40, 69, 214, 0.2) 0%, rgba(40, 69, 214, 0.1) 100%);
+  color: #5B7BF0;
   box-shadow:
-    0 2px 4px rgba(40, 69, 214, 0.1),
-    inset 0 1px 0 rgba(255, 255, 255, 0.8),
-    inset 0 -1px 0 rgba(40, 69, 214, 0.05);
-  border: 1px solid rgba(40, 69, 214, 0.15);
+    0 2px 4px rgba(40, 69, 214, 0.15),
+    inset 0 1px 0 rgba(255, 255, 255, 0.04),
+    inset 0 -1px 0 rgba(40, 69, 214, 0.1);
+  border: 1px solid rgba(40, 69, 214, 0.2);
 }
 
 .clay-badge-success {
-  background: linear-gradient(145deg, #F0FDF4 0%, #DCFCE7 100%);
-  color: #16A34A;
+  background: linear-gradient(145deg, rgba(34, 197, 94, 0.15) 0%, rgba(34, 197, 94, 0.08) 100%);
+  color: #4ADE80;
   box-shadow:
-    0 2px 4px rgba(40, 69, 214, 0.1),
-    inset 0 1px 0 rgba(255, 255, 255, 0.8),
-    inset 0 -1px 0 rgba(40, 69, 214, 0.05);
-  border: 1px solid rgba(40, 69, 214, 0.15);
+    0 2px 4px rgba(34, 197, 94, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.04),
+    inset 0 -1px 0 rgba(34, 197, 94, 0.05);
+  border: 1px solid rgba(34, 197, 94, 0.2);
 }
 
 .clay-badge-warning {
-  background: linear-gradient(145deg, #FFFBEB 0%, #FEF3C7 100%);
-  color: #B45309;
+  background: linear-gradient(145deg, rgba(245, 158, 11, 0.15) 0%, rgba(245, 158, 11, 0.08) 100%);
+  color: #FBBF24;
   box-shadow:
     0 2px 4px rgba(245, 158, 11, 0.1),
-    inset 0 1px 0 rgba(255, 255, 255, 0.8),
+    inset 0 1px 0 rgba(255, 255, 255, 0.04),
     inset 0 -1px 0 rgba(245, 158, 11, 0.05);
   border: 1px solid rgba(245, 158, 11, 0.15);
 }
 
 .clay-badge-error {
-  background: linear-gradient(145deg, #FEF2F2 0%, #FEE2E2 100%);
-  color: #DC2626;
+  background: linear-gradient(145deg, rgba(239, 68, 68, 0.15) 0%, rgba(239, 68, 68, 0.08) 100%);
+  color: #F87171;
   box-shadow:
     0 2px 4px rgba(239, 68, 68, 0.1),
-    inset 0 1px 0 rgba(255, 255, 255, 0.8),
+    inset 0 1px 0 rgba(255, 255, 255, 0.04),
     inset 0 -1px 0 rgba(239, 68, 68, 0.05);
   border: 1px solid rgba(239, 68, 68, 0.15);
 }
 
-/* Clay Icon Box - Enhanced for light backgrounds */
+/* Clay Icon Box - Dark mode */
 .clay-icon-box {
-  background: linear-gradient(145deg, #f8faff 0%, #f0f4ff 100%);
+  background: linear-gradient(145deg, #1E293B 0%, #172033 100%);
   box-shadow:
-    0 4px 8px rgba(0, 0, 0, 0.04),
-    0 2px 4px rgba(0, 0, 0, 0.02),
-    inset 0 1px 0 rgba(248, 250, 255, 1),
-    inset 0 -1px 0 rgba(0, 0, 0, 0.02);
-  border: 1px solid rgba(199, 210, 240, 0.8);
+    0 4px 8px rgba(0, 0, 0, 0.35),
+    0 2px 4px rgba(0, 0, 0, 0.25),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.06);
   transition: all 0.2s ease;
 }
 
 .clay-icon-box:hover {
   box-shadow:
-    0 6px 12px rgba(0, 0, 0, 0.06),
-    0 4px 6px rgba(0, 0, 0, 0.03),
-    inset 0 1px 0 rgba(248, 250, 255, 1),
-    inset 0 -1px 0 rgba(0, 0, 0, 0.02);
+    0 6px 12px rgba(0, 0, 0, 0.4),
+    0 4px 6px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.15);
 }
 
 .clay-icon-box-accent {
-  background: linear-gradient(145deg, #EFF6FF 0%, #DBEAFE 100%);
+  background: linear-gradient(145deg, rgba(40, 69, 214, 0.2) 0%, rgba(40, 69, 214, 0.12) 100%);
   box-shadow:
-    0 4px 8px rgba(40, 69, 214, 0.12),
-    0 2px 4px rgba(40, 69, 214, 0.08),
-    inset 0 1px 0 rgba(255, 255, 255, 0.8),
-    inset 0 -1px 0 rgba(40, 69, 214, 0.05);
-  border: 1px solid rgba(40, 69, 214, 0.15);
+    0 4px 8px rgba(40, 69, 214, 0.15),
+    0 2px 4px rgba(0, 0, 0, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.04),
+    inset 0 -1px 0 rgba(40, 69, 214, 0.1);
+  border: 1px solid rgba(40, 69, 214, 0.2);
 }
 
 .clay-icon-box-secondary {
-  background: linear-gradient(145deg, #FEF0E7 0%, #FDE5D3 100%);
+  background: linear-gradient(145deg, rgba(246, 128, 72, 0.2) 0%, rgba(246, 128, 72, 0.12) 100%);
   box-shadow:
-    0 4px 8px rgba(246, 128, 72, 0.12),
-    0 2px 4px rgba(246, 128, 72, 0.08),
-    inset 0 1px 0 rgba(255, 255, 255, 0.8),
-    inset 0 -1px 0 rgba(246, 128, 72, 0.05);
+    0 4px 8px rgba(246, 128, 72, 0.15),
+    0 2px 4px rgba(0, 0, 0, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.04),
+    inset 0 -1px 0 rgba(246, 128, 72, 0.1);
   border: 1px solid rgba(246, 128, 72, 0.15);
 }
 
 .clay-icon-box-tertiary {
-  background: linear-gradient(145deg, #EFF6FF 0%, #DBEAFE 100%);
+  background: linear-gradient(145deg, rgba(40, 69, 214, 0.2) 0%, rgba(40, 69, 214, 0.12) 100%);
   box-shadow:
-    0 4px 8px rgba(40, 69, 214, 0.12),
-    0 2px 4px rgba(40, 69, 214, 0.08),
-    inset 0 1px 0 rgba(255, 255, 255, 0.8),
-    inset 0 -1px 0 rgba(40, 69, 214, 0.05);
-  border: 1px solid rgba(40, 69, 214, 0.15);
+    0 4px 8px rgba(40, 69, 214, 0.15),
+    0 2px 4px rgba(0, 0, 0, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.04),
+    inset 0 -1px 0 rgba(40, 69, 214, 0.1);
+  border: 1px solid rgba(40, 69, 214, 0.2);
 }
 
-/* Clay Section - Enhanced for light backgrounds */
+/* Clay Section - Dark mode */
 .clay-section-muted {
-  background: linear-gradient(180deg, #eef2ff 0%, #e0e7ff 50%, #d4dcf5 100%);
+  background: linear-gradient(180deg, #131B2E 0%, #0F172A 50%, #0D1526 100%);
   position: relative;
   box-shadow:
-    inset 0 2px 8px rgba(0, 0, 0, 0.02),
-    inset 0 -2px 4px rgba(255, 255, 255, 0.6);
+    inset 0 2px 8px rgba(0, 0, 0, 0.25),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.03);
 }
 
-/* Clay Input - Enhanced for light backgrounds */
+/* Clay Input - Dark mode */
 .clay-input {
-  background: linear-gradient(145deg, #f8faff 0%, #f0f4ff 100%);
+  background: linear-gradient(145deg, #1E293B 0%, #172033 100%);
   color: var(--foreground);
-  border: 1px solid rgba(199, 210, 240, 0.8);
+  border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 12px;
   box-shadow:
-    inset 0 2px 4px rgba(0, 0, 0, 0.02),
-    inset 0 -1px 0 rgba(255, 255, 255, 0.8),
-    0 1px 2px rgba(0, 0, 0, 0.02);
+    inset 0 2px 4px rgba(0, 0, 0, 0.25),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.04),
+    0 1px 2px rgba(0, 0, 0, 0.2);
   transition: all 0.2s ease;
 }
 
 .clay-input:focus {
-  background: #f8faff;
+  background: #1E293B;
   box-shadow:
-    inset 0 2px 4px rgba(0, 0, 0, 0.02),
-    0 0 0 3px rgba(40, 69, 214, 0.15),
+    inset 0 2px 4px rgba(0, 0, 0, 0.2),
+    0 0 0 3px rgba(40, 69, 214, 0.25),
     0 0 0 1px var(--primary);
   border-color: var(--primary);
   outline: none;
@@ -568,14 +561,14 @@ body {
   height: 1px;
 }
 
-/* Clay Toolbar - Enhanced for light backgrounds */
+/* Clay Toolbar - Dark mode */
 .clay-toolbar {
-  background: linear-gradient(180deg, #f8faff 0%, #f0f4ff 100%);
+  background: linear-gradient(180deg, #1E293B 0%, #172033 100%);
   position: relative;
-  border-bottom: 1px solid rgba(199, 210, 240, 0.8);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
   box-shadow:
-    0 2px 8px rgba(0, 0, 0, 0.04),
-    inset 0 1px 0 rgba(248, 250, 255, 1);
+    0 2px 8px rgba(0, 0, 0, 0.35),
+    inset 0 1px 0 rgba(255, 255, 255, 0.04);
 }
 
 /* ============================================
@@ -583,105 +576,103 @@ body {
    ============================================ */
 
 .clay-modal {
-  background: linear-gradient(165deg, #f8faff 0%, #f0f4ff 50%, #eaf0ff 100%);
+  background: linear-gradient(165deg, #1E293B 0%, #172033 50%, #141E30 100%);
   box-shadow:
-    /* Outer layered shadows for depth */
-    0 0 0 1px rgba(0, 0, 0, 0.03),
-    0 8px 24px -4px rgba(0, 0, 0, 0.08),
-    0 20px 48px -8px rgba(0, 0, 0, 0.1),
-    0 40px 80px -16px rgba(40, 69, 214, 0.12),
-    /* Inner highlights for puffy clay effect */
-    inset 0 2px 0 rgba(248, 250, 255, 1),
-    inset 0 -3px 12px rgba(0, 0, 0, 0.02);
-  border: 1px solid rgba(255, 255, 255, 0.9);
+    0 0 0 1px rgba(255, 255, 255, 0.06),
+    0 8px 24px -4px rgba(0, 0, 0, 0.5),
+    0 20px 48px -8px rgba(0, 0, 0, 0.45),
+    0 40px 80px -16px rgba(40, 69, 214, 0.15),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06),
+    inset 0 -2px 8px rgba(0, 0, 0, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.08);
 }
 
 .clay-modal-header {
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.8) 0%, rgba(255, 255, 255, 0.4) 100%);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.04) 0%, transparent 100%);
 }
 
 .clay-modal-footer {
   background: transparent;
 }
 
-/* Step Indicator Styles */
+/* Step Indicator Styles - Dark mode */
 .clay-step-active {
-  background: linear-gradient(145deg, #f8faff 0%, #f0f4ff 100%);
+  background: linear-gradient(145deg, #1E293B 0%, #172033 100%);
   box-shadow:
-    0 2px 8px rgba(40, 69, 214, 0.15),
-    0 4px 12px rgba(0, 0, 0, 0.05),
-    inset 0 1px 0 rgba(248, 250, 255, 1);
-  border: 1px solid rgba(40, 69, 214, 0.2);
+    0 2px 8px rgba(40, 69, 214, 0.2),
+    0 4px 12px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(40, 69, 214, 0.25);
 }
 
 .clay-step-completed {
-  background: linear-gradient(145deg, #f0fdf4 0%, #dcfce7 100%);
+  background: linear-gradient(145deg, rgba(34, 197, 94, 0.12) 0%, rgba(34, 197, 94, 0.06) 100%);
   box-shadow:
     0 2px 6px rgba(34, 197, 94, 0.15),
-    inset 0 1px 0 rgba(255, 255, 255, 0.8);
+    inset 0 1px 0 rgba(255, 255, 255, 0.04);
   border: 1px solid rgba(34, 197, 94, 0.2);
 }
 
 .clay-step-inactive {
-  background: linear-gradient(145deg, #eef2ff 0%, #e0e7ff 100%);
+  background: linear-gradient(145deg, #131B2E 0%, #0F172A 100%);
   box-shadow:
-    inset 0 1px 2px rgba(0, 0, 0, 0.04);
-  border: 1px solid rgba(199, 210, 240, 0.5);
+    inset 0 1px 2px rgba(0, 0, 0, 0.25);
+  border: 1px solid rgba(255, 255, 255, 0.04);
 }
 
-/* Note Selection Card Styles */
+/* Note Selection Card Styles - Dark mode */
 .clay-note-selected {
-  background: linear-gradient(145deg, #f8faff 0%, #f2f5ff 100%);
+  background: linear-gradient(145deg, #1E293B 0%, #1A2540 100%);
   box-shadow:
-    0 4px 12px rgba(40, 69, 214, 0.12),
-    0 2px 4px rgba(0, 0, 0, 0.04),
-    inset 0 1px 0 rgba(248, 250, 255, 1),
-    inset 0 -1px 0 rgba(40, 69, 214, 0.05);
+    0 4px 12px rgba(40, 69, 214, 0.15),
+    0 2px 4px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06),
+    inset 0 -1px 0 rgba(40, 69, 214, 0.1);
 }
 
 .clay-note-unselected {
-  background: linear-gradient(145deg, #f8faff 0%, #f0f4ff 100%);
+  background: linear-gradient(145deg, #1E293B 0%, #172033 100%);
   box-shadow:
-    0 1px 3px rgba(0, 0, 0, 0.04),
-    inset 0 1px 0 rgba(255, 255, 255, 0.8);
+    0 1px 3px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.04);
 }
 
 .clay-note-unselected:hover {
-  background: linear-gradient(145deg, #f8faff 0%, #f0f4ff 100%);
+  background: linear-gradient(145deg, #253352 0%, #1E293B 100%);
   box-shadow:
-    0 2px 8px rgba(0, 0, 0, 0.06),
-    inset 0 1px 0 rgba(248, 250, 255, 1);
+    0 2px 8px rgba(0, 0, 0, 0.35),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06);
 }
 
-/* Option Selection Styles (Difficulty, etc.) */
+/* Option Selection Styles - Dark mode */
 .clay-option-selected {
-  background: linear-gradient(145deg, #f8faff 0%, #f2f5ff 100%);
+  background: linear-gradient(145deg, #1E293B 0%, #1A2540 100%);
   box-shadow:
-    0 2px 8px rgba(40, 69, 214, 0.1),
-    inset 0 1px 0 rgba(248, 250, 255, 1),
-    inset 0 -1px 0 rgba(40, 69, 214, 0.05);
+    0 2px 8px rgba(40, 69, 214, 0.15),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06),
+    inset 0 -1px 0 rgba(40, 69, 214, 0.1);
 }
 
 .clay-option-unselected {
-  background: linear-gradient(145deg, #eef2ff 0%, #e5ebff 100%);
+  background: linear-gradient(145deg, #131B2E 0%, #0F172A 100%);
   box-shadow:
-    inset 0 1px 2px rgba(0, 0, 0, 0.03);
+    inset 0 1px 2px rgba(0, 0, 0, 0.25);
 }
 
 .clay-option-unselected:hover {
-  background: linear-gradient(145deg, #f8faff 0%, #f0f4ff 100%);
+  background: linear-gradient(145deg, #1E293B 0%, #172033 100%);
   box-shadow:
-    0 1px 4px rgba(0, 0, 0, 0.04),
-    inset 0 1px 0 rgba(255, 255, 255, 0.9);
+    0 1px 4px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.04);
 }
 
-/* Summary Card */
+/* Summary Card - Dark mode */
 .clay-summary {
-  background: linear-gradient(145deg, #eef2ff 0%, #e0e7ff 100%);
+  background: linear-gradient(145deg, #131B2E 0%, #0F172A 100%);
   box-shadow:
-    inset 0 2px 4px rgba(0, 0, 0, 0.03),
-    inset 0 -1px 0 rgba(255, 255, 255, 0.8);
-  border: 1px solid rgba(199, 210, 240, 0.6);
+    inset 0 2px 4px rgba(0, 0, 0, 0.25),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.04);
 }
 
 /* ==========================================
@@ -835,49 +826,20 @@ body {
   position: relative;
   isolation: isolate;
   min-height: 100vh;
-  /* Blue-first: radial vignette deepens the blue towards edges */
-  background:
-    radial-gradient(ellipse 70% 60% at 50% 40%, rgba(248, 250, 255, 0.4) 0%, transparent 100%),
-    var(--background);
-  background-attachment: fixed;
+  /* Solid dark navy backdrop with subtle gradient */
+  background: linear-gradient(180deg, #0F172A 0%, #0C1322 100%);
 }
 
-/* Subtle gradient orbs for visual interest */
+/* Subtle ambient glow - very minimal */
 .memoforge-bg::before {
   content: '';
   position: fixed;
   inset: 0;
   background:
-    /* Top right primary glow */
-    radial-gradient(ellipse 800px 600px at 85% 5%, rgba(40, 69, 214, 0.06) 0%, transparent 50%),
-    /* Bottom left secondary glow */
-    radial-gradient(ellipse 700px 500px at 10% 85%, rgba(246, 128, 72, 0.04) 0%, transparent 50%),
-    /* Center ambient */
-    radial-gradient(ellipse 600px 400px at 50% 50%, rgba(40, 69, 214, 0.02) 0%, transparent 60%),
-    /* Top left soft glow */
-    radial-gradient(ellipse 500px 400px at 5% 15%, rgba(40, 69, 214, 0.04) 0%, transparent 50%);
+    radial-gradient(ellipse 900px 500px at 70% 0%, rgba(40, 69, 214, 0.06) 0%, transparent 60%),
+    radial-gradient(ellipse 600px 400px at 20% 100%, rgba(246, 128, 72, 0.02) 0%, transparent 50%);
   pointer-events: none;
   z-index: -1;
-}
-
-/* Graph-paper grid with depth */
-.memoforge-bg::after {
-  content: '';
-  position: fixed;
-  inset: 0;
-  background-image:
-    /* Major grid lines */
-    linear-gradient(rgba(0, 0, 0, 0.06) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(0, 0, 0, 0.06) 1px, transparent 1px),
-    /* Minor grid lines (subdivisions) */
-    linear-gradient(rgba(0, 0, 0, 0.025) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(0, 0, 0, 0.025) 1px, transparent 1px);
-  background-size: 60px 60px, 60px 60px, 12px 12px, 12px 12px;
-  pointer-events: none;
-  z-index: -1;
-  /* Soft vignette - grid fades out towards edges for depth */
-  mask-image: radial-gradient(ellipse 90% 85% at 50% 45%, black 40%, transparent 100%);
-  -webkit-mask-image: radial-gradient(ellipse 90% 85% at 50% 45%, black 40%, transparent 100%);
 }
 
 /* Legacy forge-bg alias */
