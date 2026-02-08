@@ -247,6 +247,7 @@ export default function EditorPage() {
   // AI Sidebar Actions
   // ========================================
   const [aiLoading, setAiLoading] = useState<string | null>(null);
+  const [mobileDrawerOpen, setMobileDrawerOpen] = useState(false);
 
   const callAI = useCallback(async (systemPrompt: string, userContent: string): Promise<string> => {
     const geminiKey = process.env.NEXT_PUBLIC_GEMINI_API_KEY;
@@ -658,6 +659,22 @@ export default function EditorPage() {
   }, [noteId, title, tags, coverColor, slug, router, currentView, setSlug, queryClient]);
 
   // ========================================
+  // Mobile Drawer: auto-close on navigation & lock body scroll
+  // ========================================
+  useEffect(() => {
+    setMobileDrawerOpen(false);
+  }, [currentView, currentPageIndex]);
+
+  useEffect(() => {
+    if (mobileDrawerOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => { document.body.style.overflow = ''; };
+  }, [mobileDrawerOpen]);
+
+  // ========================================
   // Tag Handlers
   // ========================================
   const handleAddTag = () => {
@@ -993,18 +1010,22 @@ export default function EditorPage() {
   // ========================================
   return (
     <div className="min-h-screen flex flex-col paper-bg text-foreground">
-      <div className="flex-1 relative px-3 sm:px-4 lg:px-4 py-5 flex flex-col max-w-none mx-auto w-full">
+      {/* Main content area — extra bottom padding on mobile for the fixed bottom bar */}
+      <div className={`flex-1 relative px-3 sm:px-4 py-5 flex flex-col max-w-none mx-auto w-full ${showControls ? 'pb-24 desktop:pb-5' : ''}`}>
         <div className="flex-1 flex items-start justify-center">
           <div
-            className={`w-full max-w-[1920px] grid gap-6 justify-items-center items-start ${showControls ? 'lg:grid-cols-[minmax(280px,420px)_minmax(0,58rem)_minmax(280px,420px)]' : 'grid-cols-1'}`}
+            className={`w-full max-w-[1920px] grid gap-6 justify-items-center items-start ${showControls ? 'desktop:grid-cols-[minmax(280px,420px)_minmax(0,58rem)_minmax(280px,420px)]' : 'grid-cols-1'}`}
           >
+
+          {/* Left sidebar — hidden below 1440px, visible as column on desktop */}
           {showControls && (
-            <aside className="space-y-4 lg:sticky lg:top-6 self-start order-2 lg:order-none relative z-[60] pt-6">
+            <aside className="hidden desktop:block space-y-4 desktop:sticky desktop:top-6 self-start relative z-[60] pt-6">
               {leftRail}
             </aside>
           )}
 
-          <div className="flex flex-col order-1 lg:order-none pt-6">
+          {/* Notebook — always visible, full width on mobile/tablet */}
+          <div className="flex flex-col pt-6 w-full">
             <div
               ref={notebookContainerRef}
               className="relative w-full flex-1 min-h-[640px] flex items-start justify-center"
@@ -1065,11 +1086,121 @@ export default function EditorPage() {
             </div>
           </div>
 
+          {/* Right sidebar — hidden below 1440px, visible as column on desktop */}
           {showControls && (
-            <aside className="space-y-4 lg:sticky lg:top-6 self-start order-3 lg:order-none pt-6">
+            <aside className="hidden desktop:block space-y-4 desktop:sticky desktop:top-6 self-start pt-6">
               {rightRail}
             </aside>
           )}
+          </div>
+        </div>
+      </div>
+
+      {/* ====== Mobile / Tablet Bottom Bar (< 1440px) ====== */}
+      {showControls && (
+        <div
+          className="fixed bottom-0 left-0 right-0 z-50 desktop:hidden"
+          style={{ paddingBottom: 'env(safe-area-inset-bottom, 0px)' }}
+        >
+          <div className="bg-surface/95 backdrop-blur-md border-t border-border shadow-[0_-4px_12px_rgba(0,0,0,0.05)]">
+            <div className="flex items-center justify-between px-3 sm:px-4 py-2.5 max-w-2xl mx-auto">
+              {/* Left: Context action */}
+              {currentView === 'page' ? (
+                <button
+                  onClick={handleBackToContents}
+                  className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-sm font-semibold text-foreground hover:bg-background-muted transition-colors min-w-[44px] min-h-[44px]"
+                >
+                  <Menu01Icon className="w-5 h-5 text-foreground-muted" />
+                  <span className="hidden sm:inline">Contents</span>
+                </button>
+              ) : (
+                <Link
+                  href="/library"
+                  className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-sm font-semibold text-foreground hover:bg-background-muted transition-colors min-w-[44px] min-h-[44px]"
+                >
+                  <ArrowLeft02Icon className="w-5 h-5 text-foreground-muted" />
+                  <span className="hidden sm:inline">Library</span>
+                </Link>
+              )}
+
+              {/* Center: Page indicator */}
+              <span className="text-sm font-semibold text-foreground-muted tabular-nums">
+                {currentView === 'toc'
+                  ? `${pages.length} page${pages.length !== 1 ? 's' : ''}`
+                  : `${(currentPageIndex ?? 0) + 1} / ${pages.length}`}
+              </span>
+
+              {/* Right: Prev / Next + Drawer toggle */}
+              <div className="flex items-center gap-0.5">
+                <button
+                  onClick={handlePrevPage}
+                  disabled={currentView === 'toc'}
+                  className="p-2.5 rounded-xl text-foreground hover:bg-background-muted transition-colors disabled:opacity-30 disabled:pointer-events-none min-w-[44px] min-h-[44px] flex items-center justify-center"
+                  aria-label="Previous page"
+                >
+                  <ArrowLeft01Icon className="w-5 h-5" />
+                </button>
+                <button
+                  onClick={handleNextPage}
+                  disabled={currentView === 'page' && currentPageIndex === pages.length - 1}
+                  className="p-2.5 rounded-xl text-foreground hover:bg-background-muted transition-colors disabled:opacity-30 disabled:pointer-events-none min-w-[44px] min-h-[44px] flex items-center justify-center"
+                  aria-label="Next page"
+                >
+                  <ArrowRight01Icon className="w-5 h-5" />
+                </button>
+                <div className="w-px h-5 bg-border mx-1" aria-hidden="true" />
+                <button
+                  onClick={() => setMobileDrawerOpen(true)}
+                  className="p-2.5 rounded-xl text-foreground hover:bg-background-muted transition-colors min-w-[44px] min-h-[44px] flex items-center justify-center"
+                  aria-label="Open notebook panel"
+                >
+                  <Menu01Icon className="w-5 h-5" />
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ====== Mobile / Tablet Slide-out Drawer (< 1440px) ====== */}
+      <div
+        className={`fixed inset-0 z-[70] desktop:hidden transition-[visibility] duration-300 ${
+          mobileDrawerOpen ? 'visible' : 'invisible'
+        }`}
+      >
+        {/* Backdrop */}
+        <div
+          className={`absolute inset-0 bg-black/25 backdrop-blur-[2px] transition-opacity duration-300 ${
+            mobileDrawerOpen ? 'opacity-100' : 'opacity-0'
+          }`}
+          onClick={() => setMobileDrawerOpen(false)}
+          aria-hidden="true"
+        />
+
+        {/* Drawer panel — slides in from the right */}
+        <div
+          className={`absolute right-0 top-0 bottom-0 w-[340px] max-w-[85vw] paper-bg border-l border-border shadow-2xl overflow-y-auto overscroll-contain transition-transform duration-300 ease-out ${
+            mobileDrawerOpen ? 'translate-x-0' : 'translate-x-full'
+          }`}
+        >
+          {/* Sticky header */}
+          <div className="sticky top-0 z-10 flex items-center justify-between px-5 py-4 paper-bg border-b border-border">
+            <h2 className="text-base font-semibold text-foreground">Notebook</h2>
+            <button
+              onClick={() => setMobileDrawerOpen(false)}
+              className="p-2 -mr-2 rounded-xl text-foreground-muted hover:text-foreground hover:bg-background-muted transition-colors min-w-[44px] min-h-[44px] flex items-center justify-center"
+              aria-label="Close panel"
+            >
+              <Cancel01Icon className="w-5 h-5" />
+            </button>
+          </div>
+
+          {/* Drawer content — all sidebar panels */}
+          <div className="p-4 space-y-4 pb-8">
+            {notebookCard}
+            {pagesPanel}
+            {navCard}
+            {toolsPanel}
           </div>
         </div>
       </div>
