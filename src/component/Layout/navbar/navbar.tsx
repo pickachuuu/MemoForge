@@ -3,7 +3,7 @@
 import { navItems } from "./navConfig";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
-import { Logout01Icon, Menu01Icon, Cancel01Icon, DashboardSpeed01Icon, Notification03Icon, Bookmark01Icon } from "hugeicons-react";
+import { Logout01Icon, Menu01Icon, Cancel01Icon, DashboardSpeed01Icon, Notification03Icon, Bookmark01Icon, Search01Icon } from "hugeicons-react";
 import { useEffect, useRef, useState } from "react";
 import { signOut } from '@/hook/useAuthActions';
 import { NotebookIcon, FlashcardIcon, ExamIcon } from '@/component/icons';
@@ -26,6 +26,7 @@ export default function Navbar() {
 
   const secondaryItems = [
     { name: 'Saved Materials', href: '/saved', icon: <Bookmark01Icon className="w-6 h-6" /> },
+    { name: 'Community', href: '/community', icon: <Search01Icon className="w-6 h-6" /> },
   ];
   const notifications = [] as { id: string; title: string; detail: string }[];
 
