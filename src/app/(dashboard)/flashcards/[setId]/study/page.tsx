@@ -199,21 +199,21 @@ export default function StudyPage() {
   // ═══════════════════════════════════════════
   if (isLoading) {
     return (
-      <div className="max-w-4xl mx-auto py-8 space-y-6">
+      <div className="max-w-5xl mx-auto py-8 space-y-6">
         <div className="animate-pulse space-y-6">
           <div className="flex items-center gap-4">
-            <div className="w-10 h-10 bg-surface-elevated rounded-xl" />
-            <div className="h-6 w-48 bg-surface-elevated rounded-lg" />
+            <div className="w-10 h-10 bg-background-muted border border-border/40 rounded-xl" />
+            <div className="h-6 w-48 bg-background-muted border border-border/40 rounded-lg" />
           </div>
-          <div className="h-2 bg-surface-elevated rounded-full" />
+          <div className="h-2 bg-background-muted border border-border/40 rounded-full" />
           <ClayCard variant="default" padding="lg" className="rounded-2xl">
             <div className="space-y-4">
-              <div className="h-4 w-20 bg-surface-elevated rounded" />
-              <div className="h-6 w-3/4 bg-surface-elevated rounded" />
-              <div className="h-6 w-1/2 bg-surface-elevated rounded" />
+              <div className="h-4 w-20 bg-background-muted border border-border/40 rounded" />
+              <div className="h-6 w-3/4 bg-background-muted border border-border/40 rounded" />
+              <div className="h-6 w-1/2 bg-background-muted border border-border/40 rounded" />
             </div>
           </ClayCard>
-          <div className="h-14 bg-surface-elevated rounded-2xl" />
+          <div className="h-14 bg-background-muted border border-border/40 rounded-2xl" />
         </div>
       </div>
     );
@@ -224,7 +224,7 @@ export default function StudyPage() {
   // ═══════════════════════════════════════════
   if (dueCards.length === 0 && !sessionComplete) {
     return (
-      <div className="max-w-4xl mx-auto py-8 space-y-6">
+      <div className="max-w-5xl mx-auto py-8 space-y-6">
         <button
           onClick={handleBackToSet}
           className="flex items-center gap-2 text-foreground-muted hover:text-foreground transition-colors"
@@ -245,7 +245,7 @@ export default function StudyPage() {
             <div className="flex flex-col sm:flex-row gap-3 justify-center">
               <button
                 onClick={handleBackToSet}
-                className="px-6 py-3 rounded-xl font-semibold border border-border/60 bg-surface-elevated/50 hover:bg-surface-elevated text-foreground transition-all"
+                className="px-6 py-3 rounded-xl font-semibold border border-border/60 bg-surface hover:bg-background-muted text-foreground transition-all"
               >
                 Browse Cards
               </button>
@@ -272,7 +272,7 @@ export default function StudyPage() {
         : 0;
 
     return (
-      <div className="max-w-4xl mx-auto py-8 space-y-6">
+      <div className="max-w-5xl mx-auto py-8 space-y-6">
         <button
           onClick={() => router.push('/flashcards')}
           className="flex items-center gap-2 text-foreground-muted hover:text-foreground transition-colors"
@@ -293,15 +293,15 @@ export default function StudyPage() {
             </p>
 
             <div className="grid grid-cols-3 gap-4 max-w-md mx-auto mb-10">
-              <div className="p-4 rounded-2xl bg-surface-elevated/80 border border-border/30">
+              <div className="p-4 rounded-2xl bg-background-muted border border-border">
                 <div className="text-2xl font-bold text-primary-light">{cardsStudiedRef.current}</div>
                 <div className="text-xs text-foreground-muted mt-1">Reviewed</div>
               </div>
-              <div className="p-4 rounded-2xl bg-surface-elevated/80 border border-border/30">
+              <div className="p-4 rounded-2xl bg-background-muted border border-border">
                 <div className="text-2xl font-bold text-foreground">{correctAnswersRef.current}</div>
                 <div className="text-xs text-foreground-muted mt-1">Correct</div>
               </div>
-              <div className="p-4 rounded-2xl bg-surface-elevated/80 border border-border/30">
+              <div className="p-4 rounded-2xl bg-background-muted border border-border">
                 <div className="text-2xl font-bold text-foreground">{accuracy}%</div>
                 <div className="text-xs text-foreground-muted mt-1">Accuracy</div>
               </div>
@@ -310,7 +310,7 @@ export default function StudyPage() {
             <div className="flex flex-col sm:flex-row gap-3 justify-center">
               <button
                 onClick={() => router.push('/flashcards')}
-                className="px-6 py-3 rounded-xl text-foreground font-semibold border border-border/60 bg-surface-elevated/50 hover:bg-surface-elevated transition-all"
+                className="px-6 py-3 rounded-xl text-foreground font-semibold border border-border/60 bg-surface hover:bg-background-muted transition-all"
               >
                 Back to Sets
               </button>
@@ -332,181 +332,242 @@ export default function StudyPage() {
   // ═══════════════════════════════════════════
   const progressPercent =
     dueCards.length > 0 ? Math.round((currentIndex / dueCards.length) * 100) : 0;
+  const reviewedCount = currentIndex;
+  const remainingCount = Math.max(dueCards.length - currentIndex, 0);
+  const liveAccuracy =
+    cardsStudiedRef.current > 0
+      ? Math.round((correctAnswersRef.current / cardsStudiedRef.current) * 100)
+      : 0;
+  const liveAccuracyLabel = cardsStudiedRef.current > 0 ? `${liveAccuracy}%` : '--';
 
   return (
-    <div className="max-w-4xl mx-auto py-8 space-y-6">
-      {/* Top bar */}
-      <ClayCard variant="elevated" padding="md" className="rounded-3xl">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3 min-w-0">
+    <div className="max-w-5xl mx-auto py-8 space-y-6">
+      {/* Header */}
+      <ClayCard variant="elevated" padding="lg" className="rounded-3xl">
+        <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+          <div className="flex items-start gap-4">
             <button
               onClick={handleBackToSet}
-              className="p-2 rounded-xl bg-background-muted border border-border hover:bg-background-muted/70 transition-all flex-shrink-0"
+              className="p-2.5 rounded-xl bg-background-muted border border-border hover:bg-background-muted/70 transition-all flex-shrink-0"
               title="Back to set"
             >
               <ArrowLeft01Icon className="w-4 h-4 text-foreground-muted" />
             </button>
-            <div className="min-w-0">
-              <h1 className="text-lg font-bold text-foreground truncate">{setTitle}</h1>
-              <div className="flex items-center gap-2 mt-0.5">
-                <span className="text-xs text-foreground-muted">
-                  Card {currentIndex + 1} of {dueCards.length} due
-                </span>
-              </div>
+            <div className="p-3 rounded-2xl bg-background-muted border border-border">
+              <FlashcardIcon className="w-6 h-6 text-primary" />
+            </div>
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-wide text-foreground-muted">Study session</p>
+              <h1 className="text-xl md:text-2xl font-bold text-foreground">{setTitle}</h1>
+              <p className="text-sm text-foreground-muted mt-1">
+                Card {currentIndex + 1} of {dueCards.length} due
+              </p>
             </div>
           </div>
-          <span className="text-xs font-medium text-foreground-muted bg-background-muted px-3 py-1.5 rounded-lg border border-border">
-            Study Mode
-          </span>
+          <div className="flex flex-wrap items-center gap-2">
+            <span className="px-3 py-1.5 rounded-full text-xs font-semibold bg-background-muted border border-border text-foreground">
+              Study Mode
+            </span>
+            <span className="px-3 py-1.5 rounded-full text-xs font-semibold bg-background-muted border border-border text-foreground-muted">
+              Due {dueCards.length}
+            </span>
+            <span className="px-3 py-1.5 rounded-full text-xs font-semibold bg-background-muted border border-border text-foreground-muted">
+              Accuracy {liveAccuracyLabel}
+            </span>
+          </div>
         </div>
       </ClayCard>
 
-      {/* Progress bar */}
-      <ClayCard variant="default" padding="md" className="rounded-2xl">
-        <div className="flex justify-between items-center mb-2">
-          <span className="text-xs text-foreground-muted">
-            {currentIndex}/{dueCards.length} reviewed
-          </span>
-          <span className="text-xs font-semibold text-primary-light">{progressPercent}%</span>
-        </div>
-        <div className="h-1.5 rounded-full bg-background-muted overflow-hidden border border-border/20">
-          <div
-            className="h-full rounded-full bg-primary/70 transition-all duration-500"
-            style={{ width: `${progressPercent}%` }}
-          />
-        </div>
-      </ClayCard>
-
-      {/* Flashcard */}
+      {/* Study stage */}
       {currentCard && (
-        <ClayCard variant="default" padding="none" className="rounded-2xl overflow-hidden relative">
-          {/* Question */}
-          <div className="p-6 pb-5">
-            <div className="flex items-center gap-2 mb-4">
-              <span className="text-[10px] uppercase tracking-widest font-bold text-foreground-muted/60">
-                Question
-              </span>
-            </div>
-            <div className="text-lg md:text-xl text-foreground leading-relaxed whitespace-pre-line font-medium">
-              {currentCard.question}
-            </div>
-          </div>
-
-          {/* Answer */}
-          {showAnswer && (
-            <div className="border-t border-border/40">
-              <div className="p-6 bg-surface-elevated/30">
-                <div className="flex items-center gap-2 mb-4">
-                  <span className="text-[10px] uppercase tracking-widest font-bold text-primary-light/70">
-                    Answer
-                  </span>
-                </div>
-                <div className="text-lg md:text-xl text-foreground leading-relaxed whitespace-pre-line">
-                  {currentCard.answer}
-                </div>
-              </div>
-
-              {/* Review result feedback */}
-              {lastReviewResult && (
-                <div
-                  className={`mx-6 mb-6 p-4 rounded-xl text-center border ${
-                    lastReviewResult.wasSuccessful
-                      ? 'bg-primary/10 border-primary/15 text-primary-light'
-                      : 'bg-red-500/10 border-red-500/15 text-red-400'
-                  }`}
-                >
-                  <span className="font-semibold">
-                    {lastReviewResult.wasSuccessful ? 'Correct!' : 'Keep practicing!'}
-                  </span>
-                  <span className="ml-2 text-sm opacity-80">
-                    Next review in {lastReviewResult.interval}
-                  </span>
-                </div>
-              )}
-
-              {/* Rating buttons (mandatory) */}
-              {!lastReviewResult && (
-                <div className="px-6 pb-6 space-y-3">
-                  <p className="text-xs text-foreground-muted text-center font-medium">
-                    How well did you know this?
-                  </p>
-                  <div className="grid grid-cols-4 gap-2">
-                    <RatingButton
-                      onClick={() => handleReview('again')}
-                      disabled={isReviewing}
-                      icon={<RepeatIcon className="w-5 h-5" />}
-                      label="Again"
-                      sublabel={reviewPreviews?.again}
-                      color="red"
-                      shortcut="1"
-                    />
-                    <RatingButton
-                      onClick={() => handleReview('hard')}
-                      disabled={isReviewing}
-                      icon={<Clock01Icon className="w-5 h-5" />}
-                      label="Hard"
-                      sublabel={reviewPreviews?.hard}
-                      color="orange"
-                      shortcut="2"
-                    />
-                    <RatingButton
-                      onClick={() => handleReview('good')}
-                      disabled={isReviewing}
-                      icon={<CheckmarkCircle01Icon className="w-5 h-5" />}
-                      label="Good"
-                      sublabel={reviewPreviews?.good}
-                      color="blue"
-                      shortcut="3"
-                    />
-                    <RatingButton
-                      onClick={() => handleReview('easy')}
-                      disabled={isReviewing}
-                      icon={<SparklesIcon className="w-5 h-5" />}
-                      label="Easy"
-                      sublabel="Mastered"
-                      color="indigo"
-                      shortcut="4"
+        <ClayCard variant="default" padding="none" className="rounded-[32px] overflow-hidden">
+          <div className="grid lg:grid-cols-[240px_1fr]">
+            <aside className="bg-background-muted/60 border-r border-border/60 p-6 flex flex-col gap-6">
+              <div>
+                <p className="text-xs font-semibold uppercase tracking-wide text-foreground-muted">Session progress</p>
+                <div className="mt-3">
+                  <div className="flex items-center justify-between text-xs text-foreground-muted mb-2">
+                    <span>{reviewedCount} reviewed</span>
+                    <span>{remainingCount} left</span>
+                  </div>
+                  <div className="h-2 rounded-full bg-background-muted overflow-hidden border border-border/30">
+                    <div
+                      className="h-full rounded-full bg-primary/70 transition-all duration-500"
+                      style={{ width: `${progressPercent}%` }}
                     />
                   </div>
+                  <div className="mt-3 grid grid-cols-2 gap-2">
+                    <div className="rounded-xl border border-border bg-surface/80 px-2 py-3 text-center">
+                      <p className="text-base font-semibold text-foreground">{progressPercent}%</p>
+                      <p className="text-[10px] text-foreground-muted">Progress</p>
+                    </div>
+                    <div className="rounded-xl border border-border bg-surface/80 px-2 py-3 text-center">
+                      <p className="text-base font-semibold text-foreground">{liveAccuracyLabel}</p>
+                      <p className="text-[10px] text-foreground-muted">Accuracy</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="rounded-2xl border border-border bg-surface/90 p-4">
+                <p className="text-xs font-semibold uppercase tracking-wide text-foreground-muted">Session stats</p>
+                <div className="mt-3 space-y-3 text-sm">
+                  <div className="flex items-center justify-between">
+                    <span className="text-foreground-muted">Reviewed</span>
+                    <span className="font-semibold text-foreground">{cardsStudiedRef.current}</span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-foreground-muted">Correct</span>
+                    <span className="font-semibold text-foreground">{correctAnswersRef.current}</span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-foreground-muted">Remaining</span>
+                    <span className="font-semibold text-foreground">{remainingCount}</span>
+                  </div>
+                </div>
+              </div>
+
+              <div>
+                <p className="text-xs font-semibold uppercase tracking-wide text-foreground-muted">Shortcuts</p>
+                <div className="mt-3 space-y-2 text-xs text-foreground-muted">
+                  <div className="flex items-center gap-2">
+                    <kbd className="px-2 py-1 rounded bg-background-muted border border-border/30 text-foreground-muted/70">
+                      Space
+                    </kbd>
+                    <span>Reveal answer</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <kbd className="px-2 py-1 rounded bg-background-muted border border-border/30 text-foreground-muted/70">
+                      1-4
+                    </kbd>
+                    <span>Rate difficulty</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <kbd className="px-2 py-1 rounded bg-background-muted border border-border/30 text-foreground-muted/70">
+                      Esc
+                    </kbd>
+                    <span>Exit session</span>
+                  </div>
+                </div>
+              </div>
+            </aside>
+
+            <section className="p-6 md:p-8 flex flex-col min-h-[460px]">
+              <div>
+                <div className="flex items-center justify-between mb-4">
+                  <div className="flex items-center gap-2">
+                    <span className="text-[10px] uppercase tracking-widest font-semibold text-foreground-muted/70">
+                      Question
+                    </span>
+                    <span className="px-2 py-1 rounded-full bg-background-muted border border-border text-[10px] font-semibold text-foreground-muted">
+                      {currentIndex + 1}/{dueCards.length}
+                    </span>
+                  </div>
+                  <span className="text-xs text-foreground-muted">{remainingCount} left</span>
+                </div>
+                <div className="text-xl md:text-2xl text-foreground leading-relaxed whitespace-pre-line font-semibold">
+                  {currentCard.question}
+                </div>
+              </div>
+
+              {showAnswer ? (
+                <div className="mt-6 space-y-4">
+                  <div className="rounded-2xl border border-border bg-background-muted/60 p-5">
+                    <div className="flex items-center gap-2 mb-3">
+                      <span className="text-[10px] uppercase tracking-widest font-semibold text-primary/70">
+                        Answer
+                      </span>
+                    </div>
+                    <div className="text-lg md:text-xl text-foreground leading-relaxed whitespace-pre-line">
+                      {currentCard.answer}
+                    </div>
+                  </div>
+
+                  {lastReviewResult && (
+                    <div
+                      className={`p-4 rounded-xl text-center border ${
+                        lastReviewResult.wasSuccessful
+                          ? 'bg-primary/10 border-primary/20 text-primary'
+                          : 'bg-red-500/10 border-red-500/20 text-red-500'
+                      }`}
+                    >
+                      <span className="font-semibold">
+                        {lastReviewResult.wasSuccessful ? 'Correct!' : 'Keep practicing!'}
+                      </span>
+                      <span className="ml-2 text-sm opacity-80">
+                        Next review in {lastReviewResult.interval}
+                      </span>
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <div className="mt-6 rounded-2xl border border-dashed border-pencil/40 bg-background-muted/40 p-5 text-sm text-foreground-muted">
+                  Take a moment to think it through. Press Space or click the button to reveal.
                 </div>
               )}
-            </div>
-          )}
 
-          {/* Reveal button */}
-          {!showAnswer && (
-            <div className="px-6 pb-6">
-              <button
-                onClick={handleShowAnswer}
-                className="w-full py-4 rounded-xl font-semibold text-white bg-primary hover:bg-primary-dark hover:shadow-lg hover:shadow-primary/20 transition-all flex items-center justify-center gap-2"
-              >
-                <ViewIcon className="w-5 h-5" />
-                Reveal Answer
-              </button>
-            </div>
-          )}
+              <div className="mt-auto pt-6">
+                {showAnswer ? (
+                  !lastReviewResult && (
+                    <div className="space-y-4">
+                      <p className="text-xs text-foreground-muted text-center font-medium">
+                        How well did you know this?
+                      </p>
+                      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                        <RatingButton
+                          onClick={() => handleReview('again')}
+                          disabled={isReviewing}
+                          icon={<RepeatIcon className="w-5 h-5" />}
+                          label="Again"
+                          sublabel={reviewPreviews?.again}
+                          color="red"
+                          shortcut="1"
+                        />
+                        <RatingButton
+                          onClick={() => handleReview('hard')}
+                          disabled={isReviewing}
+                          icon={<Clock01Icon className="w-5 h-5" />}
+                          label="Hard"
+                          sublabel={reviewPreviews?.hard}
+                          color="orange"
+                          shortcut="2"
+                        />
+                        <RatingButton
+                          onClick={() => handleReview('good')}
+                          disabled={isReviewing}
+                          icon={<CheckmarkCircle01Icon className="w-5 h-5" />}
+                          label="Good"
+                          sublabel={reviewPreviews?.good}
+                          color="blue"
+                          shortcut="3"
+                        />
+                        <RatingButton
+                          onClick={() => handleReview('easy')}
+                          disabled={isReviewing}
+                          icon={<SparklesIcon className="w-5 h-5" />}
+                          label="Easy"
+                          sublabel="Mastered"
+                          color="indigo"
+                          shortcut="4"
+                        />
+                      </div>
+                    </div>
+                  )
+                ) : (
+                  <button
+                    onClick={handleShowAnswer}
+                    className="w-full py-4 rounded-2xl font-semibold text-white bg-primary hover:bg-primary-dark hover:shadow-lg hover:shadow-primary/20 transition-all flex items-center justify-center gap-2"
+                  >
+                    <ViewIcon className="w-5 h-5" />
+                    Reveal Answer
+                    <span className="text-[11px] text-white/70">Space</span>
+                  </button>
+                )}
+              </div>
+            </section>
+          </div>
         </ClayCard>
       )}
-
-      {/* Keyboard hint */}
-      <ClayCard variant="default" padding="sm" className="rounded-2xl">
-        <div className="flex items-center justify-center gap-1.5 text-[10px] text-foreground-muted/70">
-          <kbd className="px-1.5 py-0.5 rounded bg-background-muted border border-border/30 text-foreground-muted/70">
-            Space
-          </kbd>
-          <span>reveal</span>
-          <span className="mx-1">·</span>
-          <kbd className="px-1.5 py-0.5 rounded bg-background-muted border border-border/30 text-foreground-muted/70">
-            1-4
-          </kbd>
-          <span>rate</span>
-          <span className="mx-1">·</span>
-          <kbd className="px-1.5 py-0.5 rounded bg-background-muted border border-border/30 text-foreground-muted/70">
-            Esc
-          </kbd>
-          <span>exit</span>
-        </div>
-      </ClayCard>
     </div>
   );
 }
@@ -517,36 +578,36 @@ export default function StudyPage() {
 
 const RATING_COLORS = {
   red: {
-    bg: 'bg-red-500/8',
-    border: 'border-red-500/15',
+    bg: 'bg-red-500/10',
+    border: 'border-red-500/25',
     hoverBg: 'hover:bg-red-500/15',
-    hoverBorder: 'hover:border-red-500/25',
-    text: 'text-red-400',
-    subtext: 'text-red-400/60',
+    hoverBorder: 'hover:border-red-500/30',
+    text: 'text-red-500',
+    subtext: 'text-red-500/70',
   },
   orange: {
-    bg: 'bg-orange-500/8',
-    border: 'border-orange-500/15',
+    bg: 'bg-orange-500/10',
+    border: 'border-orange-500/25',
     hoverBg: 'hover:bg-orange-500/15',
-    hoverBorder: 'hover:border-orange-500/25',
-    text: 'text-orange-400',
-    subtext: 'text-orange-400/60',
+    hoverBorder: 'hover:border-orange-500/30',
+    text: 'text-orange-500',
+    subtext: 'text-orange-500/70',
   },
   blue: {
     bg: 'bg-primary/10',
-    border: 'border-primary/15',
-    hoverBg: 'hover:bg-primary/20',
-    hoverBorder: 'hover:border-primary/25',
-    text: 'text-primary-light',
-    subtext: 'text-primary-light/60',
+    border: 'border-primary/25',
+    hoverBg: 'hover:bg-primary/15',
+    hoverBorder: 'hover:border-primary/30',
+    text: 'text-primary',
+    subtext: 'text-primary/70',
   },
   indigo: {
     bg: 'bg-indigo-500/10',
-    border: 'border-indigo-500/15',
-    hoverBg: 'hover:bg-indigo-500/20',
-    hoverBorder: 'hover:border-indigo-500/25',
-    text: 'text-indigo-400',
-    subtext: 'text-indigo-400/60',
+    border: 'border-indigo-500/25',
+    hoverBg: 'hover:bg-indigo-500/15',
+    hoverBorder: 'hover:border-indigo-500/30',
+    text: 'text-indigo-500',
+    subtext: 'text-indigo-500/70',
   },
 };
 
@@ -577,7 +638,7 @@ function RatingButton({
       <div className={c.text}>{icon}</div>
       <span className={`text-xs font-semibold mt-1.5 ${c.text}`}>{label}</span>
       {sublabel && <span className={`text-[10px] mt-0.5 ${c.subtext}`}>{sublabel}</span>}
-      <kbd className="mt-1.5 text-[9px] px-1.5 py-0.5 rounded bg-surface-elevated/80 border border-border/30 text-foreground-muted/50">
+      <kbd className="mt-1.5 text-[9px] px-1.5 py-0.5 rounded bg-background-muted border border-border/30 text-foreground-muted/60">
         {shortcut}
       </kbd>
     </button>
