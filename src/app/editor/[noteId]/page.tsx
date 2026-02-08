@@ -994,24 +994,23 @@ export default function EditorPage() {
   return (
     <div className="min-h-screen flex flex-col paper-bg text-foreground">
       <div className="flex-1 relative px-3 sm:px-4 lg:px-4 py-5 flex flex-col max-w-none mx-auto w-full">
-        <div
-          className={`flex-1 grid gap-4 ${showControls ? 'lg:grid-cols-[240px_minmax(0,1fr)_240px] 2xl:grid-cols-[280px_minmax(0,1fr)_280px]' : 'grid-cols-1'}`}
-        >
+        <div className="flex-1 flex items-start justify-center">
+          <div
+            className={`w-full max-w-[1920px] grid gap-6 justify-items-center items-start ${showControls ? 'lg:grid-cols-[minmax(280px,420px)_minmax(0,58rem)_minmax(280px,420px)]' : 'grid-cols-1'}`}
+          >
           {showControls && (
-            <aside className="space-y-4 lg:sticky lg:top-6 self-start order-2 lg:order-none relative z-[60]">
+            <aside className="space-y-4 lg:sticky lg:top-6 self-start order-2 lg:order-none relative z-[60] pt-6">
               {leftRail}
             </aside>
           )}
 
-          <div className="flex flex-col order-1 lg:order-none">
+          <div className="flex flex-col order-1 lg:order-none pt-6">
             <div
               ref={notebookContainerRef}
-              className="relative w-full flex-1 min-h-[640px] flex items-start justify-center py-6 px-4 sm:px-6"
+              className="relative w-full flex-1 min-h-[640px] flex items-start justify-center"
             >
-              <div className="absolute inset-0 rounded-[36px] bg-surface/80 border border-border shadow-[0_20px_60px_rgba(60,50,40,0.16)] pointer-events-none" />
-
               <div
-                className="relative z-10"
+                className="relative"
                 style={{
                   width: NOTEBOOK_WIDTH * scale,
                   height: NOTEBOOK_HEIGHT * scale,
@@ -1067,10 +1066,11 @@ export default function EditorPage() {
           </div>
 
           {showControls && (
-            <aside className="space-y-4 lg:sticky lg:top-6 self-start order-3 lg:order-none">
+            <aside className="space-y-4 lg:sticky lg:top-6 self-start order-3 lg:order-none pt-6">
               {rightRail}
             </aside>
           )}
+          </div>
         </div>
       </div>
     </div>
