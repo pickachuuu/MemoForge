@@ -75,7 +75,7 @@ export default function WeeklyActivityChart() {
       </div>
 
       {/* Bar Chart */}
-      <div className="flex-1 flex items-end justify-between gap-3 mb-3 px-1 min-h-[140px] relative">
+      <div className="flex-1 flex items-end justify-between gap-3 mb-3 px-1 h-40 min-h-[160px] relative">
         {/* Empty state overlay when no activity */}
         {totalCards === 0 && (
           <div className="absolute inset-0 flex flex-col items-center justify-center z-10">
@@ -94,7 +94,7 @@ export default function WeeklyActivityChart() {
           const barColor = BAR_COLORS[index] || BAR_COLORS[BAR_COLORS.length - 1];
 
           return (
-            <div key={day.date} className="flex-1 flex flex-col items-center group relative">
+            <div key={day.date} className="flex-1 h-full flex flex-col items-center group relative">
               {/* Tooltip */}
               <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-3 py-2 bg-foreground text-background text-xs rounded-xl opacity-0 group-hover:opacity-100 transition-all whitespace-nowrap pointer-events-none z-10 shadow-lg">
                 <p className="font-bold">{day.cardsStudied} cards</p>
@@ -104,7 +104,7 @@ export default function WeeklyActivityChart() {
               </div>
 
               {/* Bar */}
-              <div className="w-full flex-1 flex items-end">
+              <div className="w-full h-full flex items-end">
                 <div
                   className={`w-full rounded-xl transition-all duration-500 cursor-pointer hover:opacity-90 ${
                     hasActivity
@@ -112,8 +112,8 @@ export default function WeeklyActivityChart() {
                       : 'bg-background-muted border border-border'
                   }`}
                   style={{
-                    height: hasActivity ? `${Math.max(heightPercent, 12)}%` : '8px',
-                    minHeight: hasActivity ? '16px' : '8px',
+                    height: hasActivity ? `${Math.max(heightPercent, 16)}%` : '8px',
+                    minHeight: hasActivity ? '24px' : '8px',
                   }}
                 />
               </div>
