@@ -314,7 +314,7 @@ export default function ForgeFlashcardsModal({
 
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
-      <div className="clay-modal w-full max-w-2xl max-h-[90vh] overflow-hidden rounded-3xl flex flex-col">
+      <div className="clay-modal w-full max-w-2xl max-h-[90vh] overflow-hidden rounded-3xl flex flex-col border border-dashed border-pencil/40">
           {/* Header */}
           <div className="clay-modal-header px-6 py-5 border-b border-border">
             <div className="flex items-center justify-between">

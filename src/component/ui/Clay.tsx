@@ -48,7 +48,7 @@ export function ClayCard({
 
   return (
     <div className={clsx(
-      'rounded-3xl',
+      'rounded-3xl paper-texture border border-dashed border-pencil/40',
       variantClasses[variant],
       paddingClasses[padding],
       className

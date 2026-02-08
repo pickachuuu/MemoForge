@@ -25,36 +25,16 @@ export default function Navbar() {
   return (
     <>
       {/* ═══════════════ Desktop Sidebar ═══════════════ */}
-      <aside
-        className="hidden md:flex fixed left-0 top-0 bottom-0 w-60 z-50 flex-col"
-        style={{
-          background: 'linear-gradient(180deg, #1E293B 0%, #172033 100%)',
-          boxShadow: [
-            '4px 0 24px rgba(0, 0, 0, 0.3)',
-            '1px 0 0 rgba(255, 255, 255, 0.04)',
-            'inset -1px 0 0 rgba(255, 255, 255, 0.06)',
-          ].join(', '),
-          borderRight: '1px solid rgba(255, 255, 255, 0.06)',
-        }}
-      >
+      <aside className="hidden md:flex fixed left-0 top-0 bottom-0 w-60 z-50 flex-col bg-surface border-r border-border shadow-[4px_0_24px_rgba(60,50,40,0.08)]">
         {/* Logo */}
         <div className="px-5 pt-6 pb-8">
           <Link href="/dashboard" className="flex items-center gap-3 group">
             <div
-              className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform"
-              style={{
-                background: 'linear-gradient(145deg, var(--primary-light) 0%, var(--primary) 60%, var(--primary-dark) 100%)',
-                boxShadow: [
-                  '0 6px 16px -2px rgba(40, 69, 214, 0.55)',
-                  '0 2px 4px rgba(0, 0, 0, 0.25)',
-                  'inset 0 1px 1px rgba(255, 255, 255, 0.3)',
-                  'inset 0 -1px 2px rgba(0, 0, 0, 0.2)',
-                ].join(', '),
-              }}
+              className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform bg-background-muted border border-border shadow-sm"
             >
-              <span className="text-white font-bold text-lg" style={{ textShadow: '0 1px 2px rgba(0,0,0,0.3)' }}>M</span>
+              <span className="text-primary font-bold text-lg">M</span>
             </div>
-            <span className="text-xl font-bold text-white/90 group-hover:text-white transition-colors tracking-tight">
+            <span className="text-xl font-bold text-foreground group-hover:text-foreground transition-colors tracking-tight">
               MemoForge
             </span>
           </Link>
@@ -69,32 +49,11 @@ export default function Navbar() {
               <Link
                 key={index}
                 href={item.href}
-                className="flex items-center gap-3.5 px-4 py-3.5 rounded-xl text-base font-semibold transition-all duration-200"
-                style={isActive ? {
-                  background: 'linear-gradient(145deg, rgba(40, 69, 214, 0.35) 0%, rgba(40, 69, 214, 0.15) 100%)',
-                  color: '#ffffff',
-                  boxShadow: [
-                    '0 4px 12px -2px rgba(40, 69, 214, 0.3)',
-                    'inset 0 1px 0 rgba(255, 255, 255, 0.1)',
-                    'inset 0 -1px 2px rgba(0, 0, 0, 0.1)',
-                  ].join(', '),
-                  border: '1px solid rgba(40, 69, 214, 0.25)',
-                } : {
-                  color: 'rgba(255, 255, 255, 0.45)',
-                  border: '1px solid transparent',
-                }}
-                onMouseEnter={(e) => {
-                  if (!isActive) {
-                    e.currentTarget.style.background = 'rgba(255, 255, 255, 0.06)';
-                    e.currentTarget.style.color = 'rgba(255, 255, 255, 0.85)';
-                  }
-                }}
-                onMouseLeave={(e) => {
-                  if (!isActive) {
-                    e.currentTarget.style.background = '';
-                    e.currentTarget.style.color = 'rgba(255, 255, 255, 0.45)';
-                  }
-                }}
+                className={`flex items-center gap-3.5 px-4 py-3.5 rounded-xl text-base font-semibold transition-all duration-200 border ${
+                  isActive
+                    ? "bg-background-muted text-foreground border-pencil/40 shadow-sm relative after:content-[''] after:absolute after:left-4 after:right-4 after:bottom-2 after:h-[2px] after:bg-pencil/50 after:rounded-full"
+                    : 'text-foreground-muted border-transparent hover:bg-background-muted hover:text-foreground hover:border-border'
+                }`}
               >
                 {getNavIcon(item.href)}
                 {item.name}
@@ -105,22 +64,10 @@ export default function Navbar() {
 
         {/* Sign Out */}
         <div className="px-3 pb-6 mt-auto">
-          <div
-            className="h-px mx-3 mb-4"
-            style={{ background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.08), transparent)' }}
-          />
+          <div className="h-px mx-3 mb-4 bg-gradient-to-r from-transparent via-border to-transparent" />
           <button
             onClick={signOut}
-            className="flex items-center gap-3 w-full px-4 py-3 rounded-xl text-sm font-semibold transition-all duration-200"
-            style={{ color: 'rgba(255, 255, 255, 0.35)' }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.background = 'rgba(239, 68, 68, 0.1)';
-              e.currentTarget.style.color = '#F87171';
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.background = '';
-              e.currentTarget.style.color = 'rgba(255, 255, 255, 0.35)';
-            }}
+            className="flex items-center gap-3 w-full px-4 py-3 rounded-xl text-sm font-semibold transition-colors text-foreground-muted hover:text-error hover:bg-error/10"
           >
             <Logout01Icon className="w-5 h-5" />
             Sign Out
@@ -130,33 +77,19 @@ export default function Navbar() {
 
       {/* ═══════════════ Mobile Top Bar ═══════════════ */}
       <div className="md:hidden fixed top-0 left-0 right-0 z-50">
-        <div
-          className="px-4 py-3"
-          style={{
-            background: 'linear-gradient(180deg, rgba(30, 41, 59, 0.98) 0%, rgba(23, 32, 51, 0.95) 100%)',
-            backdropFilter: 'blur(24px)',
-            WebkitBackdropFilter: 'blur(24px)',
-            boxShadow: '0 4px 16px rgba(0, 0, 0, 0.3)',
-            borderBottom: '1px solid rgba(255, 255, 255, 0.06)',
-          }}
-        >
+        <div className="px-4 py-3 bg-surface/95 backdrop-blur-md border-b border-border shadow-sm">
           <div className="flex items-center justify-between">
             <Link href="/dashboard" className="flex items-center gap-2.5">
               <div
-                className="w-9 h-9 rounded-xl flex items-center justify-center"
-                style={{
-                  background: 'linear-gradient(145deg, var(--primary-light) 0%, var(--primary) 100%)',
-                  boxShadow: '0 4px 12px rgba(40, 69, 214, 0.45)',
-                }}
+                className="w-9 h-9 rounded-xl flex items-center justify-center bg-background-muted border border-border shadow-sm"
               >
-                <span className="text-white font-bold text-base">M</span>
+                <span className="text-primary font-bold text-base">M</span>
               </div>
-              <span className="text-lg font-bold text-white/90">MemoForge</span>
+              <span className="text-lg font-bold text-foreground">MemoForge</span>
             </Link>
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="p-2.5 rounded-xl transition-colors"
-              style={{ color: 'rgba(255, 255, 255, 0.6)' }}
+              className="p-2.5 rounded-xl transition-colors text-foreground-muted hover:text-foreground hover:bg-background-muted"
             >
               {mobileMenuOpen ? <Cancel01Icon className="w-5 h-5" /> : <Menu01Icon className="w-5 h-5" />}
             </button>
@@ -165,15 +98,7 @@ export default function Navbar() {
 
         {/* Mobile Dropdown */}
         {mobileMenuOpen && (
-          <div
-            className="px-4 pb-4"
-            style={{
-              background: 'rgba(30, 41, 59, 0.98)',
-              backdropFilter: 'blur(24px)',
-              boxShadow: '0 8px 24px rgba(0, 0, 0, 0.3)',
-              borderTop: '1px solid rgba(255, 255, 255, 0.06)',
-            }}
-          >
+          <div className="px-4 pb-4 bg-surface border-t border-border shadow-md">
             <nav className="space-y-1 pt-2">
               {navItems.map((item, index) => {
                 const isActive = pathname === item.href;
@@ -182,13 +107,11 @@ export default function Navbar() {
                     key={index}
                     href={item.href}
                     onClick={() => setMobileMenuOpen(false)}
-                    className="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold transition-all"
-                    style={isActive ? {
-                      background: 'linear-gradient(145deg, rgba(40, 69, 214, 0.35) 0%, rgba(40, 69, 214, 0.15) 100%)',
-                      color: '#ffffff',
-                    } : {
-                      color: 'rgba(255, 255, 255, 0.45)',
-                    }}
+                    className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold transition-all border ${
+                      isActive
+                        ? 'bg-background-muted text-foreground border-pencil/40 shadow-sm'
+                        : 'text-foreground-muted border-transparent hover:bg-background-muted hover:text-foreground hover:border-border'
+                    }`}
                   >
                     {getNavIcon(item.href)}
                     {item.name}

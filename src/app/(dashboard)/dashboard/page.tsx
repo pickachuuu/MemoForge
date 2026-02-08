@@ -11,23 +11,23 @@ export default function Dashboard() {
   const { data: user } = useUserProfile();
 
   return (
-    <div className="pb-10">
+    <div className="pb-12">
       {/* Header */}
       <DashboardHeader user={user ?? undefined} />
 
-      <div className="mt-6 space-y-5">
-        {/* Streak (1/3) + Weekly Activity (2/3) row */}
-        <div className="flex flex-col md:flex-row gap-5">
-          <div className="w-full md:w-1/3">
-            <StudyStreak />
-          </div>
-          <div className="w-full md:w-2/3">
-            <WeeklyActivityChart />
-          </div>
+      <div className="mt-8 grid gap-6 lg:grid-cols-12">
+        <div className="lg:col-span-4">
+          <StudyStreak />
         </div>
-
-        <ContinueLearning />
-        <RecentActivity />
+        <div className="lg:col-span-8">
+          <WeeklyActivityChart />
+        </div>
+        <div className="lg:col-span-7">
+          <ContinueLearning />
+        </div>
+        <div className="lg:col-span-5">
+          <RecentActivity />
+        </div>
       </div>
     </div>
   );

@@ -38,41 +38,28 @@ export default function StudyStreak() {
   const isOnFire = currentStreak >= 7;
   const isWarm = currentStreak >= 3;
   const isActive = currentStreak > 0;
-
-  const flameGradient = isOnFire
-    ? 'from-secondary via-red-500 to-secondary-light'
+  const flameTone = isOnFire
+    ? 'text-secondary'
     : isWarm
-      ? 'from-secondary via-secondary to-secondary-light'
+      ? 'text-secondary/80'
       : isActive
-        ? 'from-secondary/90 to-secondary-light'
-        : 'from-border to-border-light';
+        ? 'text-secondary/60'
+        : 'text-foreground-muted';
+  const flameShell = isActive
+    ? 'bg-secondary/10 border-secondary/30 shadow-sm'
+    : 'bg-background-muted border-border';
 
   return (
-    <ClayCard variant="default" padding="none" className="rounded-2xl h-full overflow-hidden relative">
-      {/* Subtle gradient background for active streaks */}
-      {isActive && (
-        <div className={`absolute inset-0 bg-gradient-to-b ${
-          isOnFire ? 'from-secondary-muted/80 via-transparent to-transparent' :
-          isWarm ? 'from-secondary-muted/60 via-transparent to-transparent' :
-          'from-secondary-muted/30 to-transparent'
-        } pointer-events-none`} />
-      )}
-
+    <ClayCard variant="default" padding="none" className="rounded-2xl h-full relative">
       <div className="relative z-10 p-6 flex flex-col items-center text-center h-full">
         {/* Flame / Icon */}
         <div className="relative mb-4">
-          {/* Glow ring */}
-          {isActive && (
-            <div className={`absolute inset-0 rounded-full bg-gradient-to-br ${flameGradient} opacity-20 blur-xl scale-150`} />
-          )}
-          <div className={`relative w-20 h-20 rounded-full bg-gradient-to-br ${flameGradient} flex items-center justify-center shadow-lg ${
-            isOnFire ? 'shadow-secondary/40' : isWarm ? 'shadow-secondary/30' : isActive ? 'shadow-secondary/20' : 'shadow-gray-200/50'
-          }`}>
-            <FireIcon className={`w-10 h-10 text-white ${isOnFire ? 'animate-pulse' : ''}`} />
+          <div className={`relative w-20 h-20 rounded-full border ${flameShell} flex items-center justify-center`}>
+            <FireIcon className={`w-10 h-10 ${flameTone} ${isOnFire ? 'animate-pulse' : ''}`} />
           </div>
           {/* Fire badge for 7+ */}
           {isOnFire && (
-            <div className="absolute -top-1 -right-1 w-7 h-7 bg-gradient-to-br from-secondary-light to-secondary rounded-full flex items-center justify-center shadow-md border-2 border-white">
+            <div className="absolute -top-1 -right-1 w-7 h-7 bg-secondary/15 rounded-full flex items-center justify-center border border-secondary/40">
               <span className="text-xs">🔥</span>
             </div>
           )}
@@ -88,7 +75,7 @@ export default function StudyStreak() {
 
         {/* Studied today badge */}
         {studiedToday && (
-          <span className="mt-3 px-3 py-1 bg-gradient-to-r from-tertiary/10 to-tertiary/20 text-tertiary text-xs font-bold rounded-full border border-tertiary/20">
+          <span className="mt-3 px-3 py-1 bg-tertiary/10 text-tertiary text-xs font-bold rounded-full border border-tertiary/30">
             Studied today ✓
           </span>
         )}
@@ -97,7 +84,7 @@ export default function StudyStreak() {
         <div className="flex-1" />
 
         {/* Mini 7-day heatmap */}
-        <div className="w-full mt-5 pt-5 border-t border-border/50">
+        <div className="w-full mt-5 pt-5 border-t border-border/70">
           <div className="flex items-center justify-between mb-3">
             <span className="text-xs text-foreground-muted font-semibold">This week</span>
             <div className="flex items-center gap-1.5 text-foreground-muted">
@@ -117,12 +104,12 @@ export default function StudyStreak() {
                     className={`w-full aspect-square rounded-lg transition-all duration-300 ${
                       hasActivity
                         ? intensity === 'high'
-                          ? 'bg-gradient-to-br from-primary to-primary-light shadow-sm shadow-primary/20'
+                          ? 'bg-primary/40 border border-primary/40'
                           : intensity === 'med'
-                            ? 'bg-gradient-to-br from-primary/60 to-primary-light/60'
-                            : 'bg-gradient-to-br from-primary/30 to-primary-light/30'
-                        : 'bg-surface'
-                    } ${isToday ? 'ring-2 ring-primary/30 ring-offset-1 ring-offset-surface' : ''}`}
+                            ? 'bg-primary/25 border border-primary/30'
+                            : 'bg-primary/15 border border-primary/20'
+                        : 'bg-background-muted border border-border'
+                    } ${isToday ? 'ring-2 ring-primary/30 ring-offset-1 ring-offset-background' : ''}`}
                     title={`${day.shortDay}: ${day.cardsStudied} cards`}
                   />
                   <span className={`text-[10px] font-medium ${isToday ? 'text-primary font-bold' : 'text-foreground-muted'}`}>

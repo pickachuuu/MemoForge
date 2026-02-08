@@ -1,57 +1,59 @@
 @import "tailwindcss";
 
 /* ============================================
-   🎨 BLUE-FIRST COLOR SYSTEM - MemoForge
+   📝 PAPER-FIRST COLOR SYSTEM - MemoForge
    ============================================
-   The app lives "in blue" - blue backgrounds,
-   blue-tinted surfaces, blue everything.
-   Orange coral as the warm accent.
+   Warm paper canvas, graphite text,
+   ink accents, pencil edges.
    ============================================ */
 
 :root {
-  /* Base tones - Dark blue backdrop (Quizlet-inspired) */
-  --background: #0F172A;             /* Deep navy base */
-  --background-muted: #1E293B;       /* Slightly lighter navy for recessed areas */
-  --background-glow: #1A2CA3;        /* Blue glow for accents */
-  --foreground: #F1F5F9;             /* Light gray for text */
-  --foreground-muted: #94A3B8;       /* Muted slate-gray */
+  /* Base tones - Paper canvas */
+  --background: #F8F2E8;             /* Warm paper */
+  --background-muted: #EFE6D8;       /* Soft shadow */
+  --background-glow: #F6EDDC;        /* Highlight wash */
+  --foreground: #2D2A26;             /* Graphite */
+  --foreground-muted: #6F655A;       /* Soft graphite */
 
-  /* Primary - Royal Blue */
-  --primary: #2845D6;                /* Bold Royal Blue */
-  --primary-light: #5B7BF0;          /* Lighter blue */
-  --primary-dark: #1A2CA3;           /* Darker blue for hover */
-  --primary-muted: #1A2744;          /* Dark blue tint */
+  /* Primary - Ink blue */
+  --primary: #2B5D8B;                /* Ink */
+  --primary-light: #4B79A5;          /* Light ink */
+  --primary-dark: #1F4567;           /* Deep ink */
+  --primary-muted: #DBE6F1;          /* Ink wash */
 
-  /* Secondary - Warm Coral/Orange */
-  --secondary: #F68048;              /* Warm Coral/Orange */
-  --secondary-light: #F9A07A;        /* Lighter coral */
-  --secondary-muted: #2A1F18;        /* Dark warm tint */
+  /* Secondary - Terracotta */
+  --secondary: #C77B4B;
+  --secondary-light: #D79A72;
+  --secondary-muted: #F2E0CF;
 
-  /* Tertiary - Maps to Primary */
-  --tertiary: #2845D6;
-  --tertiary-light: #5B7BF0;
-  --tertiary-muted: #1A2744;
+  /* Tertiary - Olive */
+  --tertiary: #7A8B4F;
+  --tertiary-light: #9EAB74;
+  --tertiary-muted: #E5EAD4;
 
   /* Legacy accent (maps to primary for backwards compat) */
   --accent: var(--primary);
   --accent-light: var(--primary-light);
   --accent-muted: var(--primary-muted);
 
-  /* Borders / Surfaces - dark mode */
-  --surface: #1E293B;                /* Dark card surface */
-  --surface-elevated: #283548;       /* Elevated surface */
-  --border: #334155;                 /* Slate-700 border */
-  --border-light: #475569;           /* Slate-600 border */
+  /* Borders / Surfaces */
+  --surface: #FFFAF0;                /* Clean sheet */
+  --surface-elevated: #FDF3E3;       /* Slight lift */
+  --border: #D9CBB9;                 /* Paper edge */
+  --border-light: #E6DAC9;           /* Soft edge */
+
+  /* Pencil + paper shading */
+  --pencil: #6F655A;
+  --pencil-dark: #534A41;
+  --pencil-light: #9A9085;
+  --paper-shadow: rgba(60, 50, 40, 0.12);
+  --paper-shadow-soft: rgba(60, 50, 40, 0.06);
+  --paper-highlight: rgba(255, 255, 255, 0.7);
 
   /* Semantic colors */
-  --success: #22C55E;
-  --warning: #F59E0B;
-  --error: #EF4444;
-
-  /* Claymorphism specific - dark mode */
-  --clay-shadow-light: rgba(255, 255, 255, 0.04);
-  --clay-shadow-dark: rgba(0, 0, 0, 0.4);
-  --clay-highlight: rgba(255, 255, 255, 0.06);
+  --success: #2F7D4C;
+  --warning: #B8872A;
+  --error: #B14B3F;
 }
 
 /* 🖥️ Tailwind Theme Bridge */
@@ -66,6 +68,9 @@
   --color-surface-elevated: var(--surface-elevated);
   --color-border: var(--border);
   --color-border-light: var(--border-light);
+  --color-pencil: var(--pencil);
+  --color-pencil-light: var(--pencil-light);
+  --color-pencil-dark: var(--pencil-dark);
 
   /* 3-tone color system */
   --color-primary: var(--primary);
@@ -231,10 +236,10 @@ body {
 }
 
 /* ==========================================
-   🎨 Claymorphism Design System - Light Mode
+   ✏️ Paper Design System
    ==========================================
-   Modern, puffy, 3D-like design optimized for white backgrounds
-   Creates depth through layered shadows and subtle gradients
+   Flat paper surfaces with pencil edges
+   and subtle grain for depth
 */
 
 /* Paper texture base - subtle noise pattern */
@@ -248,133 +253,93 @@ body {
   inset: 0;
   border-radius: inherit;
   background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
-  opacity: 0.02;
+  opacity: 0.035;
   pointer-events: none;
   mix-blend-mode: multiply;
 }
 
-/* Clay Card Variants - Dark blue backgrounds */
-.clay-card {
-  background: linear-gradient(145deg, #1E293B 0%, #172033 100%);
+/* Clay Card Variants - Paper UI */
+.clay-card,
+.clay-card-elevated,
+.clay-card-pressed,
+.clay-card-floating,
+.clay-card-glass {
+  background: var(--surface);
   position: relative;
   border-radius: 24px;
-  box-shadow:
-    0 4px 6px -1px rgba(0, 0, 0, 0.45),
-    0 10px 20px -2px rgba(0, 0, 0, 0.35),
-    inset 0 1px 0 rgba(255, 255, 255, 0.06),
-    inset 0 -2px 6px rgba(0, 0, 0, 0.15);
-  border: 1px solid rgba(255, 255, 255, 0.06);
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 6px 14px var(--paper-shadow-soft);
+  color: var(--foreground);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
 .clay-card:hover {
-  box-shadow:
-    0 6px 12px -2px rgba(0, 0, 0, 0.5),
-    0 16px 32px -4px rgba(0, 0, 0, 0.4),
-    inset 0 1px 0 rgba(255, 255, 255, 0.08),
-    inset 0 -2px 6px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 10px 20px var(--paper-shadow);
   transform: translateY(-2px);
 }
 
-/* Elevated card - More prominent shadow for hero sections */
+/* Elevated card - hero sections */
 .clay-card-elevated {
-  background: linear-gradient(165deg, #1E293B 0%, #172033 100%);
-  position: relative;
-  border-radius: 28px;
   box-shadow:
-    0 0 0 1px rgba(255, 255, 255, 0.04),
-    0 8px 16px -4px rgba(0, 0, 0, 0.5),
-    0 20px 40px -8px rgba(0, 0, 0, 0.4),
-    0 32px 64px -16px rgba(40, 69, 214, 0.1),
-    inset 0 1px 0 rgba(255, 255, 255, 0.06),
-    inset 0 -3px 8px rgba(0, 0, 0, 0.15);
-  border: 1px solid rgba(255, 255, 255, 0.06);
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    0 12px 24px var(--paper-shadow-soft),
+    0 2px 0 rgba(60, 50, 40, 0.08);
 }
 
 .clay-card-elevated:hover {
   box-shadow:
-    0 0 0 1px rgba(255, 255, 255, 0.06),
-    0 12px 24px -6px rgba(0, 0, 0, 0.55),
-    0 28px 56px -12px rgba(0, 0, 0, 0.45),
-    0 40px 80px -20px rgba(40, 69, 214, 0.15),
-    inset 0 1px 0 rgba(255, 255, 255, 0.08),
-    inset 0 -3px 8px rgba(0, 0, 0, 0.15);
-  transform: translateY(-4px);
+    0 18px 32px var(--paper-shadow),
+    0 3px 0 rgba(60, 50, 40, 0.1);
+  transform: translateY(-3px);
 }
 
 /* Pressed/Inset card style */
 .clay-card-pressed {
-  background: linear-gradient(145deg, #131B2E 0%, #0F172A 100%);
-  position: relative;
-  border-radius: 20px;
+  background: var(--background-muted);
   box-shadow:
-    inset 0 3px 8px rgba(0, 0, 0, 0.35),
-    inset 0 1px 2px rgba(0, 0, 0, 0.25),
-    inset 0 -1px 0 rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.03);
-  transition: all 0.2s ease;
+    inset 0 2px 8px var(--paper-shadow-soft),
+    inset 0 1px 2px rgba(60, 50, 40, 0.08);
 }
 
-/* Floating card - Maximum elevation */
+/* Floating card - maximum elevation */
 .clay-card-floating {
-  background: linear-gradient(165deg, #1E293B 0%, #1A2540 100%);
-  position: relative;
-  border-radius: 32px;
   box-shadow:
-    0 12px 24px -6px rgba(0, 0, 0, 0.55),
-    0 32px 64px -12px rgba(0, 0, 0, 0.45),
-    0 48px 96px -24px rgba(40, 69, 214, 0.15),
-    inset 0 1px 0 rgba(255, 255, 255, 0.06),
-    inset 0 -4px 12px rgba(0, 0, 0, 0.15);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    0 18px 36px var(--paper-shadow),
+    0 4px 0 rgba(60, 50, 40, 0.08);
 }
 
-/* Glassmorphism variant for overlays */
+/* Glass variant - vellum sheet */
 .clay-card-glass {
-  background: rgba(30, 41, 59, 0.88);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border-radius: 24px;
-  box-shadow:
-    0 8px 32px rgba(0, 0, 0, 0.4),
-    inset 0 1px 0 rgba(255, 255, 255, 0.06);
-  border: 1px solid rgba(255, 255, 255, 0.06);
+  background: rgba(255, 250, 240, 0.78);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  box-shadow: 0 14px 28px var(--paper-shadow-soft);
 }
 
-/* Clay Button Variants - Enhanced for light backgrounds */
+/* Clay Button Variants - Paper UI */
 .clay-button-primary {
-  background: linear-gradient(145deg, var(--primary-light) 0%, var(--primary) 100%);
-  color: white;
+  background: var(--primary);
+  color: #fffaf2;
   box-shadow:
-    0 4px 14px -2px rgba(40, 69, 214, 0.4),
-    0 2px 4px rgba(0, 0, 0, 0.06),
-    inset 0 1px 0 rgba(255, 255, 255, 0.2),
-    inset 0 -1px 0 rgba(0, 0, 0, 0.1);
-  border: 1px solid rgba(40, 69, 214, 0.2);
+    0 2px 0 rgba(0, 0, 0, 0.15),
+    0 8px 14px var(--paper-shadow-soft);
+  border: 1px solid var(--primary-dark);
   transition: all 0.2s ease;
 }
 
 .clay-button-primary:hover {
-  background: linear-gradient(145deg, var(--primary) 0%, var(--primary-dark) 100%);
+  background: var(--primary-dark);
   box-shadow:
-    0 6px 20px -3px rgba(40, 69, 214, 0.5),
-    0 4px 8px rgba(0, 0, 0, 0.08),
-    inset 0 1px 0 rgba(255, 255, 255, 0.25),
-    inset 0 -1px 0 rgba(0, 0, 0, 0.15);
+    0 3px 0 rgba(0, 0, 0, 0.18),
+    0 12px 18px var(--paper-shadow);
   transform: translateY(-1px);
 }
 
 .clay-button-secondary {
-  background: linear-gradient(145deg, #1E293B 0%, #172033 100%);
+  background: var(--surface);
   color: var(--foreground);
   box-shadow:
-    0 2px 8px rgba(0, 0, 0, 0.35),
-    0 4px 12px rgba(0, 0, 0, 0.25),
-    inset 0 1px 0 rgba(255, 255, 255, 0.06),
-    inset 0 -1px 0 rgba(0, 0, 0, 0.15);
-  border: 1px solid rgba(255, 255, 255, 0.06);
+    0 2px 0 rgba(60, 50, 40, 0.08),
+    0 6px 10px var(--paper-shadow-soft);
+  border: 1.5px solid var(--pencil);
   transition: all 0.2s ease;
 }
 
@@ -383,25 +348,23 @@ body {
 }
 
 .clay-button-secondary:hover {
-  background: linear-gradient(145deg, #253352 0%, #1E293B 100%);
+  background: var(--background-muted);
   box-shadow:
-    0 4px 12px rgba(0, 0, 0, 0.4),
-    0 8px 20px rgba(0, 0, 0, 0.3),
-    inset 0 1px 0 rgba(255, 255, 255, 0.08),
-    inset 0 -1px 0 rgba(0, 0, 0, 0.15);
+    0 3px 0 rgba(60, 50, 40, 0.1),
+    0 10px 16px var(--paper-shadow);
   transform: translateY(-1px);
-  color: var(--primary-light);
+  color: var(--foreground);
 }
 
 .clay-button-secondary:hover svg {
-  color: var(--primary-light);
+  color: inherit;
 }
 
 .clay-button-ghost {
   background: transparent;
   color: var(--foreground-muted);
   box-shadow: none;
-  border: 1px solid transparent;
+  border: 1px dashed var(--border);
   transition: all 0.2s ease;
 }
 
@@ -410,11 +373,8 @@ body {
 }
 
 .clay-button-ghost:hover {
-  background: linear-gradient(145deg, #1E293B 0%, #172033 100%);
-  box-shadow:
-    0 2px 6px rgba(0, 0, 0, 0.3),
-    inset 0 1px 0 rgba(255, 255, 255, 0.06);
-  border: 1px solid rgba(255, 255, 255, 0.06);
+  background: var(--background-muted);
+  border-color: var(--pencil-light);
   color: var(--foreground);
 }
 
@@ -422,257 +382,197 @@ body {
   color: inherit;
 }
 
-/* Clay Badge Variants - Dark mode */
+/* Clay Badge Variants - Paper UI */
 .clay-badge {
-  background: linear-gradient(145deg, #1E293B 0%, #172033 100%);
+  background: var(--background-muted);
   color: var(--foreground-muted);
-  box-shadow:
-    0 2px 4px rgba(0, 0, 0, 0.3),
-    inset 0 1px 0 rgba(255, 255, 255, 0.06),
-    inset 0 -1px 0 rgba(0, 0, 0, 0.15);
-  border: 1px solid rgba(255, 255, 255, 0.06);
+  box-shadow: 0 2px 4px var(--paper-shadow-soft);
+  border: 1px dashed var(--border);
 }
 
 .clay-badge-accent {
-  background: linear-gradient(145deg, rgba(40, 69, 214, 0.2) 0%, rgba(40, 69, 214, 0.1) 100%);
-  color: #5B7BF0;
-  box-shadow:
-    0 2px 4px rgba(40, 69, 214, 0.15),
-    inset 0 1px 0 rgba(255, 255, 255, 0.04),
-    inset 0 -1px 0 rgba(40, 69, 214, 0.1);
-  border: 1px solid rgba(40, 69, 214, 0.2);
+  background: var(--primary-muted);
+  color: var(--primary-dark);
+  box-shadow: 0 2px 4px var(--paper-shadow-soft);
+  border: 1px solid color-mix(in srgb, var(--primary) 35%, var(--border) 65%);
 }
 
 .clay-badge-success {
-  background: linear-gradient(145deg, rgba(34, 197, 94, 0.15) 0%, rgba(34, 197, 94, 0.08) 100%);
-  color: #4ADE80;
-  box-shadow:
-    0 2px 4px rgba(34, 197, 94, 0.1),
-    inset 0 1px 0 rgba(255, 255, 255, 0.04),
-    inset 0 -1px 0 rgba(34, 197, 94, 0.05);
-  border: 1px solid rgba(34, 197, 94, 0.2);
+  background: color-mix(in srgb, var(--success) 12%, white);
+  color: var(--success);
+  box-shadow: 0 2px 4px var(--paper-shadow-soft);
+  border: 1px solid color-mix(in srgb, var(--success) 30%, var(--border) 70%);
 }
 
 .clay-badge-warning {
-  background: linear-gradient(145deg, rgba(245, 158, 11, 0.15) 0%, rgba(245, 158, 11, 0.08) 100%);
-  color: #FBBF24;
-  box-shadow:
-    0 2px 4px rgba(245, 158, 11, 0.1),
-    inset 0 1px 0 rgba(255, 255, 255, 0.04),
-    inset 0 -1px 0 rgba(245, 158, 11, 0.05);
-  border: 1px solid rgba(245, 158, 11, 0.15);
+  background: color-mix(in srgb, var(--warning) 14%, white);
+  color: var(--warning);
+  box-shadow: 0 2px 4px var(--paper-shadow-soft);
+  border: 1px solid color-mix(in srgb, var(--warning) 30%, var(--border) 70%);
 }
 
 .clay-badge-error {
-  background: linear-gradient(145deg, rgba(239, 68, 68, 0.15) 0%, rgba(239, 68, 68, 0.08) 100%);
-  color: #F87171;
-  box-shadow:
-    0 2px 4px rgba(239, 68, 68, 0.1),
-    inset 0 1px 0 rgba(255, 255, 255, 0.04),
-    inset 0 -1px 0 rgba(239, 68, 68, 0.05);
-  border: 1px solid rgba(239, 68, 68, 0.15);
+  background: color-mix(in srgb, var(--error) 12%, white);
+  color: var(--error);
+  box-shadow: 0 2px 4px var(--paper-shadow-soft);
+  border: 1px solid color-mix(in srgb, var(--error) 30%, var(--border) 70%);
 }
 
-/* Clay Icon Box - Dark mode */
+/* Clay Icon Box - Paper UI */
 .clay-icon-box {
-  background: linear-gradient(145deg, #1E293B 0%, #172033 100%);
+  background: var(--background-muted);
   box-shadow:
-    0 4px 8px rgba(0, 0, 0, 0.35),
-    0 2px 4px rgba(0, 0, 0, 0.25),
-    inset 0 1px 0 rgba(255, 255, 255, 0.06),
-    inset 0 -1px 0 rgba(0, 0, 0, 0.15);
-  border: 1px solid rgba(255, 255, 255, 0.06);
+    0 2px 0 rgba(60, 50, 40, 0.08),
+    0 8px 14px var(--paper-shadow-soft);
+  border: 1px solid var(--border);
   transition: all 0.2s ease;
 }
 
 .clay-icon-box:hover {
   box-shadow:
-    0 6px 12px rgba(0, 0, 0, 0.4),
-    0 4px 6px rgba(0, 0, 0, 0.3),
-    inset 0 1px 0 rgba(255, 255, 255, 0.08),
-    inset 0 -1px 0 rgba(0, 0, 0, 0.15);
+    0 3px 0 rgba(60, 50, 40, 0.1),
+    0 12px 18px var(--paper-shadow);
+  transform: translateY(-1px);
 }
 
 .clay-icon-box-accent {
-  background: linear-gradient(145deg, rgba(40, 69, 214, 0.2) 0%, rgba(40, 69, 214, 0.12) 100%);
-  box-shadow:
-    0 4px 8px rgba(40, 69, 214, 0.15),
-    0 2px 4px rgba(0, 0, 0, 0.2),
-    inset 0 1px 0 rgba(255, 255, 255, 0.04),
-    inset 0 -1px 0 rgba(40, 69, 214, 0.1);
-  border: 1px solid rgba(40, 69, 214, 0.2);
+  background: var(--primary-muted);
+  border: 1px solid color-mix(in srgb, var(--primary) 25%, var(--border) 75%);
 }
 
 .clay-icon-box-secondary {
-  background: linear-gradient(145deg, rgba(246, 128, 72, 0.2) 0%, rgba(246, 128, 72, 0.12) 100%);
-  box-shadow:
-    0 4px 8px rgba(246, 128, 72, 0.15),
-    0 2px 4px rgba(0, 0, 0, 0.2),
-    inset 0 1px 0 rgba(255, 255, 255, 0.04),
-    inset 0 -1px 0 rgba(246, 128, 72, 0.1);
-  border: 1px solid rgba(246, 128, 72, 0.15);
+  background: var(--secondary-muted);
+  border: 1px solid color-mix(in srgb, var(--secondary) 25%, var(--border) 75%);
 }
 
 .clay-icon-box-tertiary {
-  background: linear-gradient(145deg, rgba(40, 69, 214, 0.2) 0%, rgba(40, 69, 214, 0.12) 100%);
-  box-shadow:
-    0 4px 8px rgba(40, 69, 214, 0.15),
-    0 2px 4px rgba(0, 0, 0, 0.2),
-    inset 0 1px 0 rgba(255, 255, 255, 0.04),
-    inset 0 -1px 0 rgba(40, 69, 214, 0.1);
-  border: 1px solid rgba(40, 69, 214, 0.2);
+  background: var(--tertiary-muted);
+  border: 1px solid color-mix(in srgb, var(--tertiary) 25%, var(--border) 75%);
 }
 
-/* Clay Section - Dark mode */
+/* Clay Section - Paper UI */
 .clay-section-muted {
-  background: linear-gradient(180deg, #131B2E 0%, #0F172A 50%, #0D1526 100%);
+  background: var(--background-muted);
   position: relative;
-  box-shadow:
-    inset 0 2px 8px rgba(0, 0, 0, 0.25),
-    inset 0 -1px 0 rgba(255, 255, 255, 0.03);
+  box-shadow: inset 0 1px 0 var(--paper-highlight);
 }
 
-/* Clay Input - Dark mode */
+/* Clay Input - Paper UI */
 .clay-input {
-  background: linear-gradient(145deg, #1E293B 0%, #172033 100%);
+  background: var(--surface);
   color: var(--foreground);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  border: 1px solid var(--border);
   border-radius: 12px;
   box-shadow:
-    inset 0 2px 4px rgba(0, 0, 0, 0.25),
-    inset 0 -1px 0 rgba(255, 255, 255, 0.04),
-    0 1px 2px rgba(0, 0, 0, 0.2);
+    inset 0 1px 2px var(--paper-shadow-soft),
+    0 1px 2px rgba(60, 50, 40, 0.06);
   transition: all 0.2s ease;
 }
 
 .clay-input:focus {
-  background: #1E293B;
+  background: var(--surface);
   box-shadow:
-    inset 0 2px 4px rgba(0, 0, 0, 0.2),
-    0 0 0 3px rgba(40, 69, 214, 0.25),
-    0 0 0 1px var(--primary);
+    0 0 0 3px var(--primary-muted),
+    inset 0 1px 2px var(--paper-shadow-soft);
   border-color: var(--primary);
   outline: none;
 }
 
-/* Clay Divider - Enhanced for light backgrounds */
+/* Clay Divider - Paper UI */
 .clay-divider {
   background: linear-gradient(90deg, transparent, var(--border) 20%, var(--border) 80%, transparent);
   height: 1px;
 }
 
-/* Clay Toolbar - Dark mode */
+/* Clay Toolbar - Paper UI */
 .clay-toolbar {
-  background: linear-gradient(180deg, #1E293B 0%, #172033 100%);
+  background: var(--surface);
   position: relative;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-  box-shadow:
-    0 2px 8px rgba(0, 0, 0, 0.35),
-    inset 0 1px 0 rgba(255, 255, 255, 0.04);
+  border-bottom: 1px solid var(--border);
+  box-shadow: 0 6px 12px var(--paper-shadow-soft);
 }
 
 /* ============================================
-   Clay Modal - Claymorphism Multi-Step Modal
+   Clay Modal - Paper UI
    ============================================ */
 
 .clay-modal {
-  background: linear-gradient(165deg, #1E293B 0%, #172033 50%, #141E30 100%);
-  box-shadow:
-    0 0 0 1px rgba(255, 255, 255, 0.06),
-    0 8px 24px -4px rgba(0, 0, 0, 0.5),
-    0 20px 48px -8px rgba(0, 0, 0, 0.45),
-    0 40px 80px -16px rgba(40, 69, 214, 0.15),
-    inset 0 1px 0 rgba(255, 255, 255, 0.06),
-    inset 0 -2px 8px rgba(0, 0, 0, 0.15);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: var(--surface);
+  box-shadow: 0 20px 40px var(--paper-shadow);
+  position: relative;
 }
 
 .clay-modal-header {
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.04) 0%, transparent 100%);
+  background: var(--background-muted);
+  border-bottom: 1px dashed var(--border);
 }
 
 .clay-modal-footer {
   background: transparent;
 }
 
-/* Step Indicator Styles - Dark mode */
+/* Step Indicator Styles - Paper UI */
 .clay-step-active {
-  background: linear-gradient(145deg, #1E293B 0%, #172033 100%);
-  box-shadow:
-    0 2px 8px rgba(40, 69, 214, 0.2),
-    0 4px 12px rgba(0, 0, 0, 0.3),
-    inset 0 1px 0 rgba(255, 255, 255, 0.06);
-  border: 1px solid rgba(40, 69, 214, 0.25);
+  background: var(--surface);
+  box-shadow: 0 4px 10px var(--paper-shadow-soft);
+  border: 1px solid var(--primary);
 }
 
 .clay-step-completed {
-  background: linear-gradient(145deg, rgba(34, 197, 94, 0.12) 0%, rgba(34, 197, 94, 0.06) 100%);
-  box-shadow:
-    0 2px 6px rgba(34, 197, 94, 0.15),
-    inset 0 1px 0 rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(34, 197, 94, 0.2);
+  background: color-mix(in srgb, var(--success) 12%, white);
+  box-shadow: 0 3px 8px var(--paper-shadow-soft);
+  border: 1px solid color-mix(in srgb, var(--success) 30%, var(--border) 70%);
 }
 
 .clay-step-inactive {
-  background: linear-gradient(145deg, #131B2E 0%, #0F172A 100%);
-  box-shadow:
-    inset 0 1px 2px rgba(0, 0, 0, 0.25);
-  border: 1px solid rgba(255, 255, 255, 0.04);
+  background: var(--background-muted);
+  box-shadow: inset 0 1px 2px var(--paper-shadow-soft);
+  border: 1px dashed var(--border);
 }
 
-/* Note Selection Card Styles - Dark mode */
+/* Note Selection Card Styles - Paper UI */
 .clay-note-selected {
-  background: linear-gradient(145deg, #1E293B 0%, #1A2540 100%);
-  box-shadow:
-    0 4px 12px rgba(40, 69, 214, 0.15),
-    0 2px 4px rgba(0, 0, 0, 0.3),
-    inset 0 1px 0 rgba(255, 255, 255, 0.06),
-    inset 0 -1px 0 rgba(40, 69, 214, 0.1);
+  background: var(--surface);
+  box-shadow: 0 6px 14px var(--paper-shadow-soft);
+  border: 1px solid var(--primary);
 }
 
 .clay-note-unselected {
-  background: linear-gradient(145deg, #1E293B 0%, #172033 100%);
-  box-shadow:
-    0 1px 3px rgba(0, 0, 0, 0.3),
-    inset 0 1px 0 rgba(255, 255, 255, 0.04);
+  background: var(--surface);
+  box-shadow: 0 2px 6px var(--paper-shadow-soft);
+  border: 1px solid var(--border);
 }
 
 .clay-note-unselected:hover {
-  background: linear-gradient(145deg, #253352 0%, #1E293B 100%);
-  box-shadow:
-    0 2px 8px rgba(0, 0, 0, 0.35),
-    inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  background: var(--background-muted);
+  box-shadow: 0 4px 10px var(--paper-shadow);
 }
 
-/* Option Selection Styles - Dark mode */
+/* Option Selection Styles - Paper UI */
 .clay-option-selected {
-  background: linear-gradient(145deg, #1E293B 0%, #1A2540 100%);
-  box-shadow:
-    0 2px 8px rgba(40, 69, 214, 0.15),
-    inset 0 1px 0 rgba(255, 255, 255, 0.06),
-    inset 0 -1px 0 rgba(40, 69, 214, 0.1);
+  background: var(--surface);
+  box-shadow: 0 4px 12px var(--paper-shadow-soft);
+  border: 1px solid var(--primary);
 }
 
 .clay-option-unselected {
-  background: linear-gradient(145deg, #131B2E 0%, #0F172A 100%);
-  box-shadow:
-    inset 0 1px 2px rgba(0, 0, 0, 0.25);
+  background: var(--surface);
+  box-shadow: inset 0 1px 2px var(--paper-shadow-soft);
+  border: 1px dashed var(--border);
 }
 
 .clay-option-unselected:hover {
-  background: linear-gradient(145deg, #1E293B 0%, #172033 100%);
-  box-shadow:
-    0 1px 4px rgba(0, 0, 0, 0.3),
-    inset 0 1px 0 rgba(255, 255, 255, 0.04);
+  background: var(--background-muted);
+  box-shadow: 0 3px 8px var(--paper-shadow-soft);
 }
 
-/* Summary Card - Dark mode */
+/* Summary Card - Paper UI */
 .clay-summary {
-  background: linear-gradient(145deg, #131B2E 0%, #0F172A 100%);
+  background: var(--background-muted);
   box-shadow:
-    inset 0 2px 4px rgba(0, 0, 0, 0.25),
-    inset 0 -1px 0 rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.04);
+    inset 0 2px 4px var(--paper-shadow-soft),
+    0 3px 8px var(--paper-shadow-soft);
+  border: 1px solid var(--border);
 }
 
 /* ==========================================
@@ -817,63 +717,41 @@ body {
 
 
 /* ==========================================
-   ✨ MemoForge Background - Clean & Modern
+   📄 Paper Background - Warm & Textured
    ==========================================
-   Sleek white with subtle gradients and floating shapes
+   Soft paper grain with gentle desk shading
 */
 
+.paper-bg,
 .memoforge-bg {
   position: relative;
   isolation: isolate;
   min-height: 100vh;
-  /* Rich gradient with subtle depth shifts */
-  background:
-    linear-gradient(165deg, #0F172A 0%, #111D35 25%, #0E1629 50%, #0C1322 100%);
+  background: var(--background);
 }
 
-/* Grid pattern - structured mesh lines */
+/* Paper grain layer */
+.paper-bg::before,
 .memoforge-bg::before {
   content: '';
   position: fixed;
   inset: 0;
-  background-image:
-    /* Vertical grid lines */
-    repeating-linear-gradient(
-      90deg,
-      rgba(148, 163, 184, 0.08) 0px,
-      rgba(148, 163, 184, 0.08) 1px,
-      transparent 1px,
-      transparent 48px
-    ),
-    /* Horizontal grid lines */
-    repeating-linear-gradient(
-      0deg,
-      rgba(148, 163, 184, 0.08) 0px,
-      rgba(148, 163, 184, 0.08) 1px,
-      transparent 1px,
-      transparent 48px
-    );
-  /* Mask: fade grid toward edges */
-  -webkit-mask-image: radial-gradient(ellipse 90% 85% at 50% 50%, black 40%, transparent 80%);
-  mask-image: radial-gradient(ellipse 90% 85% at 50% 50%, black 40%, transparent 80%);
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+  opacity: 0.05;
+  mix-blend-mode: multiply;
   pointer-events: none;
   z-index: -1;
 }
 
-/* Ambient glow layers for depth and warmth over the grid */
+/* Desk shading + soft highlights */
+.paper-bg::after,
 .memoforge-bg::after {
   content: '';
   position: fixed;
   inset: 0;
   background:
-    /* Primary blue glow - top right */
-    radial-gradient(ellipse 1000px 600px at 80% 0%, rgba(40, 69, 214, 0.18) 0%, transparent 55%),
-    /* Secondary warm glow - bottom left */
-    radial-gradient(ellipse 900px 600px at 5% 90%, rgba(246, 128, 72, 0.08) 0%, transparent 50%),
-    /* Soft center glow for depth */
-    radial-gradient(ellipse 1400px 900px at 50% 35%, rgba(30, 41, 59, 0.4) 0%, transparent 60%),
-    /* Top-left blue highlight */
-    radial-gradient(ellipse 800px 300px at 25% 0%, rgba(91, 123, 240, 0.1) 0%, transparent 60%);
+    radial-gradient(ellipse 1200px 700px at 15% 0%, rgba(255, 255, 255, 0.7) 0%, transparent 60%),
+    radial-gradient(ellipse 900px 700px at 85% 100%, rgba(0, 0, 0, 0.05) 0%, transparent 65%);
   pointer-events: none;
   z-index: -1;
 }
@@ -3312,22 +3190,11 @@ body {
   width: 100%;
   height: 100%;
   border-radius: 20px;
-  background: linear-gradient(
-    155deg,
-    var(--clay-accent) 0%,
-    var(--clay-secondary) 25%,
-    var(--clay-primary) 50%,
-    color-mix(in srgb, var(--clay-primary) 85%, black) 100%
-  );
+  background: var(--clay-primary);
+  border: 1px solid color-mix(in srgb, var(--clay-primary) 70%, var(--border) 30%);
   box-shadow:
-    /* Outer shadow for depth */
-    0 25px 50px -15px var(--clay-shadow),
-    0 15px 30px -10px rgba(0, 0, 0, 0.15),
-    8px 0 20px -10px rgba(0, 0, 0, 0.1),
-    /* Inner highlight for puffy look */
-    inset 0 2px 6px rgba(255, 255, 255, 0.4),
-    inset 0 -3px 6px rgba(0, 0, 0, 0.15),
-    inset -2px 0 4px rgba(0, 0, 0, 0.05);
+    0 14px 28px var(--paper-shadow-soft),
+    0 2px 0 rgba(60, 50, 40, 0.08);
   display: flex;
   flex-direction: column;
   overflow: visible;
@@ -3348,8 +3215,8 @@ body {
   height: 40%;
   background: linear-gradient(
     180deg,
-    rgba(255, 255, 255, 0.15) 0%,
-    rgba(255, 255, 255, 0.05) 50%,
+    rgba(255, 255, 255, 0.12) 0%,
+    rgba(255, 255, 255, 0.04) 50%,
     transparent 100%
   );
   border-radius: 20px 20px 0 0;
@@ -3365,8 +3232,8 @@ body {
   width: 28px;
   background: linear-gradient(
     90deg,
-    rgba(0, 0, 0, 0.2) 0%,
-    rgba(0, 0, 0, 0.1) 30%,
+    rgba(0, 0, 0, 0.12) 0%,
+    rgba(0, 0, 0, 0.05) 40%,
     transparent 100%
   );
   border-radius: 20px 0 0 20px;
@@ -3381,7 +3248,7 @@ body {
 .clay-notebook-cover__spine-line {
   width: 100%;
   height: 2px;
-  background: linear-gradient(90deg, rgba(255, 255, 255, 0.1) 0%, transparent 100%);
+  background: linear-gradient(90deg, rgba(255, 255, 255, 0.18) 0%, transparent 100%);
   border-radius: 1px;
 }
 
@@ -3392,9 +3259,9 @@ body {
   left: 10%;
   right: 10%;
   height: 20px;
-  background: radial-gradient(ellipse 60% 100% at center, var(--clay-shadow) 0%, transparent 70%);
-  filter: blur(8px);
-  opacity: 0.5;
+  background: radial-gradient(ellipse 60% 100% at center, var(--paper-shadow) 0%, transparent 70%);
+  filter: blur(10px);
+  opacity: 0.25;
   transition: all 0.3s ease;
   z-index: 0;
   pointer-events: none;
@@ -3402,7 +3269,7 @@ body {
 
 .clay-notebook-cover--card:hover .clay-notebook-cover__shadow {
   bottom: -12px;
-  opacity: 0.7;
+  opacity: 0.35;
 }
 
 /* Page stack effect for card mode */
@@ -3461,15 +3328,10 @@ body {
   width: 14px;
   height: 14px;
   border-radius: 50%;
-  background: linear-gradient(
-    145deg,
-    rgba(0, 0, 0, 0.35) 0%,
-    rgba(0, 0, 0, 0.15) 100%
-  );
+  background: radial-gradient(circle at 35% 35%, rgba(0, 0, 0, 0.25) 0%, rgba(0, 0, 0, 0.4) 100%);
   box-shadow:
-    inset 0 2px 4px rgba(0, 0, 0, 0.4),
-    inset 0 -1px 2px rgba(255, 255, 255, 0.1),
-    0 1px 2px rgba(255, 255, 255, 0.15);
+    inset 0 1px 2px rgba(0, 0, 0, 0.3),
+    0 1px 2px rgba(255, 255, 255, 0.2);
 }
 
 .clay-notebook-cover__hole--small {

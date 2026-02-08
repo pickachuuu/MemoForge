@@ -155,7 +155,7 @@ export default function NotePage() {
     return (
       <div className="min-h-[calc(100vh-120px)] flex flex-col -mx-4 sm:-mx-6 lg:-mx-8 -mt-6">
         {/* Header skeleton */}
-        <div className="clay-card border-b border-border px-6 py-4">
+        <div className="clay-card border border-dashed border-pencil/40 border-b px-6 py-4">
           <div className="max-w-4xl mx-auto flex items-center justify-between">
             <div className="h-6 w-32 bg-background-muted rounded animate-pulse" />
             <div className="h-6 w-20 bg-background-muted rounded-full animate-pulse" />
@@ -164,7 +164,7 @@ export default function NotePage() {
         {/* Document skeleton */}
         <div className="flex-1 bg-background-muted/50 py-8">
           <div className="max-w-4xl mx-auto">
-            <div className="clay-card-elevated rounded-2xl p-12 min-h-[700px] animate-pulse">
+            <div className="clay-card-elevated rounded-2xl p-12 min-h-[700px] animate-pulse border border-dashed border-pencil/40">
               <div className="h-10 w-2/3 bg-background-muted rounded-lg mb-8" />
               <div className="space-y-4">
                 <div className="h-4 w-full bg-background-muted rounded" />
@@ -181,7 +181,7 @@ export default function NotePage() {
   return (
     <div className="min-h-[calc(100vh-120px)] flex flex-col -mx-4 sm:-mx-6 lg:-mx-8 -mt-6">
       {/* Top Header Bar */}
-      <div className="clay-card sticky top-0 z-20 border-b border-border">
+      <div className="clay-card sticky top-0 z-20 border border-dashed border-pencil/40 border-b">
         <div className="max-w-5xl mx-auto px-6 py-3 flex items-center justify-between gap-4">
           {/* Left: Back button */}
           <Link
@@ -273,7 +273,7 @@ export default function NotePage() {
       <div className="flex-1 bg-gradient-to-b from-background-muted/30 to-background-muted/60 overflow-auto">
         <div className="max-w-4xl mx-auto py-8 px-4">
           {/* The Document "Paper" */}
-          <div className="clay-card-elevated rounded-2xl overflow-hidden min-h-[800px] flex flex-col">
+          <div className="clay-card-elevated rounded-2xl overflow-hidden min-h-[800px] flex flex-col border border-dashed border-pencil/40">
             {/* Document Header with Title */}
             <div className="px-8 sm:px-12 pt-10 pb-6 border-b border-border/50">
               <input

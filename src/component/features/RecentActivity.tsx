@@ -83,7 +83,7 @@ function ActivityItemSkeleton({ isLast }: { isLast: boolean }) {
 function EmptyState() {
   return (
     <div className="flex flex-col items-center justify-center py-10 text-center">
-      <div className="p-4 rounded-2xl bg-gradient-to-br from-surface to-surface-elevated mb-4 shadow-inner">
+      <div className="p-4 rounded-2xl bg-background-muted border border-border mb-4 shadow-inner">
         <Clock01Icon className="w-8 h-8 text-foreground-muted" />
       </div>
       <h4 className="font-semibold text-foreground text-sm mb-1">No recent activity</h4>
@@ -100,17 +100,17 @@ export default function RecentActivity() {
   const iconConfigs = {
     note: {
       icon: <NotebookIcon className="w-4.5 h-4.5 text-primary" />,
-      iconBg: 'bg-gradient-to-br from-primary-muted to-primary-muted/70',
+      iconBg: 'bg-background-muted border border-border',
       dotColor: 'bg-primary',
     },
     flashcard: {
       icon: <FlashcardIcon className="w-4.5 h-4.5 text-tertiary" />,
-      iconBg: 'bg-gradient-to-br from-tertiary-muted to-tertiary-muted/70',
+      iconBg: 'bg-background-muted border border-border',
       dotColor: 'bg-tertiary',
     },
     exam: {
       icon: <ExamIcon className="w-4.5 h-4.5 text-secondary" />,
-      iconBg: 'bg-gradient-to-br from-secondary-muted to-secondary-muted/70',
+      iconBg: 'bg-background-muted border border-border',
       dotColor: 'bg-secondary',
     },
   };
@@ -130,9 +130,9 @@ export default function RecentActivity() {
     <ClayCard variant="elevated" padding="none" className="rounded-3xl overflow-hidden">
       {/* Decorative top: subtle ruled-line accent */}
       <div
-        className="h-2 opacity-[0.06]"
+        className="h-2 opacity-[0.15]"
         style={{
-          backgroundImage: 'repeating-linear-gradient(0deg, transparent, transparent 3px, #2845D6 3px, #2845D6 4px)',
+          backgroundImage: 'repeating-linear-gradient(0deg, transparent, transparent 3px, var(--pencil) 3px, var(--pencil) 4px)',
         }}
       />
 
@@ -142,7 +142,7 @@ export default function RecentActivity() {
             <h3 className="text-lg font-bold text-foreground">Recent Activity</h3>
             <p className="text-xs text-foreground-muted mt-0.5">Your learning journal</p>
           </div>
-          <Link href="/library" className="text-xs text-primary hover:text-primary-dark font-semibold flex items-center gap-1 transition-colors px-3 py-1.5 rounded-lg hover:bg-primary-muted/50">
+          <Link href="/library" className="text-xs text-primary hover:text-primary-dark font-semibold flex items-center gap-1 transition-colors px-3 py-1.5 rounded-lg hover:bg-background-muted">
             View all
             <ArrowRight01Icon className="w-3.5 h-3.5" />
           </Link>

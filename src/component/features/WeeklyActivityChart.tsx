@@ -23,15 +23,15 @@ function ChartSkeleton() {
   );
 }
 
-// Gradient colors for each day to add visual variety
+// Soft ink tones for each day
 const BAR_COLORS = [
-  'from-blue-300 to-primary',
-  'from-primary-light to-primary',
-  'from-blue-200 to-primary-light',
-  'from-blue-300 to-primary',
-  'from-primary to-primary-dark',
-  'from-primary-light to-primary-dark',
-  'from-primary to-primary-dark', // today - most vivid
+  'bg-primary/25',
+  'bg-primary/35',
+  'bg-primary/20',
+  'bg-primary/30',
+  'bg-primary/40',
+  'bg-primary/35',
+  'bg-primary/50', // today - most vivid
 ];
 
 export default function WeeklyActivityChart() {
@@ -52,7 +52,7 @@ export default function WeeklyActivityChart() {
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-3">
-          <div className="p-2.5 rounded-xl bg-gradient-to-br from-primary-muted to-primary-muted/70">
+          <div className="p-2.5 rounded-xl bg-background-muted border border-border">
             <Activity03Icon className="w-5 h-5 text-primary" />
           </div>
           <div>
@@ -63,11 +63,11 @@ export default function WeeklyActivityChart() {
 
         {/* Stat pills */}
         <div className="flex items-center gap-2">
-          <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-gradient-to-br from-primary-muted/50 to-primary-muted/80 border border-primary/10">
+          <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-background-muted border border-border">
             <FlashcardIcon className="w-3.5 h-3.5 text-primary" />
             <span className="text-sm font-bold text-primary">{totalCards}</span>
           </div>
-          <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-gradient-to-br from-tertiary-muted/50 to-tertiary-muted/80 border border-tertiary/10">
+          <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-background-muted border border-border">
             <Clock01Icon className="w-3.5 h-3.5 text-tertiary" />
             <span className="text-sm font-bold text-tertiary">{totalMinutes}m</span>
           </div>
@@ -79,8 +79,8 @@ export default function WeeklyActivityChart() {
         {/* Empty state overlay when no activity */}
         {totalCards === 0 && (
           <div className="absolute inset-0 flex flex-col items-center justify-center z-10">
-            <div className="p-3 rounded-2xl bg-gradient-to-br from-primary-muted/40 to-primary-muted/20 mb-3">
-              <Activity03Icon className="w-6 h-6 text-primary/40" />
+            <div className="p-3 rounded-2xl bg-background-muted border border-border mb-3">
+              <Activity03Icon className="w-6 h-6 text-primary/50" />
             </div>
             <p className="text-sm font-medium text-foreground-muted">No activity this week</p>
             <p className="text-xs text-foreground-muted/70 mt-1">Study some cards to see your chart fill up!</p>
@@ -96,7 +96,7 @@ export default function WeeklyActivityChart() {
           return (
             <div key={day.date} className="flex-1 flex flex-col items-center group relative">
               {/* Tooltip */}
-              <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-3 py-2 bg-foreground text-white text-xs rounded-xl opacity-0 group-hover:opacity-100 transition-all whitespace-nowrap pointer-events-none z-10 shadow-lg">
+              <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-3 py-2 bg-foreground text-background text-xs rounded-xl opacity-0 group-hover:opacity-100 transition-all whitespace-nowrap pointer-events-none z-10 shadow-lg">
                 <p className="font-bold">{day.cardsStudied} cards</p>
                 {day.minutesStudied > 0 && (
                   <p className="opacity-70">{day.minutesStudied}m studied</p>
@@ -108,8 +108,8 @@ export default function WeeklyActivityChart() {
                 <div
                   className={`w-full rounded-xl transition-all duration-500 cursor-pointer hover:opacity-90 ${
                     hasActivity
-                      ? `bg-gradient-to-t ${barColor} ${isToday ? 'shadow-lg shadow-primary/25 ring-2 ring-primary/20 ring-offset-2 ring-offset-surface' : 'shadow-sm'}`
-                      : 'bg-gradient-to-t from-surface to-surface-elevated/50'
+                      ? `${barColor} ${isToday ? 'shadow-sm ring-2 ring-primary/20 ring-offset-2 ring-offset-background' : 'shadow-sm'}`
+                      : 'bg-background-muted border border-border'
                   }`}
                   style={{
                     height: hasActivity ? `${Math.max(heightPercent, 12)}%` : '8px',
@@ -137,7 +137,7 @@ export default function WeeklyActivityChart() {
       </div>
 
       {/* Active Days Footer */}
-      <div className="mt-5 pt-4 border-t border-border/50">
+      <div className="mt-5 pt-4 border-t border-border/70">
         <div className="flex items-center justify-between">
           <span className="text-xs text-foreground-muted font-medium">
             {activeDays}/7 active days
@@ -148,7 +148,7 @@ export default function WeeklyActivityChart() {
                 key={i}
                 className={`w-2.5 h-2.5 rounded-full transition-all duration-300 ${
                   i < activeDays
-                    ? 'bg-gradient-to-br from-primary-light to-primary shadow-sm shadow-primary/20'
+                    ? 'bg-primary/35'
                     : 'bg-border'
                 }`}
               />

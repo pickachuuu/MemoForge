@@ -46,7 +46,6 @@ export default function ContinueLearning() {
           subtitle: `${dueCardsCount} cards waiting`,
           icon: <Clock01Icon className="w-6 h-6" />,
           href: '/flashcards',
-          gradient: 'from-secondary via-secondary to-secondary-light',
           accentColor: 'secondary',
           priority: 'high',
         };
@@ -56,7 +55,6 @@ export default function ContinueLearning() {
           subtitle: lastStudiedSet ? `${lastStudiedSet.title}` : 'Pick up where you left off',
           icon: <PlayIcon className="w-6 h-6" />,
           href: lastStudiedSet ? `/flashcards/${lastStudiedSet.id}/study` : '/flashcards',
-          gradient: 'from-primary via-primary to-primary-light',
           accentColor: 'primary',
           priority: 'medium',
         };
@@ -66,7 +64,6 @@ export default function ContinueLearning() {
           subtitle: 'Begin studying a new set',
           icon: <FlashcardIcon className="w-6 h-6" />,
           href: '/flashcards',
-          gradient: 'from-primary-light via-primary to-primary-dark',
           accentColor: 'tertiary',
           priority: 'normal',
         };
@@ -77,7 +74,6 @@ export default function ContinueLearning() {
           subtitle: 'Generate from your notes',
           icon: <Add01Icon className="w-6 h-6" />,
           href: '/library',
-          gradient: 'from-primary via-primary to-primary-dark',
           accentColor: 'primary',
           priority: 'normal',
         };
@@ -85,18 +81,39 @@ export default function ContinueLearning() {
   };
 
   const config = getActionConfig();
+  const accentStyles = {
+    primary: {
+      bar: 'bg-primary',
+      icon: 'text-primary',
+      border: 'border-primary/30',
+      tint: 'bg-primary/10',
+    },
+    secondary: {
+      bar: 'bg-secondary',
+      icon: 'text-secondary',
+      border: 'border-secondary/30',
+      tint: 'bg-secondary/10',
+    },
+    tertiary: {
+      bar: 'bg-tertiary',
+      icon: 'text-tertiary',
+      border: 'border-tertiary/30',
+      tint: 'bg-tertiary/10',
+    },
+  } as const;
+  const accent = accentStyles[config.accentColor as keyof typeof accentStyles] ?? accentStyles.primary;
 
   return (
-    <ClayCard variant="elevated" padding="none" className="rounded-3xl h-full overflow-hidden relative">
-      {/* Decorative bookmark tab */}
-      <div className="absolute top-0 right-6 w-8 h-10 bg-gradient-to-b from-secondary to-secondary-light rounded-b-lg shadow-md z-20 flex items-end justify-center pb-1">
-        <Bookmark01Icon className="w-4 h-4 text-white" />
+    <ClayCard variant="elevated" padding="none" className="rounded-3xl h-full relative">
+      {/* Decorative tab */}
+      <div className={`absolute top-0 right-6 w-8 h-10 bg-background-muted border border-border rounded-b-lg z-20 flex items-end justify-center pb-1 ${accent.icon}`}>
+        <Bookmark01Icon className="w-4 h-4" />
       </div>
 
       <div className="p-6 flex flex-col h-full">
         {/* Header */}
         <div className="flex items-center gap-2.5 mb-5">
-          <div className="p-1.5 rounded-lg bg-gradient-to-br from-primary-muted to-primary-muted/60">
+          <div className="p-1.5 rounded-lg bg-background-muted border border-border">
             <SparklesIcon className="w-4 h-4 text-primary" />
           </div>
           <h3 className="text-sm font-semibold text-foreground">Recommended</h3>
@@ -104,32 +121,30 @@ export default function ContinueLearning() {
 
         {/* Main CTA Card */}
         <Link href={config.href} className="block">
-          <div className={`relative overflow-hidden rounded-2xl bg-gradient-to-br ${config.gradient} p-5 text-white shadow-xl hover:shadow-2xl transition-all hover:scale-[1.02] hover:-translate-y-0.5 cursor-pointer group`}>
-            {/* Decorative circles */}
-            <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -translate-y-1/2 translate-x-1/2 blur-xl" />
-            <div className="absolute bottom-0 left-0 w-24 h-24 bg-black/10 rounded-full translate-y-1/2 -translate-x-1/2 blur-lg" />
+          <div className="relative overflow-hidden rounded-2xl bg-surface border border-pencil/40 p-5 shadow-sm hover:shadow-md transition-all cursor-pointer group">
+            <span className={`absolute left-0 top-0 bottom-0 w-1.5 ${accent.bar}`} />
 
             <div className="relative flex items-center gap-4">
-              <div className="p-3 bg-white/20 rounded-xl backdrop-blur-sm">
+              <div className={`p-3 rounded-xl bg-background-muted border border-border ${accent.icon}`}>
                 {config.icon}
               </div>
               <div className="flex-1 min-w-0">
-                <h4 className="font-bold text-base leading-tight">{config.title}</h4>
-                <p className="text-white/75 text-xs mt-1 truncate">{config.subtitle}</p>
+                <h4 className="font-bold text-base leading-tight text-foreground">{config.title}</h4>
+                <p className="text-foreground-muted text-xs mt-1 truncate">{config.subtitle}</p>
               </div>
-              <ArrowRight01Icon className="w-5 h-5 opacity-50 group-hover:opacity-100 group-hover:translate-x-1 transition-all flex-shrink-0" />
+              <ArrowRight01Icon className="w-5 h-5 text-foreground-muted opacity-60 group-hover:opacity-100 group-hover:translate-x-1 transition-all flex-shrink-0" />
             </div>
 
             {/* Progress bar for continue_set */}
             {suggestedAction === 'continue_set' && lastStudiedSet && (
-              <div className="mt-4 pt-3 border-t border-white/20">
-                <div className="flex items-center justify-between text-xs mb-2">
-                  <span className="text-white/70">Progress</span>
-                  <span className="font-bold">{lastStudiedSet.progress}%</span>
+              <div className="mt-4 pt-3 border-t border-border/70">
+                <div className="flex items-center justify-between text-xs mb-2 text-foreground-muted">
+                  <span>Progress</span>
+                  <span className="font-bold text-foreground">{lastStudiedSet.progress}%</span>
                 </div>
-                <div className="h-2 bg-white/20 rounded-full overflow-hidden">
+                <div className="h-2 bg-background-muted rounded-full overflow-hidden border border-border">
                   <div
-                    className="h-full bg-white rounded-full transition-all duration-500"
+                    className={`h-full ${accent.bar} rounded-full transition-all duration-500`}
                     style={{ width: `${lastStudiedSet.progress}%` }}
                   />
                 </div>
@@ -139,7 +154,7 @@ export default function ContinueLearning() {
             {/* Priority badge */}
             {suggestedAction === 'review_due' && dueCardsCount && dueCardsCount > 5 && (
               <div className="mt-3">
-                <span className="px-2.5 py-1 bg-white/20 rounded-full text-[10px] font-bold backdrop-blur-sm">
+                <span className={`px-2.5 py-1 rounded-full text-[10px] font-bold border ${accent.border} ${accent.tint} ${accent.icon}`}>
                   ⚡ High Priority
                 </span>
               </div>
@@ -153,9 +168,9 @@ export default function ContinueLearning() {
         {/* Quick Actions */}
         <div className="mt-4 grid grid-cols-2 gap-2.5">
           <Link href="/library">
-            <div className="p-3.5 rounded-xl bg-gradient-to-br from-surface to-surface-elevated/50 hover:from-secondary-muted/30 hover:to-secondary-muted/50 border border-border hover:border-secondary/20 transition-all cursor-pointer group">
+            <div className="p-3.5 rounded-xl bg-surface border border-pencil/30 hover:bg-background-muted transition-all cursor-pointer group">
               <div className="flex items-center gap-3">
-                <div className="p-2 rounded-lg bg-gradient-to-br from-secondary-muted to-secondary-muted/70">
+                <div className="p-2 rounded-lg bg-background-muted border border-border">
                   <PencilEdit01Icon className="w-4 h-4 text-secondary" />
                 </div>
                 <div className="min-w-0">
@@ -167,9 +182,9 @@ export default function ContinueLearning() {
           </Link>
 
           <Link href="/flashcards">
-            <div className="p-3.5 rounded-xl bg-gradient-to-br from-surface to-surface-elevated/50 hover:from-tertiary-muted/30 hover:to-tertiary-muted/50 border border-border hover:border-tertiary/20 transition-all cursor-pointer group">
+            <div className="p-3.5 rounded-xl bg-surface border border-pencil/30 hover:bg-background-muted transition-all cursor-pointer group">
               <div className="flex items-center gap-3">
-                <div className="p-2 rounded-lg bg-gradient-to-br from-tertiary-muted to-tertiary-muted/70">
+                <div className="p-2 rounded-lg bg-background-muted border border-border">
                   <FlashcardIcon className="w-4 h-4 text-tertiary" />
                 </div>
                 <div className="min-w-0">
