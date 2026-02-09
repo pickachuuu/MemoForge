@@ -1,13 +1,15 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useParams } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import { createClient } from '@/utils/supabase/client';
 import Card from '@/component/ui/Card';
 import Button from '@/component/ui/Button';
 import Header from '@/component/ui/Header';
-import { ArrowLeft01Icon, Share01Icon, EyeIcon } from 'hugeicons-react';
+import { ArrowLeft01Icon, Share01Icon, EyeIcon, Bookmark01Icon } from 'hugeicons-react';
 import Link from 'next/link';
+import SaveMaterialModal from '@/component/features/modal/SaveMaterialModal';
+import { useCopyPublicFlashcardSet, useSaveReference } from '@/hooks/useSavedMaterials';
 
 const supabase = createClient();
 
@@ -29,6 +31,7 @@ interface Flashcard {
 
 export default function PublicFlashcardSetPage() {
   const params = useParams();
+  const router = useRouter();
   const setId = params?.setId as string;
 
   const [set, setSet] = useState<FlashcardSet | null>(null);
@@ -37,6 +40,11 @@ export default function PublicFlashcardSetPage() {
   const [error, setError] = useState<string | null>(null);
   const [currentCardIndex, setCurrentCardIndex] = useState(0);
   const [showAnswer, setShowAnswer] = useState(false);
+  const [isSaveModalOpen, setIsSaveModalOpen] = useState(false);
+  const [savingAction, setSavingAction] = useState<'reference' | 'copy' | null>(null);
+
+  const saveReferenceMutation = useSaveReference();
+  const copyFlashcardSetMutation = useCopyPublicFlashcardSet();
 
   useEffect(() => {
     const fetchPublicSet = async () => {
@@ -107,6 +115,33 @@ export default function PublicFlashcardSetPage() {
     // You could add a toast notification here
   };
 
+  const handleSaveReference = async () => {
+    if (!set) return;
+    setSavingAction('reference');
+    try {
+      await saveReferenceMutation.mutateAsync({ itemType: 'flashcard', itemId: set.id });
+      setIsSaveModalOpen(false);
+    } catch (error) {
+      console.error('Error saving flashcard reference:', error);
+    } finally {
+      setSavingAction(null);
+    }
+  };
+
+  const handleSaveCopy = async () => {
+    if (!set) return;
+    setSavingAction('copy');
+    try {
+      const result = await copyFlashcardSetMutation.mutateAsync(set.id);
+      setIsSaveModalOpen(false);
+      router.push(`/flashcards/${result.id}`);
+    } catch (error) {
+      console.error('Error copying flashcard set:', error);
+    } finally {
+      setSavingAction(null);
+    }
+  };
+
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
@@ -163,15 +198,26 @@ export default function PublicFlashcardSetPage() {
                 <span>Shared publicly</span>
               </div>
             </div>
-            <Button
-              onClick={copyShareLink}
-              variant="outline"
-              size="sm"
-              className="shrink-0"
-            >
-              <Share01Icon className="w-4 h-4 mr-2" />
-              Copy Link
-            </Button>
+            <div className="flex items-center gap-2">
+              <Button
+                onClick={() => setIsSaveModalOpen(true)}
+                variant="outline"
+                size="sm"
+                className="shrink-0"
+              >
+                <Bookmark01Icon className="w-4 h-4 mr-2" />
+                Save
+              </Button>
+              <Button
+                onClick={copyShareLink}
+                variant="outline"
+                size="sm"
+                className="shrink-0"
+              >
+                <Share01Icon className="w-4 h-4 mr-2" />
+                Copy Link
+              </Button>
+            </div>
           </div>
         </Card.Header>
       </Card>
@@ -255,6 +301,16 @@ export default function PublicFlashcardSetPage() {
           <p className="text-foreground-muted">This flashcard set is empty.</p>
         </Card>
       )}
+
+      <SaveMaterialModal
+        isOpen={isSaveModalOpen}
+        onClose={() => setIsSaveModalOpen(false)}
+        itemType="flashcard"
+        title={set?.title || 'Flashcard set'}
+        onSaveReference={handleSaveReference}
+        onSaveCopy={handleSaveCopy}
+        savingAction={savingAction}
+      />
     </div>
   </div>
   );

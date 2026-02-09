@@ -199,6 +199,7 @@ export type Database = {
           slug: string | null
           status: 'draft' | 'published' | 'archived'
           tags: string[] | null
+          cover_color: string | null
           is_public: boolean
           created_at: string
           updated_at: string
@@ -211,6 +212,7 @@ export type Database = {
           slug?: string | null
           status?: 'draft' | 'published' | 'archived'
           tags?: string[] | null
+          cover_color?: string | null
           is_public?: boolean
           created_at?: string
           updated_at?: string
@@ -223,6 +225,7 @@ export type Database = {
           slug?: string | null
           status?: 'draft' | 'published' | 'archived'
           tags?: string[] | null
+          cover_color?: string | null
           is_public?: boolean
           created_at?: string
           updated_at?: string
@@ -404,6 +407,29 @@ export type Database = {
           created_at?: string
         }
       }
+      saved_items: {
+        Row: {
+          id: string
+          user_id: string
+          item_type: 'note' | 'flashcard' | 'exam'
+          item_id: string
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          item_type: 'note' | 'flashcard' | 'exam'
+          item_id: string
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          item_type?: 'note' | 'flashcard' | 'exam'
+          item_id?: string
+          created_at?: string
+        }
+      }
       gemini_requests: {
         Row: {
           id: string
@@ -505,6 +531,7 @@ export type FlashcardSet = Database['public']['Tables']['flashcard_sets']['Row']
 export type Flashcard = Database['public']['Tables']['flashcards']['Row']
 export type StudySession = Database['public']['Tables']['study_sessions']['Row']
 export type SessionResult = Database['public']['Tables']['session_results']['Row']
+export type SavedItem = Database['public']['Tables']['saved_items']['Row']
 export type GeminiRequest = Database['public']['Tables']['gemini_requests']['Row']
 export type UserPreferences = Database['public']['Tables']['user_preferences']['Row']
 
@@ -515,6 +542,7 @@ export type FlashcardSetInsert = Database['public']['Tables']['flashcard_sets'][
 export type FlashcardInsert = Database['public']['Tables']['flashcards']['Insert']
 export type StudySessionInsert = Database['public']['Tables']['study_sessions']['Insert']
 export type SessionResultInsert = Database['public']['Tables']['session_results']['Insert']
+export type SavedItemInsert = Database['public']['Tables']['saved_items']['Insert']
 export type GeminiRequestInsert = Database['public']['Tables']['gemini_requests']['Insert']
 export type UserPreferencesInsert = Database['public']['Tables']['user_preferences']['Insert']
 
@@ -525,6 +553,7 @@ export type FlashcardSetUpdate = Database['public']['Tables']['flashcard_sets'][
 export type FlashcardUpdate = Database['public']['Tables']['flashcards']['Update']
 export type StudySessionUpdate = Database['public']['Tables']['study_sessions']['Update']
 export type SessionResultUpdate = Database['public']['Tables']['session_results']['Update']
+export type SavedItemUpdate = Database['public']['Tables']['saved_items']['Update']
 export type GeminiRequestUpdate = Database['public']['Tables']['gemini_requests']['Update']
 export type UserPreferencesUpdate = Database['public']['Tables']['user_preferences']['Update']
 

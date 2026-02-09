@@ -5,82 +5,8 @@ import Link from 'next/link';
 import { ClayBadge, ClayCard } from '@/component/ui/Clay';
 import { FilterIcon, Search01Icon, SparklesIcon } from 'hugeicons-react';
 import { ExamIcon, FlashcardIcon, NotebookIcon } from '@/component/icons';
+import { useCommunityItems, CommunityType, CommunityItem } from '@/hooks/useCommunity';
 
-type CommunityType = 'note' | 'flashcard' | 'exam';
-
-type CommunityItem = {
-  id: string;
-  type: CommunityType;
-  title: string;
-  summary: string;
-  tags: string[];
-  author: string;
-  updatedAt: string;
-  href: string;
-};
-
-const COMMUNITY_ITEMS: CommunityItem[] = [
-  {
-    id: 'note-photosynthesis',
-    type: 'note',
-    title: 'AP Biology: Photosynthesis',
-    summary: 'Concise notes with diagrams on light and dark reactions.',
-    tags: ['biology', 'ap', 'plants'],
-    author: 'Jenna L.',
-    updatedAt: '2d ago',
-    href: '/library'
-  },
-  {
-    id: 'flashcard-calc-derivatives',
-    type: 'flashcard',
-    title: 'Calculus: Derivatives Drill',
-    summary: '120-card set focused on derivative rules and trig identities.',
-    tags: ['calculus', 'math', 'derivatives'],
-    author: 'Noah K.',
-    updatedAt: '5d ago',
-    href: '/flashcards'
-  },
-  {
-    id: 'exam-us-history',
-    type: 'exam',
-    title: 'US History: Progressive Era Practice',
-    summary: 'Timed practice exam with mixed multiple choice and short answer.',
-    tags: ['history', 'ap', 'civics'],
-    author: 'Maria S.',
-    updatedAt: '1w ago',
-    href: '/exams'
-  },
-  {
-    id: 'note-psych-learning',
-    type: 'note',
-    title: 'Psychology: Learning Theories',
-    summary: 'Classical vs operant conditioning with key researchers.',
-    tags: ['psychology', 'behavior', 'notes'],
-    author: 'Leo R.',
-    updatedAt: '3d ago',
-    href: '/library'
-  },
-  {
-    id: 'flashcard-chem-bonds',
-    type: 'flashcard',
-    title: 'Chemistry: Bonding Basics',
-    summary: 'Ionic, covalent, metallic bonding with quick checks.',
-    tags: ['chemistry', 'bonds', 'science'],
-    author: 'Sasha P.',
-    updatedAt: '4d ago',
-    href: '/flashcards'
-  },
-  {
-    id: 'exam-statistics',
-    type: 'exam',
-    title: 'Statistics: Hypothesis Testing',
-    summary: 'Confidence intervals, p-values, and decision rules.',
-    tags: ['statistics', 'math', 'probability'],
-    author: 'Ivy T.',
-    updatedAt: '6d ago',
-    href: '/exams'
-  }
-];
 
 const FILTER_OPTIONS: { id: CommunityType | 'all'; label: string }[] = [
   { id: 'all', label: 'All' },
@@ -110,14 +36,13 @@ const TYPE_META = {
   }
 } as const;
 
-const TRENDING_TAGS = ['biology', 'calculus', 'psychology', 'history', 'chemistry', 'statistics'];
-
 export default function CommunityPage() {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedType, setSelectedType] = useState<CommunityType | 'all'>('all');
+  const { data: communityItems = [], isLoading, isError } = useCommunityItems();
 
   const filteredItems = useMemo(() => {
-    let filtered = [...COMMUNITY_ITEMS];
+    let filtered = [...communityItems];
 
     if (selectedType !== 'all') {
       filtered = filtered.filter((item) => item.type === selectedType);
@@ -134,16 +59,16 @@ export default function CommunityPage() {
     }
 
     return filtered;
-  }, [searchQuery, selectedType]);
+  }, [communityItems, searchQuery, selectedType]);
 
   const stats = useMemo(() => {
     return {
-      total: COMMUNITY_ITEMS.length,
-      notes: COMMUNITY_ITEMS.filter((item) => item.type === 'note').length,
-      flashcards: COMMUNITY_ITEMS.filter((item) => item.type === 'flashcard').length,
-      exams: COMMUNITY_ITEMS.filter((item) => item.type === 'exam').length
+      total: communityItems.length,
+      notes: communityItems.filter((item) => item.type === 'note').length,
+      flashcards: communityItems.filter((item) => item.type === 'flashcard').length,
+      exams: communityItems.filter((item) => item.type === 'exam').length
     };
-  }, []);
+  }, [communityItems]);
 
   const typeCounts = {
     all: stats.total,
@@ -151,6 +76,20 @@ export default function CommunityPage() {
     flashcard: stats.flashcards,
     exam: stats.exams
   };
+
+  const trendingTags = useMemo(() => {
+    const tagCounts = new Map<string, number>();
+    communityItems.forEach((item) => {
+      item.tags.forEach((tag) => {
+        const key = tag.toLowerCase();
+        tagCounts.set(key, (tagCounts.get(key) || 0) + 1);
+      });
+    });
+    return Array.from(tagCounts.entries())
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 6)
+      .map(([tag]) => tag);
+  }, [communityItems]);
 
   return (
     <div className="space-y-6">
@@ -219,7 +158,25 @@ export default function CommunityPage() {
               </div>
             </div>
 
-            {filteredItems.length === 0 ? (
+            {isLoading ? (
+              <div className="text-center py-12">
+                <div className="w-20 h-20 rounded-2xl bg-background-muted border border-border flex items-center justify-center mx-auto mb-5">
+                  <Search01Icon className="w-9 h-9 text-foreground-muted animate-pulse" />
+                </div>
+                <h3 className="text-lg font-semibold text-foreground mb-2">Loading shared materials</h3>
+                <p className="text-sm text-foreground-muted">Fetching the latest community resources.</p>
+              </div>
+            ) : isError ? (
+              <div className="text-center py-12">
+                <div className="w-20 h-20 rounded-2xl bg-red-50 border border-red-200 flex items-center justify-center mx-auto mb-5">
+                  <Search01Icon className="w-9 h-9 text-red-500" />
+                </div>
+                <h3 className="text-lg font-semibold text-foreground mb-2">Unable to load community</h3>
+                <p className="text-sm text-foreground-muted">
+                  Please try again in a moment.
+                </p>
+              </div>
+            ) : filteredItems.length === 0 ? (
               <div className="text-center py-12">
                 <div className="w-20 h-20 rounded-2xl bg-background-muted border border-border flex items-center justify-center mx-auto mb-5">
                   <Search01Icon className="w-9 h-9 text-foreground-muted" />
@@ -358,15 +315,19 @@ export default function CommunityPage() {
                   Trending topics
                 </p>
                 <div className="flex flex-wrap gap-2">
-                  {TRENDING_TAGS.map((tag) => (
-                    <button
-                      key={tag}
-                      onClick={() => setSearchQuery(tag)}
-                      className="px-3 py-1.5 rounded-full bg-surface border border-border text-[11px] font-semibold text-foreground-muted hover:text-foreground hover:shadow-sm transition-all"
-                    >
-                      #{tag}
-                    </button>
-                  ))}
+                  {trendingTags.length === 0 ? (
+                    <span className="text-xs text-foreground-muted">No topics yet</span>
+                  ) : (
+                    trendingTags.map((tag) => (
+                      <button
+                        key={tag}
+                        onClick={() => setSearchQuery(tag)}
+                        className="px-3 py-1.5 rounded-full bg-surface border border-border text-[11px] font-semibold text-foreground-muted hover:text-foreground hover:shadow-sm transition-all"
+                      >
+                        #{tag}
+                      </button>
+                    ))
+                  )}
                 </div>
               </div>
             </div>
