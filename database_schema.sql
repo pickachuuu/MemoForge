@@ -136,6 +136,16 @@ CREATE TABLE IF NOT EXISTS public.note_pages (
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
+-- Saved items table (bookmarks for community content)
+CREATE TABLE IF NOT EXISTS public.saved_items (
+    id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
+    user_id UUID REFERENCES public.profiles(id) ON DELETE CASCADE NOT NULL,
+    item_type TEXT NOT NULL CHECK (item_type IN ('note', 'flashcard', 'exam')),
+    item_id UUID NOT NULL,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    UNIQUE (user_id, item_type, item_id)
+);
+
 -- Indexes
 CREATE INDEX IF NOT EXISTS idx_notes_user_id ON public.notes(user_id);
 CREATE INDEX IF NOT EXISTS idx_notes_status ON public.notes(status);
@@ -159,6 +169,10 @@ CREATE INDEX IF NOT EXISTS idx_gemini_requests_created_at ON public.gemini_reque
 
 CREATE INDEX IF NOT EXISTS idx_note_pages_note_id ON public.note_pages(note_id);
 CREATE INDEX IF NOT EXISTS idx_note_pages_page_order ON public.note_pages(page_order);
+
+CREATE INDEX IF NOT EXISTS idx_saved_items_user_id ON public.saved_items(user_id);
+CREATE INDEX IF NOT EXISTS idx_saved_items_item_type ON public.saved_items(item_type);
+CREATE INDEX IF NOT EXISTS idx_saved_items_item_id ON public.saved_items(item_id);
 
 -- Trigger functions
 CREATE OR REPLACE FUNCTION update_updated_at_column()
@@ -187,6 +201,7 @@ ALTER TABLE public.session_results ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.gemini_requests ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.user_preferences ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.note_pages ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.saved_items ENABLE ROW LEVEL SECURITY;
 
 -- Functions
 CREATE OR REPLACE FUNCTION create_user_profile()

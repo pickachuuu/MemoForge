@@ -15,6 +15,9 @@ CREATE POLICY "Users can insert own profile" ON public.profiles
 CREATE POLICY "Users can view own notes" ON public.notes
     FOR SELECT USING (auth.uid() = user_id);
 
+CREATE POLICY "Public can view public notes" ON public.notes
+    FOR SELECT USING (is_public = true);
+
 CREATE POLICY "Users can insert own notes" ON public.notes
     FOR INSERT WITH CHECK (auth.uid() = user_id);
 
@@ -160,6 +163,15 @@ CREATE POLICY "Users can view own note pages" ON public.note_pages
         )
     );
 
+CREATE POLICY "Public can view pages of public notes" ON public.note_pages
+    FOR SELECT USING (
+        EXISTS (
+            SELECT 1 FROM public.notes
+            WHERE notes.id = note_pages.note_id
+            AND notes.is_public = true
+        )
+    );
+
 CREATE POLICY "Users can insert own note pages" ON public.note_pages
     FOR INSERT WITH CHECK (
         EXISTS (
@@ -186,3 +198,13 @@ CREATE POLICY "Users can delete own note pages" ON public.note_pages
             AND notes.user_id = auth.uid()
         )
     );
+
+-- Saved items policies
+CREATE POLICY "Users can view own saved items" ON public.saved_items
+    FOR SELECT USING (auth.uid() = user_id);
+
+CREATE POLICY "Users can insert own saved items" ON public.saved_items
+    FOR INSERT WITH CHECK (auth.uid() = user_id);
+
+CREATE POLICY "Users can delete own saved items" ON public.saved_items
+    FOR DELETE USING (auth.uid() = user_id);
