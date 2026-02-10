@@ -33,6 +33,7 @@ interface ForgeFlashcardsModalProps {
     setTitle: string
   ) => void;
   saving?: boolean;
+  initialSelectedNoteIds?: string[];
 }
 
 interface FormData {
@@ -195,6 +196,7 @@ export default function ForgeFlashcardsModal({
   onClose,
   onFlashcardsGenerated,
   saving,
+  initialSelectedNoteIds,
 }: ForgeFlashcardsModalProps) {
   const [currentStep, setCurrentStep] = useState<Step>(1);
   const [isGenerating, setIsGenerating] = useState(false);
@@ -222,12 +224,15 @@ export default function ForgeFlashcardsModal({
   // Reset form when modal opens/closes
   useEffect(() => {
     if (isOpen) {
-      reset(DEFAULT_VALUES);
+      reset({
+        ...DEFAULT_VALUES,
+        selectedNotes: initialSelectedNoteIds ?? [],
+      });
       setCurrentStep(1);
       setError(null);
       setGeneratedFlashcards(null);
     }
-  }, [isOpen, reset]);
+  }, [isOpen, reset, initialSelectedNoteIds]);
 
   // Auto-generate title from selected notes
   useEffect(() => {

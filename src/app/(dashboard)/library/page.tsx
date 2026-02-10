@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useCallback } from 'react';
 import Link from 'next/link';
 import { ClayCard, ClayBadge } from '@/component/ui/Clay';
 import MobileBottomSheet from '@/component/ui/MobileBottomSheet';
@@ -15,18 +15,22 @@ import {
   Calendar03Icon
 } from 'hugeicons-react';
 import { NotebookIcon } from '@/component/icons';
-import { useFlashcardActions } from '@/hook/useFlashcardActions';
-import GenerateFlashCardModal from '@/component/features/modal/GenerateFlashCardModal';
+import GenerateStudyMaterialModal from '@/component/features/modal/GenerateStudyMaterialModal';
+import ForgeFlashcardsModal from '@/component/features/modal/ForgeFlashcardsModal';
+import CreateExamModal from '@/component/features/modal/CreateExamModal';
 import ConfirmDeleteModal from '@/component/features/modal/ConfirmDeleteModal';
-import { GeminiResponse } from '@/lib/gemini';
+import { ExamGenerationResponse, GeminiResponse } from '@/lib/gemini';
 
 // TanStack Query hooks
 import { useUserNotes, useDeleteNote, Note } from '@/hooks/useNotes';
+import { useSaveGeneratedFlashcards } from '@/hooks/useFlashcards';
+import { useCreateExam } from '@/hooks/useExams';
 
 type SortOption = 'recent' | 'alphabetical' | 'oldest';
 
 export default function LibraryPage() {
-  const { saveGeneratedFlashcards } = useFlashcardActions();
+  const saveFlashcardsMutation = useSaveGeneratedFlashcards();
+  const createExamMutation = useCreateExam();
 
   // TanStack Query for data fetching
   const { data: notes = [], isLoading, error, refetch } = useUserNotes();
@@ -39,12 +43,12 @@ export default function LibraryPage() {
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
 
   // Modal state
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isGenerateModalOpen, setIsGenerateModalOpen] = useState(false);
+  const [isForgeModalOpen, setIsForgeModalOpen] = useState(false);
+  const [isExamModalOpen, setIsExamModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [selectedNote, setSelectedNote] = useState<Note | null>(null);
 
-  // Flashcard generation state
-  const [saving, setSaving] = useState(false);
   const [saveSuccess, setSaveSuccess] = useState<string | null>(null);
 
   // Filter and sort notes
@@ -92,9 +96,18 @@ export default function LibraryPage() {
   const colorLabel = selectedColor === 'all' ? 'All colors' : NOTEBOOK_COLORS[selectedColor].name;
   const activeFilters = Number(selectedColor !== 'all');
 
-  const handleGenerateFlashcards = (note: Note) => {
+  const handleGenerateMaterials = (note: Note) => {
     setSelectedNote(note);
-    setIsModalOpen(true);
+    setIsGenerateModalOpen(true);
+  };
+
+  const handleSelectMaterial = (type: 'flashcards' | 'exam') => {
+    setIsGenerateModalOpen(false);
+    if (type === 'flashcards') {
+      setIsForgeModalOpen(true);
+      return;
+    }
+    setIsExamModalOpen(true);
   };
 
   const handleDeleteNote = (note: Note) => {
@@ -119,16 +132,17 @@ export default function LibraryPage() {
     }
   };
 
-  const handleFlashcardsGenerated = async (geminiResponse: GeminiResponse) => {
-    if (!selectedNote) return;
-
-    setSaving(true);
+  const handleFlashcardsGenerated = async (
+    geminiResponse: GeminiResponse,
+    noteIds: string[],
+    setTitle: string
+  ) => {
     setSaveSuccess(null);
     try {
       const difficulty = geminiResponse.flashcards[0]?.difficulty || 'medium';
-      await saveGeneratedFlashcards({
-        noteId: selectedNote.id,
-        noteTitle: selectedNote.title,
+      await saveFlashcardsMutation.mutateAsync({
+        noteId: noteIds.length === 1 ? noteIds[0] : undefined,
+        noteTitle: setTitle || selectedNote?.title || 'Untitled Note',
         difficulty,
         geminiResponse
       });
@@ -140,14 +154,56 @@ export default function LibraryPage() {
       setSaveSuccess('Error saving flashcards. Please try again.');
       setTimeout(() => setSaveSuccess(null), 3000);
     } finally {
-      setSaving(false);
+      setIsForgeModalOpen(false);
+      setSelectedNote(null);
     }
   };
 
-  const handleCloseModal = () => {
-    setIsModalOpen(false);
-    setSelectedNote(null);
-  };
+  const handleExamGenerated = useCallback(async (
+    examResponse: ExamGenerationResponse,
+    noteIds: string[],
+    title: string,
+    config: {
+      difficulty: 'easy' | 'medium' | 'hard' | 'mixed';
+      timeLimitEnabled: boolean;
+      timeLimitMinutes: number;
+      includeMultipleChoice: boolean;
+      includeIdentification: boolean;
+      includeEssay: boolean;
+    }
+  ) => {
+    try {
+      const seenQuestions = new Set<string>();
+      const uniqueQuestions = examResponse.questions.filter((q) => {
+        const key = `${q.question_type}:${q.question}`;
+        if (seenQuestions.has(key)) return false;
+        seenQuestions.add(key);
+        return true;
+      });
+
+      await createExamMutation.mutateAsync({
+        noteId: noteIds.length === 1 ? noteIds[0] : null,
+        title,
+        config: {
+          difficulty: config.difficulty,
+          timeLimitMinutes: config.timeLimitEnabled ? config.timeLimitMinutes : null,
+          includeMultipleChoice: config.includeMultipleChoice,
+          includeIdentification: config.includeIdentification,
+          includeEssay: config.includeEssay,
+        },
+        questions: uniqueQuestions,
+      });
+
+      setSaveSuccess('Exam created successfully!');
+      setTimeout(() => setSaveSuccess(null), 3000);
+      setIsExamModalOpen(false);
+      setSelectedNote(null);
+    } catch (err) {
+      console.error('Error saving exam:', err);
+      setSaveSuccess('Error saving exam. Please try again.');
+      setTimeout(() => setSaveSuccess(null), 3000);
+    }
+  }, [createExamMutation]);
 
   // Handle auth errors
   if (error) {
@@ -261,7 +317,7 @@ export default function LibraryPage() {
                     <NotebookListItem
                       key={note.id}
                       note={note}
-                      onGenerateFlashcards={() => handleGenerateFlashcards(note)}
+                      onGenerate={() => handleGenerateMaterials(note)}
                       onDelete={() => handleDeleteNote(note)}
                     />
                   ))}
@@ -492,12 +548,36 @@ export default function LibraryPage() {
         </div>
       </MobileBottomSheet>
 
-      <GenerateFlashCardModal
-        isOpen={isModalOpen}
-        onClose={handleCloseModal}
-        noteContent={selectedNote?.content || ''}
+      <GenerateStudyMaterialModal
+        isOpen={isGenerateModalOpen}
+        onClose={() => {
+          setIsGenerateModalOpen(false);
+          setSelectedNote(null);
+        }}
+        onSelect={handleSelectMaterial}
+        noteTitle={selectedNote?.title || 'Untitled Notebook'}
+      />
+
+      <ForgeFlashcardsModal
+        isOpen={isForgeModalOpen}
+        onClose={() => {
+          setIsForgeModalOpen(false);
+          setSelectedNote(null);
+        }}
         onFlashcardsGenerated={handleFlashcardsGenerated}
-        saving={saving}
+        saving={saveFlashcardsMutation.isPending}
+        initialSelectedNoteIds={selectedNote ? [selectedNote.id] : undefined}
+      />
+
+      <CreateExamModal
+        isOpen={isExamModalOpen}
+        onClose={() => {
+          setIsExamModalOpen(false);
+          setSelectedNote(null);
+        }}
+        onExamGenerated={handleExamGenerated}
+        saving={createExamMutation.isPending}
+        initialSelectedNoteIds={selectedNote ? [selectedNote.id] : undefined}
       />
 
       <ConfirmDeleteModal
@@ -579,11 +659,11 @@ function NotebooksSkeleton() {
 
 function NotebookListItem({
   note,
-  onGenerateFlashcards,
+  onGenerate,
   onDelete,
 }: {
   note: Note;
-  onGenerateFlashcards: () => void;
+  onGenerate: () => void;
   onDelete: () => void;
 }) {
   const color = (note.cover_color as NotebookColorKey) || 'royal';
@@ -736,10 +816,10 @@ function NotebookListItem({
                 onClick={(e) => {
                   e.preventDefault();
                   e.stopPropagation();
-                  onGenerateFlashcards();
+                  onGenerate();
                 }}
                 className="p-2 rounded-lg bg-primary/10 text-primary hover:bg-primary/20 transition-colors"
-                title="Generate flashcards"
+                title="Generate study materials"
               >
                 <SparklesIcon className="w-4 h-4" />
               </button>

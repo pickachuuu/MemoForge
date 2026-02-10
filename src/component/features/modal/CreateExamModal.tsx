@@ -35,6 +35,7 @@ interface CreateExamModalProps {
     config: ExamFormConfig
   ) => void;
   saving?: boolean;
+  initialSelectedNoteIds?: string[];
 }
 
 interface ExamFormConfig {
@@ -280,6 +281,7 @@ export default function CreateExamModal({
   onClose,
   onExamGenerated,
   saving,
+  initialSelectedNoteIds,
 }: CreateExamModalProps) {
   const [currentStep, setCurrentStep] = useState<Step>(1);
   const [isGenerating, setIsGenerating] = useState(false);
@@ -312,12 +314,15 @@ export default function CreateExamModal({
   // Reset form when modal opens/closes
   useEffect(() => {
     if (isOpen) {
-      reset(DEFAULT_VALUES);
+      reset({
+        ...DEFAULT_VALUES,
+        selectedNotes: initialSelectedNoteIds ?? [],
+      });
       setCurrentStep(1);
       setError(null);
       setGeneratedExam(null);
     }
-  }, [isOpen, reset]);
+  }, [isOpen, reset, initialSelectedNoteIds]);
 
   // Auto-generate title from selected notes
   useEffect(() => {
