@@ -197,7 +197,7 @@ export default function LibraryPage() {
 
         <div className="grid gap-6 lg:grid-cols-12">
           {/* Main content */}
-          <div className="lg:col-span-8 space-y-4">
+          <div className="order-2 lg:order-1 lg:col-span-8 space-y-4">
             {isLoading ? (
               <NotebooksSkeleton />
             ) : processedNotes.length === 0 ? (
@@ -236,7 +236,7 @@ export default function LibraryPage() {
           </div>
 
           {/* Sidebar controls */}
-          <div className="lg:col-span-4 space-y-4">
+          <div className="order-1 lg:order-2 lg:col-span-4 space-y-4">
             <ClayCard variant="default" padding="md" className="rounded-2xl">
               <div className="flex items-center gap-2">
                 <Search01Icon className="w-5 h-5 text-foreground-muted" />

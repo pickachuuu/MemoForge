@@ -136,7 +136,7 @@ export default function CommunityPage() {
       </ClayCard>
 
       <div className="grid gap-6 lg:grid-cols-12">
-        <div className="lg:col-span-8 space-y-4">
+        <div className="order-2 lg:order-1 lg:col-span-8 space-y-4">
           <ClayCard variant="default" padding="lg" className="rounded-3xl">
             <div className="flex flex-wrap items-center justify-between gap-3">
               <div>
@@ -246,7 +246,7 @@ export default function CommunityPage() {
           </ClayCard>
         </div>
 
-        <div className="lg:col-span-4 space-y-4">
+        <div className="order-1 lg:order-2 lg:col-span-4 space-y-4">
           <ClayCard variant="default" padding="md" className="rounded-2xl">
             <div className="flex items-center gap-2">
               <Search01Icon className="w-5 h-5 text-foreground-muted" />
