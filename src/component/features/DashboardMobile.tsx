@@ -63,9 +63,7 @@ function MobileHeader({ user }: DashboardMobileProps) {
     <ClayCard variant="elevated" padding="sm" className="rounded-2xl">
       <div className="flex items-center justify-between gap-4">
         <div className="flex items-center gap-3 min-w-0">
-          <div className="p-2 rounded-xl bg-background-muted border border-border">
-            <DashboardSpeed01Icon className="w-5 h-5 text-primary" />
-          </div>
+          <DashboardSpeed01Icon className="w-8 h-8 text-primary" />
           <div className="min-w-0">
             <p className="text-[10px] uppercase tracking-widest text-foreground-muted">{greeting}</p>
             <h1 className="text-base font-semibold text-foreground truncate">

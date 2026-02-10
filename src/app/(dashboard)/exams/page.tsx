@@ -743,10 +743,8 @@ function ExamsHeader({
     <ClayCard variant="elevated" padding="lg" className="rounded-3xl">
       <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
         {/* Title area */}
-        <div className="flex items-start gap-4">
-          <div className="p-4 rounded-2xl bg-background-muted border border-border">
-            <ExamIcon className="w-8 h-8 text-primary" />
-          </div>
+        <div className="flex items-start gap-3">
+          <ExamIcon className="w-12 h-12 text-primary shrink-0" />
           <div>
             <div className="flex items-center gap-3 mb-1">
               <h1 className="text-2xl md:text-3xl font-bold tracking-tight text-foreground">

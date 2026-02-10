@@ -1,6 +1,6 @@
 /**
  * ============================================
- * MemoForge Custom Icon System
+ * Verso Custom Icon System
  * ============================================
  *
  * App-specific icons for Notebooks, Flashcards, and Exams.

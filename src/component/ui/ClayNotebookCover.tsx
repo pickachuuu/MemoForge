@@ -202,7 +202,7 @@ function EditorCover({
             <div className="clay-notebook-cover__hole" />
           </div>
 
-          {/* Header branding - engraved Memoforge */}
+          {/* Header branding - engraved Verso */}
           <div className="clay-notebook-cover__header">
             <div className="clay-notebook-cover__brand">
               {/* Decorative emblem */}
@@ -223,7 +223,7 @@ function EditorCover({
                   <circle cx="20" cy="12" r="2" fill="currentColor" />
                 </svg>
               </div>
-              <span className="clay-notebook-cover__brand-text">MEMOFORGE</span>
+              <span className="clay-notebook-cover__brand-text">VERSO</span>
               <div className="clay-notebook-cover__brand-tagline">Knowledge Crafted</div>
             </div>
           </div>
@@ -436,7 +436,7 @@ function CardCover({
               <circle cx="20" cy="12" r="2" fill="currentColor" />
             </svg>
           </div>
-          <span className="clay-notebook-cover__card-brand">MEMOFORGE</span>
+          <span className="clay-notebook-cover__card-brand">VERSO</span>
         </div>
 
         {/* Content */}

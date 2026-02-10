@@ -1,7 +1,7 @@
 @import "tailwindcss";
 
 /* ============================================
-   📝 PAPER-FIRST COLOR SYSTEM - MemoForge
+   📝 PAPER-FIRST COLOR SYSTEM - Verso
    ============================================
    Warm paper canvas, graphite text,
    ink accents, pencil edges.
@@ -726,7 +726,7 @@ body {
 */
 
 .paper-bg,
-.memoforge-bg {
+.verso-bg {
   position: relative;
   isolation: isolate;
   min-height: 100vh;
@@ -735,7 +735,7 @@ body {
 
 /* Paper grain layer */
 .paper-bg::before,
-.memoforge-bg::before {
+.verso-bg::before {
   content: '';
   position: fixed;
   inset: 0;
@@ -748,7 +748,7 @@ body {
 
 /* Desk shading + soft highlights */
 .paper-bg::after,
-.memoforge-bg::after {
+.verso-bg::after {
   content: '';
   position: fixed;
   inset: 0;

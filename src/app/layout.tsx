@@ -44,7 +44,7 @@ const cinzel = Cinzel({
 
 // Metadata
 export const metadata: Metadata = {
-  title: "MemoForge - Smart Learning Platform",
+  title: "Verso - Smart Learning Platform",
   description: "Organize your learning with notes and flashcards",
 };
 

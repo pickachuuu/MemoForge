@@ -3,6 +3,7 @@
 import { navItems } from "./navConfig";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
+import Image from "next/image";
 import { Logout01Icon, Menu01Icon, Cancel01Icon } from "hugeicons-react";
 import { AnimatePresence, motion } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
@@ -59,13 +60,16 @@ export default function Navbar() {
         {/* Logo */}
         <div className="px-5 pt-6 pb-8">
           <Link href="/dashboard" className="flex items-center gap-3 group">
-            <div
-              className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform bg-background-muted border border-border shadow-sm"
-            >
-              <span className="text-primary font-bold text-lg">M</span>
-            </div>
+            <Image
+              src="/brand/verso-mark.png"
+              alt="Verso logo"
+              width={48}
+              height={48}
+              className="w-12 h-12 shrink-0 group-hover:scale-105 transition-transform"
+              priority
+            />
             <span className="text-xl font-bold text-foreground group-hover:text-foreground transition-colors tracking-tight">
-              MemoForge
+              Verso
             </span>
           </Link>
         </div>
@@ -172,12 +176,15 @@ export default function Navbar() {
         <div className="px-4 py-3 bg-surface/95 backdrop-blur-md border-b border-border shadow-sm relative z-50">
           <div className="flex items-center justify-between">
             <Link href="/dashboard" className="flex items-center gap-2.5">
-              <div
-                className="w-9 h-9 rounded-xl flex items-center justify-center bg-background-muted border border-border shadow-sm"
-              >
-                <span className="text-primary font-bold text-base">M</span>
-              </div>
-              <span className="text-lg font-bold text-foreground">MemoForge</span>
+              <Image
+                src="/brand/verso-mark.png"
+                alt="Verso logo"
+                width={40}
+                height={40}
+                className="w-10 h-10 shrink-0"
+                priority
+              />
+              <span className="text-lg font-bold text-foreground">Verso</span>
             </Link>
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}

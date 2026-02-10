@@ -177,7 +177,7 @@ export default function PublicFlashcardSetPage() {
     <div className='px-2 md:px-12'>
       <div className='flex justify-between item-center my-5'>
         <Link href={`${window.location.origin}/dashboard`}>
-          <Header title="MemoForge" />
+          <Header title="Verso" />
         </Link>
 
       </div>

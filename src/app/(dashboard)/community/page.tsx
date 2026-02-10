@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { ClayBadge, ClayCard } from '@/component/ui/Clay';
 import MobileBottomSheet from '@/component/ui/MobileBottomSheet';
 import { FilterIcon, Search01Icon, SparklesIcon } from 'hugeicons-react';
-import { ExamIcon, FlashcardIcon, NotebookIcon } from '@/component/icons';
+import { CommunityIcon, ExamIcon, FlashcardIcon, NotebookIcon } from '@/component/icons';
 import { useCommunityItems, CommunityType, CommunityItem } from '@/hooks/useCommunity';
 
 
@@ -98,10 +98,8 @@ export default function CommunityPage() {
     <div className="space-y-6">
       <ClayCard variant="elevated" padding="lg" className="rounded-3xl">
         <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
-          <div className="flex items-start gap-4">
-            <div className="p-4 rounded-2xl bg-background-muted border border-border">
-              <Search01Icon className="w-8 h-8 text-primary" />
-            </div>
+          <div className="flex items-start gap-3">
+            <CommunityIcon className="w-12 h-12 text-primary shrink-0" />
             <div>
               <div className="flex flex-wrap items-center gap-2">
                 <h1 className="text-2xl md:text-3xl font-bold tracking-tight text-foreground">Community</h1>
@@ -196,7 +194,7 @@ export default function CommunityPage() {
             {isLoading ? (
               <div className="text-center py-12">
                 <div className="w-20 h-20 rounded-2xl bg-background-muted border border-border flex items-center justify-center mx-auto mb-5">
-                  <Search01Icon className="w-9 h-9 text-foreground-muted animate-pulse" />
+                  <CommunityIcon className="w-9 h-9 text-foreground-muted animate-pulse" />
                 </div>
                 <h3 className="text-lg font-semibold text-foreground mb-2">Loading shared materials</h3>
                 <p className="text-sm text-foreground-muted">Fetching the latest community resources.</p>
@@ -204,7 +202,7 @@ export default function CommunityPage() {
             ) : isError ? (
               <div className="text-center py-12">
                 <div className="w-20 h-20 rounded-2xl bg-red-50 border border-red-200 flex items-center justify-center mx-auto mb-5">
-                  <Search01Icon className="w-9 h-9 text-red-500" />
+                  <CommunityIcon className="w-9 h-9 text-red-500" />
                 </div>
                 <h3 className="text-lg font-semibold text-foreground mb-2">Unable to load community</h3>
                 <p className="text-sm text-foreground-muted">
@@ -214,7 +212,7 @@ export default function CommunityPage() {
             ) : filteredItems.length === 0 ? (
               <div className="text-center py-12">
                 <div className="w-20 h-20 rounded-2xl bg-background-muted border border-border flex items-center justify-center mx-auto mb-5">
-                  <Search01Icon className="w-9 h-9 text-foreground-muted" />
+                  <CommunityIcon className="w-9 h-9 text-foreground-muted" />
                 </div>
                 <h3 className="text-lg font-semibold text-foreground mb-2">No matches yet</h3>
                 <p className="text-sm text-foreground-muted mb-5">

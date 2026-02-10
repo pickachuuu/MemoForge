@@ -43,7 +43,7 @@ export default function LandingPage() {
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex items-center justify-between h-16">
               <Link href="/" className="text-2xl font-bold text-foreground hover:text-accent transition-colors">
-                MemoForge
+                Verso
               </Link>
               <div className="flex items-center gap-4">
                 <Link href="/auth">
@@ -88,7 +88,7 @@ export default function LandingPage() {
                   className="text-lg text-foreground-muted mb-8 max-w-lg"
                 >
                   Transform your notes into interactive flashcards instantly with AI.
-                  MemoForge analyzes your content and creates personalized study materials
+                  Verso analyzes your content and creates personalized study materials
                   that help you retain information 3x faster than traditional methods.
                 </m.p>
 
@@ -428,10 +428,10 @@ export default function LandingPage() {
         <footer className="py-8 px-4 sm:px-6 lg:px-8 border-t border-border">
           <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
             <Link href="/" className="text-xl font-bold text-foreground hover:text-accent transition-colors">
-              MemoForge
+              Verso
             </Link>
             <p className="text-foreground-muted text-sm">
-              © 2025 MemoForge. AI-Powered Study Assistant.
+              © 2025 Verso. AI-Powered Study Assistant.
             </p>
           </div>
         </footer>

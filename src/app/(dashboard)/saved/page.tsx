@@ -4,8 +4,8 @@ import Link from 'next/link';
 import { useMemo, useState } from 'react';
 import { ClayBadge, ClayButton, ClayCard } from '@/component/ui/Clay';
 import MobileBottomSheet from '@/component/ui/MobileBottomSheet';
-import { Bookmark01Icon, FilterIcon, Search01Icon } from 'hugeicons-react';
-import { NotebookIcon, FlashcardIcon, ExamIcon } from '@/component/icons';
+import { FilterIcon, Search01Icon } from 'hugeicons-react';
+import { NotebookIcon, FlashcardIcon, ExamIcon, SavedIcon } from '@/component/icons';
 import { SavedMaterialType, useRemoveReference, useSavedMaterials } from '@/hooks/useSavedMaterials';
 
 const FILTER_OPTIONS: { id: SavedMaterialType | 'all'; label: string }[] = [
@@ -98,10 +98,8 @@ export default function SavedMaterialsPage() {
     <div className="space-y-6">
       <ClayCard variant="elevated" padding="lg" className="rounded-3xl">
         <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
-          <div className="flex items-start gap-4">
-            <div className="p-4 rounded-2xl bg-background-muted border border-border">
-              <Bookmark01Icon className="w-8 h-8 text-primary" />
-            </div>
+          <div className="flex items-start gap-3">
+            <SavedIcon className="w-12 h-12 text-primary shrink-0" />
             <div>
               <h1 className="text-2xl md:text-3xl font-bold tracking-tight text-foreground">Saved Materials</h1>
               <p className="text-foreground-muted mt-1">
@@ -170,7 +168,7 @@ export default function SavedMaterialsPage() {
             {isLoading ? (
               <div className="text-center py-12">
                 <div className="w-20 h-20 rounded-2xl bg-background-muted border border-border flex items-center justify-center mx-auto mb-5">
-                  <Bookmark01Icon className="w-9 h-9 text-foreground-muted animate-pulse" />
+                  <SavedIcon className="w-9 h-9 text-foreground-muted animate-pulse" />
                 </div>
                 <h3 className="text-lg font-semibold text-foreground mb-2">Loading saved materials</h3>
                 <p className="text-sm text-foreground-muted">Fetching your saved list.</p>
@@ -178,7 +176,7 @@ export default function SavedMaterialsPage() {
             ) : isError ? (
               <div className="text-center py-12">
                 <div className="w-20 h-20 rounded-2xl bg-red-50 border border-red-200 flex items-center justify-center mx-auto mb-5">
-                  <Bookmark01Icon className="w-9 h-9 text-red-500" />
+                  <SavedIcon className="w-9 h-9 text-red-500" />
                 </div>
                 <h3 className="text-lg font-semibold text-foreground mb-2">Unable to load saved items</h3>
                 <p className="text-sm text-foreground-muted">
@@ -188,7 +186,7 @@ export default function SavedMaterialsPage() {
             ) : filteredItems.length === 0 ? (
               <div className="text-center py-10">
                 <div className="w-24 h-24 mx-auto mb-6 rounded-3xl bg-background-muted border border-border flex items-center justify-center">
-                  <Bookmark01Icon className="w-10 h-10 text-primary" />
+                  <SavedIcon className="w-10 h-10 text-primary" />
                 </div>
                 <h2 className="text-xl font-semibold text-foreground mb-2">No saved materials yet</h2>
                 <p className="text-sm text-foreground-muted mb-6 max-w-md mx-auto">
@@ -196,7 +194,7 @@ export default function SavedMaterialsPage() {
                 </p>
                 <div className="flex flex-wrap items-center justify-center gap-3">
                   <Link href="/community" className="px-4 py-2 rounded-xl bg-surface border border-border text-sm font-semibold text-foreground hover:shadow-md transition-all flex items-center gap-2">
-                    <Bookmark01Icon className="w-4 h-4" />
+                    <SavedIcon className="w-4 h-4" />
                     Browse Community
                   </Link>
                   <Link href="/library" className="px-4 py-2 rounded-xl bg-surface border border-border text-sm font-semibold text-foreground hover:shadow-md transition-all flex items-center gap-2">
@@ -255,7 +253,7 @@ export default function SavedMaterialsPage() {
                             disabled={removingId === removingKey || removeReferenceMutation.isPending}
                             className="flex items-center gap-2 text-xs"
                           >
-                            <Bookmark01Icon className="w-4 h-4" />
+                            <SavedIcon className="w-4 h-4" />
                             {removingId === removingKey ? 'Removing' : 'Unsave'}
                           </ClayButton>
                         </div>
