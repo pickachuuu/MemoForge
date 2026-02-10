@@ -4,6 +4,7 @@ import { navItems } from "./navConfig";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
 import { Logout01Icon, Menu01Icon, Cancel01Icon } from "hugeicons-react";
+import { AnimatePresence, motion } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
 import { signOut } from '@/hook/useAuthActions';
 import { NotebookIcon, FlashcardIcon, ExamIcon, DashboardIcon, SavedIcon, CommunityIcon, NotificationIcon } from '@/component/icons';
@@ -168,7 +169,7 @@ export default function Navbar() {
 
       {/* ═══════════════ Mobile Top Bar ═══════════════ */}
       <div className="md:hidden fixed top-0 left-0 right-0 z-50">
-        <div className="px-4 py-3 bg-surface/95 backdrop-blur-md border-b border-border shadow-sm">
+        <div className="px-4 py-3 bg-surface/95 backdrop-blur-md border-b border-border shadow-sm relative z-50">
           <div className="flex items-center justify-between">
             <Link href="/dashboard" className="flex items-center gap-2.5">
               <div
@@ -188,8 +189,16 @@ export default function Navbar() {
         </div>
 
         {/* Mobile Dropdown */}
-        {mobileMenuOpen && (
-          <div className="px-4 pb-4 bg-surface border-t border-border shadow-md">
+        <AnimatePresence initial={false}>
+          {mobileMenuOpen && (
+            <motion.div
+              key="mobile-menu"
+              initial={{ height: 0, opacity: 0, y: -8 }}
+              animate={{ height: "auto", opacity: 1, y: 0 }}
+              exit={{ height: 0, opacity: 0, y: -8 }}
+              transition={{ duration: 0.2, ease: "easeOut" }}
+              className="px-4 pb-4 bg-surface border-t border-border shadow-md overflow-hidden origin-top relative z-40"
+            >
             <nav className="space-y-1 pt-2">
               {navItems.map((item, index) => {
                 const isActive = pathname === item.href;
@@ -271,8 +280,9 @@ export default function Navbar() {
                 </div>
               )}
             </div>
-          </div>
+          </motion.div>
         )}
+        </AnimatePresence>
       </div>
     </>
   );

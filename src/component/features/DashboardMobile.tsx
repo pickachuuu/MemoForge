@@ -1,6 +1,5 @@
 'use client';
 
-import { useMemo } from 'react';
 import Link from 'next/link';
 import { format } from 'date-fns';
 import { ClayBadge, ClayCard } from '@/component/ui/Clay';
@@ -109,20 +108,16 @@ function MobileWeeklySnapshot() {
   const currentStreak = streak?.currentStreak || 0;
   const studiedToday = streak?.studiedToday || false;
   const data = weeklyData || [];
-  const totals = useMemo(() => {
-    return {
-      totalCards: data.reduce((sum, d) => sum + d.cardsStudied, 0),
-      totalMinutes: data.reduce((sum, d) => sum + d.minutesStudied, 0),
-      activeDays: data.filter((d) => d.cardsStudied > 0 || d.sessions > 0).length,
-      maxCards: Math.max(...data.map((d) => d.cardsStudied), 1),
-    };
-  }, [data]);
+  const totalCards = data.reduce((sum, d) => sum + d.cardsStudied, 0);
+  const totalMinutes = data.reduce((sum, d) => sum + d.minutesStudied, 0);
+  const activeDays = data.filter((d) => d.cardsStudied > 0 || d.sessions > 0).length;
+  const maxCards = Math.max(...data.map((d) => d.cardsStudied), 1);
 
   return (
     <ClayCard variant="default" padding="sm" className="rounded-2xl">
       <div className="flex items-center justify-between">
         <span className="text-xs font-semibold text-foreground">This week</span>
-        <span className="text-[10px] text-foreground-muted">{totals.activeDays}/7 active</span>
+        <span className="text-[10px] text-foreground-muted">{activeDays}/7 active</span>
       </div>
 
       <div className="mt-3 grid grid-cols-3 gap-2 text-left">
@@ -139,7 +134,7 @@ function MobileWeeklySnapshot() {
             <FlashcardIcon className="w-3.5 h-3.5 text-primary" />
             Cards
           </div>
-          <p className="text-lg font-semibold text-foreground mt-1">{totals.totalCards}</p>
+          <p className="text-lg font-semibold text-foreground mt-1">{totalCards}</p>
           <p className="text-[9px] text-foreground-muted">Studied</p>
         </div>
         <div className="rounded-xl bg-background-muted border border-border px-2 py-2">
@@ -147,7 +142,7 @@ function MobileWeeklySnapshot() {
             <Clock01Icon className="w-3.5 h-3.5 text-tertiary" />
             Minutes
           </div>
-          <p className="text-lg font-semibold text-foreground mt-1">{totals.totalMinutes}</p>
+          <p className="text-lg font-semibold text-foreground mt-1">{totalMinutes}</p>
           <p className="text-[9px] text-foreground-muted">Focused</p>
         </div>
       </div>
@@ -161,7 +156,7 @@ function MobileWeeklySnapshot() {
           {data.map((day, index) => {
             const isToday = index === data.length - 1;
             const hasActivity = day.cardsStudied > 0 || day.sessions > 0;
-            const heightPercent = totals.maxCards > 0 ? (day.cardsStudied / totals.maxCards) * 100 : 0;
+            const heightPercent = maxCards > 0 ? (day.cardsStudied / maxCards) * 100 : 0;
             return (
               <div key={day.date} className="flex-1 flex flex-col items-center justify-end">
                 <div
