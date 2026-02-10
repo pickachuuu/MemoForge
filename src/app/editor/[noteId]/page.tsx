@@ -72,8 +72,18 @@ export default function EditorPage() {
   // Notebook scaling – keeps a fixed number of grid lines on every screen size
   const notebookContainerRef = useRef<HTMLDivElement>(null);
   const rawScale = useNotebookScale(notebookContainerRef);
-  // Clamp scale so the notebook stays usable on small screens.
-  const minScale = 0.6;
+  const [isSmallScreen, setIsSmallScreen] = useState(false);
+
+  useEffect(() => {
+    const media = window.matchMedia('(max-width: 640px)');
+    const update = () => setIsSmallScreen(media.matches);
+    update();
+    media.addEventListener('change', update);
+    return () => media.removeEventListener('change', update);
+  }, []);
+
+  // Clamp scale only on larger screens; on mobile use raw scale to avoid horizontal scrolling.
+  const minScale = isSmallScreen ? 0 : 0.6;
   const scale = Math.max(rawScale, minScale);
   const isScaleClamped = rawScale < minScale;
 
