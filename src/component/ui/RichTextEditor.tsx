@@ -749,7 +749,7 @@ interface EditorToolbarProps {
   fullscreen?: boolean;
 }
 
-function EditorToolbar({ editor, fullscreen }: EditorToolbarProps) {
+export function EditorToolbar({ editor, fullscreen }: EditorToolbarProps) {
   const [mounted, setMounted] = useState(false);
   const [theme, setTheme] = useState<"light" | "dark">("light");
 

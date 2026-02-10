@@ -6,7 +6,7 @@ import Link from 'next/link';
 import { useQueryClient } from '@tanstack/react-query';
 
 // UI Components
-import { VerticalEditorToolbar, Editor } from '@/component/ui/RichTextEditor';
+import { EditorToolbar, Editor } from '@/component/ui/RichTextEditor';
 import { TIPTAP_FORMATTING_GUIDE } from '@/component/ui/AISelectionBubble';
 import PageFlipContainer from '@/component/ui/PageFlipContainer';
 import ClayNotebookCover, { NotebookColorKey } from '@/component/ui/ClayNotebookCover';
@@ -33,6 +33,11 @@ import {
   ArrowUpRight01Icon,
   ArrowDownLeft01Icon,
   Add01Icon,
+  GoogleGeminiIcon,
+  PencilEdit02Icon,
+  NoteIcon,
+  SummationCircleIcon,
+  FlashIcon,
 } from 'hugeicons-react';
 import { NotebookIcon } from '@/component/icons';
 
@@ -123,7 +128,6 @@ export default function EditorPage() {
 
   // Notebook paper stays light; surrounding UI uses paper styling
   const theme = 'light' as const;
-  const toolbarTheme = 'light' as const;
 
   // ========================================
   // Reset stores when creating a new notebook
@@ -1067,45 +1071,45 @@ export default function EditorPage() {
       </div>
     </ClayCard>
   );
-  const toolsPanel = (currentView === 'page' || currentView === 'toc') ? (
-    <ClayCard variant="default" padding="lg" className="rounded-2xl">
-      <div className="flex items-center justify-between mb-3">
-        <span className="text-sm font-semibold uppercase tracking-wide text-foreground-muted">Editor tools</span>
-        {aiLoading && (
-          <span className="text-xs text-foreground-muted">Running…</span>
-        )}
-      </div>
-      <div className="pr-1">
-        <VerticalEditorToolbar editor={editor} theme={toolbarTheme} onAIAction={handleAIAction} aiLoading={aiLoading} compact />
-      </div>
-    </ClayCard>
-  ) : null;
-  const mobileToolsPanel = (currentView === 'page' || currentView === 'toc') ? (
-    <ClayCard variant="default" padding="sm" className="rounded-2xl">
-      <div className="flex items-center justify-between mb-2">
-        <span className="text-xs font-semibold uppercase tracking-wide text-foreground-muted">Editor tools</span>
-        {aiLoading && (
-          <span className="text-[11px] text-foreground-muted">Running…</span>
-        )}
-      </div>
-      <div className="max-h-[45vh] overflow-y-auto pr-1">
-        <VerticalEditorToolbar editor={editor} theme={toolbarTheme} onAIAction={handleAIAction} aiLoading={aiLoading} />
-      </div>
-    </ClayCard>
-  ) : null;
   const leftRail = (
     <div className="space-y-4">
       {notebookCard}
+      {navCard}
       {pagesPanel}
     </div>
   );
 
-  const rightRail = (
-    <div className="space-y-4">
-      {navCard}
-      {toolsPanel}
-    </div>
-  );
+  const showTopToolbar = showControls;
+  const aiButtons = [
+    {
+      id: 'continue_writing',
+      label: 'Continue',
+      title: 'AI continues writing from cursor position',
+      icon: PencilEdit02Icon,
+      tone: 'blue',
+    },
+    {
+      id: 'generate_outline',
+      label: 'Outline',
+      title: 'Generate heading structure for this page',
+      icon: NoteIcon,
+      tone: 'blue',
+    },
+    {
+      id: 'summarize_page',
+      label: 'Summarize',
+      title: 'Summarize the entire page',
+      icon: SummationCircleIcon,
+      tone: 'blue',
+    },
+    {
+      id: 'generate_flashcards',
+      label: 'Flashcards',
+      title: 'Generate flashcards from page content',
+      icon: FlashIcon,
+      tone: 'orange',
+    },
+  ] as const;
 
   // ========================================
   // Render
@@ -1114,14 +1118,60 @@ export default function EditorPage() {
     <div className="min-h-[100dvh] flex flex-col paper-bg text-foreground">
       {/* Main content area — extra bottom padding on mobile for the fixed bottom bar */}
       <div className={`flex-1 relative px-3 sm:px-4 py-4 sm:py-5 flex flex-col max-w-none mx-auto w-full ${showControls ? 'pb-6 min-[75rem]:pb-5' : ''}`}>
-        <div className="flex-1 flex items-start justify-center">
+        {showTopToolbar && (
+          <div className="sticky top-0 z-[70] -mx-3 sm:-mx-4 -mt-4 sm:-mt-5 mb-3">
+            <EditorToolbar editor={editor} fullscreen />
+            <div className="flex flex-wrap items-center gap-2 px-3 sm:px-4 py-2 bg-surface/95 backdrop-blur border-b border-border shadow-sm">
+              <div className="flex items-center gap-2 text-[10px] font-semibold uppercase tracking-wider text-foreground-muted">
+                <GoogleGeminiIcon className="w-3.5 h-3.5 text-blue-500" />
+                AI Assist
+              </div>
+              {aiButtons.map((action) => {
+                const Icon = action.icon;
+                const isLoading = aiLoading === action.id;
+                const toneClasses = action.tone === 'orange'
+                  ? 'bg-orange-100 hover:bg-orange-200 text-orange-700 border border-orange-200'
+                  : 'bg-blue-100 hover:bg-blue-200 text-blue-700 border border-blue-200';
+                return (
+                  <button
+                    key={action.id}
+                    type="button"
+                    onClick={() => handleAIAction(action.id)}
+                    disabled={!editor || Boolean(aiLoading)}
+                    title={action.title}
+                    className={`
+                      inline-flex items-center gap-2 px-3 py-1.5 rounded-xl text-xs font-semibold transition-all
+                      disabled:opacity-40 disabled:cursor-not-allowed
+                      ${toneClasses}
+                    `}
+                  >
+                    {isLoading ? (
+                      <Loading03Icon className="w-3.5 h-3.5 animate-spin" />
+                    ) : (
+                      <Icon className="w-3.5 h-3.5" />
+                    )}
+                    <span>{action.label}</span>
+                  </button>
+                );
+              })}
+              {aiLoading && (
+                <span className="text-[11px] text-foreground-muted">Running…</span>
+              )}
+            </div>
+          </div>
+        )}
+        <div className="flex-1 flex items-start justify-start">
           <div
-            className={`w-full max-w-[1920px] grid gap-4 sm:gap-6 justify-items-center items-start ${showControls ? 'min-[75rem]:grid-cols-[minmax(280px,420px)_minmax(0,58rem)_minmax(280px,420px)]' : 'grid-cols-1'}`}
+            className={`w-full max-w-[1920px] grid gap-4 sm:gap-6 items-start ${
+              showControls
+                ? 'justify-items-start grid-cols-1 min-[75rem]:grid-cols-[minmax(240px,360px)_minmax(0,1fr)]'
+                : 'justify-items-center grid-cols-1'
+            }`}
           >
 
           {/* Left sidebar — hidden below desktop breakpoint, visible as column on desktop */}
           {showControls && (
-            <aside className="hidden min-[75rem]:block space-y-4 min-[75rem]:sticky min-[75rem]:top-6 self-start relative z-[60] pt-4 sm:pt-6">
+            <aside className="hidden min-[75rem]:block w-full space-y-4 min-[75rem]:sticky min-[75rem]:top-6 self-start relative z-[60] pt-4 sm:pt-6">
               {leftRail}
             </aside>
           )}
@@ -1191,11 +1241,6 @@ export default function EditorPage() {
           </div>
 
           {/* Right sidebar — hidden below desktop breakpoint, visible as column on desktop */}
-          {showControls && (
-            <aside className="hidden min-[75rem]:block space-y-4 min-[75rem]:sticky min-[75rem]:top-6 self-start relative z-[60] pt-4 sm:pt-6">
-              {rightRail}
-            </aside>
-          )}
           </div>
         </div>
       </div>
@@ -1251,7 +1296,6 @@ export default function EditorPage() {
           <div className="p-3 space-y-3 pb-5 overflow-y-auto max-h-[calc(80dvh-3.5rem)]">
             {mobileTitleCard}
             {mobileNavCard}
-            {mobileToolsPanel}
           </div>
         </div>
       </div>
