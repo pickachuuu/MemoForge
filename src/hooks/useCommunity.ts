@@ -14,6 +14,7 @@ export interface CommunityItem {
   summary: string;
   tags: string[];
   author: string;
+  authorAvatarUrl?: string | null;
   updatedAt: string;
   href: string;
 }
@@ -52,6 +53,7 @@ type PublicExamSetRow = {
 type ProfileRow = {
   id: string;
   full_name: string | null;
+  avatar_url: string | null;
 };
 
 export const communityKeys = {
@@ -127,11 +129,12 @@ async function fetchCommunityItems(): Promise<CommunityItem[]> {
     ...exams.map((exam) => exam.user_id),
   ])).filter(Boolean);
 
-  const authorMap = new Map<string, string>();
+  const authorNameMap = new Map<string, string>();
+  const authorAvatarMap = new Map<string, string>();
   if (userIds.length > 0) {
     const { data: profiles, error: profilesError } = await supabase
       .from('profiles')
-      .select('id, full_name')
+      .select('id, full_name, avatar_url')
       .in('id', userIds);
 
     if (profilesError) {
@@ -140,7 +143,10 @@ async function fetchCommunityItems(): Promise<CommunityItem[]> {
       const profileRows = (profiles || []) as ProfileRow[];
       profileRows.forEach((profile) => {
         if (profile.full_name) {
-          authorMap.set(profile.id, profile.full_name);
+          authorNameMap.set(profile.id, profile.full_name);
+        }
+        if (profile.avatar_url) {
+          authorAvatarMap.set(profile.id, profile.avatar_url);
         }
       });
     }
@@ -151,13 +157,15 @@ async function fetchCommunityItems(): Promise<CommunityItem[]> {
       const text = stripHtml(note.content || '');
       const summary = text ? truncateText(text) : 'No preview available yet.';
       const updatedAtRaw = note.updated_at || note.created_at;
+      const authorId = note.user_id;
       return {
         id: note.id,
         type: 'note' as const,
         title: note.title || 'Untitled Note',
         summary,
         tags: note.tags || [],
-        author: (note.user_id ? authorMap.get(note.user_id) : undefined) || 'Community member',
+        author: (authorId ? authorNameMap.get(authorId) : undefined) || 'Community member',
+        authorAvatarUrl: authorId ? authorAvatarMap.get(authorId) ?? null : null,
         updatedAt: timeAgo(updatedAtRaw),
         href: `/public/notes/${note.id}`,
         updatedAtRaw,
@@ -168,13 +176,15 @@ async function fetchCommunityItems(): Promise<CommunityItem[]> {
         ? set.description.trim()
         : `${set.total_cards || 0} cards to study.`;
       const updatedAtRaw = set.updated_at || set.created_at;
+      const authorId = set.user_id;
       return {
         id: set.id,
         type: 'flashcard' as const,
         title: set.title || 'Flashcard Set',
         summary,
         tags: [],
-        author: (set.user_id ? authorMap.get(set.user_id) : undefined) || 'Community member',
+        author: (authorId ? authorNameMap.get(authorId) : undefined) || 'Community member',
+        authorAvatarUrl: authorId ? authorAvatarMap.get(authorId) ?? null : null,
         updatedAt: timeAgo(updatedAtRaw),
         href: `/public/flashcards/${set.id}`,
         updatedAtRaw,
@@ -185,13 +195,15 @@ async function fetchCommunityItems(): Promise<CommunityItem[]> {
         ? exam.description.trim()
         : `${exam.total_questions || 0} questions (${exam.difficulty || 'mixed'}).`;
       const updatedAtRaw = exam.updated_at || exam.created_at;
+      const authorId = exam.user_id;
       return {
         id: exam.id,
         type: 'exam' as const,
         title: exam.title || 'Exam',
         summary,
         tags: exam.difficulty ? [exam.difficulty] : [],
-        author: (exam.user_id ? authorMap.get(exam.user_id) : undefined) || 'Community member',
+        author: (authorId ? authorNameMap.get(authorId) : undefined) || 'Community member',
+        authorAvatarUrl: authorId ? authorAvatarMap.get(authorId) ?? null : null,
         updatedAt: timeAgo(updatedAtRaw),
         href: `/public/exams/${exam.id}`,
         updatedAtRaw,

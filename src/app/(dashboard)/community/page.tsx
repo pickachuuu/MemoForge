@@ -233,6 +233,13 @@ export default function CommunityPage() {
                 {filteredItems.map((item) => {
                   const meta = TYPE_META[item.type];
                   const Icon = meta.icon;
+                  const authorInitials = item.author
+                    .split(/\s+/)
+                    .filter(Boolean)
+                    .slice(0, 2)
+                    .map((part) => part[0])
+                    .join('')
+                    .toUpperCase() || 'U';
 
                   return (
                     <Link
@@ -254,7 +261,22 @@ export default function CommunityPage() {
                             </div>
                             <p className="text-sm text-foreground-muted mt-1">{item.summary}</p>
                             <div className="flex flex-wrap items-center gap-2 mt-3 text-xs text-foreground-muted">
-                              <span>By {item.author}</span>
+                              <div className="flex items-center gap-2">
+                                <span className="h-6 w-6 rounded-full overflow-hidden border border-border bg-background-muted flex items-center justify-center text-[10px] font-semibold text-foreground">
+                                  {item.authorAvatarUrl ? (
+                                    <img
+                                      src={item.authorAvatarUrl}
+                                      alt={item.author ? `${item.author} avatar` : 'User avatar'}
+                                      className="h-full w-full object-cover"
+                                      loading="lazy"
+                                      referrerPolicy="no-referrer"
+                                    />
+                                  ) : (
+                                    <span>{authorInitials}</span>
+                                  )}
+                                </span>
+                                <span>By {item.author}</span>
+                              </div>
                               <span className="h-1 w-1 rounded-full bg-border" />
                               <span>Updated {item.updatedAt}</span>
                             </div>

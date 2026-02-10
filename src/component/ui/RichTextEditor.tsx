@@ -114,7 +114,8 @@ function ToolbarButton({ onClick, isActive, disabled, children, title, vertical,
       disabled={disabled}
       title={title}
       className={`
-        p-1.5 rounded-xl transition-all duration-200
+        p-1 rounded-lg transition-all duration-200
+        sm:p-1.5
         disabled:opacity-30 disabled:cursor-not-allowed
         ${isActive
           ? 'clay-button-secondary'
@@ -747,9 +748,10 @@ export function VerticalEditorToolbar({ editor, theme, onAIAction, aiLoading, co
 interface EditorToolbarProps {
   editor: Editor | null;
   fullscreen?: boolean;
+  leadingSlot?: React.ReactNode;
 }
 
-export function EditorToolbar({ editor, fullscreen }: EditorToolbarProps) {
+export function EditorToolbar({ editor, fullscreen, leadingSlot }: EditorToolbarProps) {
   const [mounted, setMounted] = useState(false);
   const [theme, setTheme] = useState<"light" | "dark">("light");
 
@@ -827,21 +829,27 @@ export function EditorToolbar({ editor, fullscreen }: EditorToolbarProps) {
       clay-toolbar
       flex flex-wrap items-center gap-0.5 px-3 py-2
       ${fullscreen ? 'justify-start' : 'justify-center'}
+      gap-0 px-2 py-1.5 sm:gap-0.5 sm:px-3 sm:py-2
     `}>
+      {leadingSlot && (
+        <div className="mr-1 flex items-center">
+          {leadingSlot}
+        </div>
+      )}
       {/* Undo/Redo */}
       <ToolbarButton
         onClick={() => editor.chain().focus().undo().run()}
         disabled={!editor.can().undo()}
         title="Undo (Ctrl+Z)"
       >
-        <ArrowTurnBackwardIcon className="w-5 h-5" />
+        <ArrowTurnBackwardIcon className="w-4.5 h-4.5 sm:w-5 sm:h-5" />
       </ToolbarButton>
       <ToolbarButton
         onClick={() => editor.chain().focus().redo().run()}
         disabled={!editor.can().redo()}
         title="Redo (Ctrl+Y)"
       >
-        <ArrowTurnForwardIcon className="w-5 h-5" />
+        <ArrowTurnForwardIcon className="w-4.5 h-4.5 sm:w-5 sm:h-5" />
       </ToolbarButton>
 
       <ToolbarDivider />
@@ -852,35 +860,35 @@ export function EditorToolbar({ editor, fullscreen }: EditorToolbarProps) {
         isActive={editor.isActive('bold')}
         title="Bold (Ctrl+B)"
       >
-        <TextBoldIcon className="w-5 h-5" />
+        <TextBoldIcon className="w-4.5 h-4.5 sm:w-5 sm:h-5" />
       </ToolbarButton>
       <ToolbarButton
         onClick={() => editor.chain().focus().toggleItalic().run()}
         isActive={editor.isActive('italic')}
         title="Italic (Ctrl+I)"
       >
-        <TextItalicIcon className="w-5 h-5" />
+        <TextItalicIcon className="w-4.5 h-4.5 sm:w-5 sm:h-5" />
       </ToolbarButton>
       <ToolbarButton
         onClick={() => editor.chain().focus().toggleUnderline().run()}
         isActive={editor.isActive('underline')}
         title="Underline (Ctrl+U)"
       >
-        <TextUnderlineIcon className="w-5 h-5" />
+        <TextUnderlineIcon className="w-4.5 h-4.5 sm:w-5 sm:h-5" />
       </ToolbarButton>
       <ToolbarButton
         onClick={() => editor.chain().focus().toggleStrike().run()}
         isActive={editor.isActive('strike')}
         title="Strikethrough"
       >
-        <TextStrikethroughIcon className="w-5 h-5" />
+        <TextStrikethroughIcon className="w-4.5 h-4.5 sm:w-5 sm:h-5" />
       </ToolbarButton>
       <ToolbarButton
         onClick={() => editor.chain().focus().toggleHighlight().run()}
         isActive={editor.isActive('highlight')}
         title="Highlight"
       >
-        <PaintBrush04Icon className="w-5 h-5" />
+        <PaintBrush04Icon className="w-4.5 h-4.5 sm:w-5 sm:h-5" />
       </ToolbarButton>
 
       <ToolbarDivider />
@@ -891,21 +899,21 @@ export function EditorToolbar({ editor, fullscreen }: EditorToolbarProps) {
         isActive={editor.isActive('heading', { level: 1 })}
         title="Heading 1"
       >
-        <Heading01Icon className="w-5 h-5" />
+        <Heading01Icon className="w-4.5 h-4.5 sm:w-5 sm:h-5" />
       </ToolbarButton>
       <ToolbarButton
         onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()}
         isActive={editor.isActive('heading', { level: 2 })}
         title="Heading 2"
       >
-        <Heading02Icon className="w-5 h-5" />
+        <Heading02Icon className="w-4.5 h-4.5 sm:w-5 sm:h-5" />
       </ToolbarButton>
       <ToolbarButton
         onClick={() => editor.chain().focus().toggleHeading({ level: 3 }).run()}
         isActive={editor.isActive('heading', { level: 3 })}
         title="Heading 3"
       >
-        <Heading03Icon className="w-5 h-5" />
+        <Heading03Icon className="w-4.5 h-4.5 sm:w-5 sm:h-5" />
       </ToolbarButton>
 
       <ToolbarDivider />
@@ -916,14 +924,14 @@ export function EditorToolbar({ editor, fullscreen }: EditorToolbarProps) {
         isActive={editor.isActive('bulletList')}
         title="Bullet List"
       >
-        <ListViewIcon className="w-5 h-5" />
+        <ListViewIcon className="w-4.5 h-4.5 sm:w-5 sm:h-5" />
       </ToolbarButton>
       <ToolbarButton
         onClick={() => editor.chain().focus().toggleOrderedList().run()}
         isActive={editor.isActive('orderedList')}
         title="Numbered List"
       >
-        <LeftToRightListNumberIcon className="w-5 h-5" />
+        <LeftToRightListNumberIcon className="w-4.5 h-4.5 sm:w-5 sm:h-5" />
       </ToolbarButton>
 
       <ToolbarDivider />
@@ -934,20 +942,20 @@ export function EditorToolbar({ editor, fullscreen }: EditorToolbarProps) {
         isActive={editor.isActive('blockquote')}
         title="Quote"
       >
-        <QuoteDownIcon className="w-5 h-5" />
+        <QuoteDownIcon className="w-4.5 h-4.5 sm:w-5 sm:h-5" />
       </ToolbarButton>
       <ToolbarButton
         onClick={() => editor.chain().focus().toggleCodeBlock().run()}
         isActive={editor.isActive('codeBlock')}
         title="Code Block"
       >
-        <SourceCodeIcon className="w-5 h-5" />
+        <SourceCodeIcon className="w-4.5 h-4.5 sm:w-5 sm:h-5" />
       </ToolbarButton>
       <ToolbarButton
         onClick={() => editor.chain().focus().setHorizontalRule().run()}
         title="Horizontal Rule"
       >
-        <MinusSignIcon className="w-5 h-5" />
+        <MinusSignIcon className="w-4.5 h-4.5 sm:w-5 sm:h-5" />
       </ToolbarButton>
 
       <ToolbarDivider />
@@ -958,21 +966,21 @@ export function EditorToolbar({ editor, fullscreen }: EditorToolbarProps) {
         isActive={editor.isActive({ textAlign: 'left' })}
         title="Align Left"
       >
-        <TextAlignLeftIcon className="w-5 h-5" />
+        <TextAlignLeftIcon className="w-[18px] h-[18px] sm:w-5 sm:h-5" />
       </ToolbarButton>
       <ToolbarButton
         onClick={() => editor.chain().focus().setTextAlign('center').run()}
         isActive={editor.isActive({ textAlign: 'center' })}
         title="Align Center"
       >
-        <TextAlignCenterIcon className="w-5 h-5" />
+        <TextAlignCenterIcon className="w-[18px] h-[18px] sm:w-5 sm:h-5" />
       </ToolbarButton>
       <ToolbarButton
         onClick={() => editor.chain().focus().setTextAlign('right').run()}
         isActive={editor.isActive({ textAlign: 'right' })}
         title="Align Right"
       >
-        <TextAlignRightIcon className="w-5 h-5" />
+        <TextAlignRightIcon className="w-[18px] h-[18px] sm:w-5 sm:h-5" />
       </ToolbarButton>
 
       <ToolbarDivider />
@@ -984,9 +992,9 @@ export function EditorToolbar({ editor, fullscreen }: EditorToolbarProps) {
           title={theme === "light" ? "Switch to dark mode" : "Switch to light mode"}
         >
           {theme === "light" ? (
-            <Sun01Icon className="w-5 h-5" />
+            <Sun01Icon className="w-4.5 h-4.5 sm:w-5 sm:h-5" />
           ) : (
-            <Moon01Icon className="w-5 h-5" />
+            <Moon01Icon className="w-4.5 h-4.5 sm:w-5 sm:h-5" />
           )}
         </ToolbarButton>
       )}

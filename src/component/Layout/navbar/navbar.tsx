@@ -8,6 +8,7 @@ import { Logout01Icon, Menu01Icon, Cancel01Icon } from "hugeicons-react";
 import { AnimatePresence, motion } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
 import { signOut } from '@/hook/useAuthActions';
+import { useUserProfile } from '@/hooks/useAuth';
 import { NotebookIcon, FlashcardIcon, ExamIcon, DashboardIcon, SavedIcon, CommunityIcon, NotificationIcon } from '@/component/icons';
 
 const getNavIcon = (href: string) => {
@@ -25,6 +26,16 @@ export default function Navbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [notificationsOpen, setNotificationsOpen] = useState(false);
   const notificationRef = useRef<HTMLDivElement | null>(null);
+  const { data: userProfile } = useUserProfile();
+
+  const avatarLabelSource = (userProfile?.full_name || userProfile?.email || '').trim();
+  const avatarFallback = (() => {
+    if (!avatarLabelSource) return 'U';
+    if (avatarLabelSource.includes('@')) return avatarLabelSource[0]?.toUpperCase() || 'U';
+    const parts = avatarLabelSource.split(/\s+/).filter(Boolean);
+    if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
+    return `${parts[0][0]}${parts[1][0]}`.toUpperCase();
+  })();
 
   const secondaryItems = [
     { name: 'Saved Materials', href: '/saved', icon: <SavedIcon className="w-6 h-6" /> },
@@ -165,7 +176,21 @@ export default function Navbar() {
             onClick={signOut}
             className="flex items-center gap-3 w-full px-4 py-3 rounded-xl text-sm font-semibold transition-colors text-foreground-muted hover:text-error hover:bg-error/10"
           >
-            <Logout01Icon className="w-5 h-5" />
+            <span className="flex items-center gap-3">
+              <span className="h-9 w-9 rounded-full overflow-hidden border border-border bg-background-muted flex items-center justify-center text-xs font-semibold text-foreground">
+                {userProfile?.avatar_url ? (
+                  <img
+                    src={userProfile.avatar_url}
+                    alt={userProfile?.full_name ? `${userProfile.full_name} avatar` : 'User avatar'}
+                    className="h-full w-full object-cover"
+                    referrerPolicy="no-referrer"
+                  />
+                ) : (
+                  <span>{avatarFallback}</span>
+                )}
+              </span>
+              <Logout01Icon className="w-5 h-5" />
+            </span>
             Sign Out
           </button>
         </div>

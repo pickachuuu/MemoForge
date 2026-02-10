@@ -56,17 +56,36 @@ export async function getCurrentUserProfile() {
   try {
     const { data: { session } } = await supabase.auth.getSession();
     if (!session?.user?.id) return null;
-    
+
+    const metadata = session.user.user_metadata ?? {};
+    const fallbackProfile = {
+      full_name: typeof metadata.full_name === 'string'
+        ? metadata.full_name
+        : typeof metadata.name === 'string'
+          ? metadata.name
+          : null,
+      email: session.user.email ?? null,
+      avatar_url: typeof metadata.avatar_url === 'string'
+        ? metadata.avatar_url
+        : typeof metadata.picture === 'string'
+          ? metadata.picture
+          : null,
+    };
+
     const { data, error } = await supabase
       .from('profiles')
-      .select('full_name, email')
+      .select('full_name, email, avatar_url')
       .eq('id', session.user.id)
       .single();
     if (error) {
       console.error('Profile fetch error:', error.message);
-      return null;
+      return fallbackProfile;
     }
-    return data;
+    return {
+      full_name: data.full_name ?? fallbackProfile.full_name,
+      email: data.email ?? fallbackProfile.email,
+      avatar_url: data.avatar_url ?? fallbackProfile.avatar_url,
+    };
   } catch (error) {
     console.error('Error getting user profile:', error);
     return null;

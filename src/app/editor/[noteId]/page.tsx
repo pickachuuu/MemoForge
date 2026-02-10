@@ -261,6 +261,14 @@ export default function EditorPage() {
     setEditor(editorInstance);
   }, [setEditor]);
 
+  const handleBack = useCallback(() => {
+    if (window.history.length > 1) {
+      router.back();
+      return;
+    }
+    router.push('/library');
+  }, [router]);
+
   // ========================================
   // AI Sidebar Actions
   // ========================================
@@ -1121,6 +1129,18 @@ export default function EditorPage() {
     },
   ] as const;
 
+  const backButton = (
+    <button
+      type="button"
+      onClick={handleBack}
+      title="Back"
+      aria-label="Go back"
+      className="h-8 w-8 sm:h-9 sm:w-9 rounded-xl border border-border bg-surface hover:bg-background-muted transition-all flex items-center justify-center shadow-sm text-foreground-muted"
+    >
+      <ArrowLeft02Icon className="w-4 h-4 sm:w-4.5 sm:h-4.5" />
+    </button>
+  );
+
   // ========================================
   // Render
   // ========================================
@@ -1130,9 +1150,9 @@ export default function EditorPage() {
       <div className={`flex-1 relative px-3 sm:px-4 py-4 sm:py-5 flex flex-col max-w-none mx-auto w-full ${showControls ? 'pb-6 min-[75rem]:pb-5' : ''}`}>
         {showTopToolbar && (
           <div className="sticky top-0 z-[70] -mx-3 sm:-mx-4 -mt-4 sm:-mt-5 mb-3">
-            <EditorToolbar editor={editor} fullscreen />
-            <div className="flex flex-wrap items-center gap-2 px-3 sm:px-4 py-2 bg-surface/95 backdrop-blur border-b border-border shadow-sm">
-              <div className="flex items-center gap-2 text-[10px] font-semibold uppercase tracking-wider text-foreground-muted">
+            <EditorToolbar editor={editor} fullscreen leadingSlot={backButton} />
+            <div className="flex flex-wrap items-center gap-1 sm:gap-2 px-2 sm:px-4 py-1.5 sm:py-2 bg-surface/95 backdrop-blur border-b border-border shadow-sm">
+              <div className="flex items-center gap-1.5 text-[9px] sm:text-[10px] font-semibold uppercase tracking-wider text-foreground-muted">
                 <GoogleGeminiIcon className="w-3.5 h-3.5 text-blue-500" />
                 AI Assist
               </div>
@@ -1150,7 +1170,7 @@ export default function EditorPage() {
                     disabled={!editor || Boolean(aiLoading)}
                     title={action.title}
                     className={`
-                      inline-flex items-center gap-2 px-3 py-1.5 rounded-xl text-xs font-semibold transition-all
+                      inline-flex items-center gap-1.5 px-2 py-1 rounded-lg text-[11px] sm:text-xs sm:px-3 sm:py-1.5 sm:rounded-xl font-semibold transition-all
                       disabled:opacity-40 disabled:cursor-not-allowed
                       ${toneClasses}
                     `}

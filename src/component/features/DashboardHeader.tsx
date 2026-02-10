@@ -2,11 +2,17 @@
 
 import { format } from 'date-fns';
 import Image from 'next/image';
+import { useEffect, useState } from 'react';
 import { ClayCard, ClayBadge } from '@/component/ui/Clay';
 import { Calendar03Icon } from 'hugeicons-react';
 import type { UserProfile } from '@/hooks/useAuth';
 
 export default function DashboardHeader({ user }: { user?: UserProfile | null }) {
+  const [isMounted, setIsMounted] = useState(false);
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
   const currentDate = new Date();
   const greeting = getGreeting();
 
@@ -17,7 +23,9 @@ export default function DashboardHeader({ user }: { user?: UserProfile | null })
     return 'Good evening';
   }
 
-  const displayName = user?.full_name || user?.email?.split('@')[0] || 'there';
+  const displayName = isMounted
+    ? user?.full_name || user?.email?.split('@')[0] || 'there'
+    : 'there';
 
   return (
     <ClayCard variant="elevated" padding="lg" className="rounded-3xl relative">

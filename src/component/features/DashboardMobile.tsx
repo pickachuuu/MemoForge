@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import Image from 'next/image';
+import { useEffect, useState } from 'react';
 import { format } from 'date-fns';
 import { ClayBadge, ClayCard } from '@/component/ui/Clay';
 import type { UserProfile } from '@/hooks/useAuth';
@@ -50,6 +51,11 @@ const ACTIVITY_META = {
 } as const;
 
 function MobileHeader({ user }: DashboardMobileProps) {
+  const [isMounted, setIsMounted] = useState(false);
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
   const currentDate = new Date();
   const greeting = (() => {
     const hour = currentDate.getHours();
@@ -57,7 +63,9 @@ function MobileHeader({ user }: DashboardMobileProps) {
     if (hour < 17) return 'Good afternoon';
     return 'Good evening';
   })();
-  const displayName = user?.full_name || user?.email?.split('@')[0] || 'there';
+  const displayName = isMounted
+    ? user?.full_name || user?.email?.split('@')[0] || 'there'
+    : 'there';
 
   return (
     <ClayCard variant="elevated" padding="sm" className="rounded-2xl">
