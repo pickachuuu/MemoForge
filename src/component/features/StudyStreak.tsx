@@ -132,8 +132,8 @@ export default function StudyStreak() {
         {currentStreak === 0 && (
           <div className="mt-4 flex flex-col items-center gap-2">
             <Image
-              src="/brand/verso-thinking-clean.svg"
-              alt="Verso mascot thinking"
+              src="/brand/verso-empty-clean.svg"
+              alt="Verso mascot — empty state"
               width={40}
               height={40}
               className="drop-shadow-sm"

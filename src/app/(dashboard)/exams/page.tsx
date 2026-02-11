@@ -881,8 +881,8 @@ function EmptyState({
     <ClayCard variant="elevated" padding="lg" className="rounded-3xl">
       <div className="text-center py-16">
         <Image
-          src="/brand/verso-thinking-clean.svg"
-          alt="Verso mascot thinking"
+          src="/brand/verso-empty-clean.svg"
+          alt="Verso mascot — empty state"
           width={140}
           height={140}
           className="mx-auto mb-8 drop-shadow-sm"

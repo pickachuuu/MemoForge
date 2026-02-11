@@ -81,8 +81,8 @@ export default function WeeklyActivityChart() {
         {totalCards === 0 && (
           <div className="absolute inset-0 flex flex-col items-center justify-center z-10">
             <Image
-              src="/brand/verso-writing-notes-clean.svg"
-              alt="Verso mascot"
+              src="/brand/verso-empty-clean.svg"
+              alt="Verso mascot — empty state"
               width={64}
               height={64}
               className="mb-3 drop-shadow-sm"

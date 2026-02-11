@@ -213,8 +213,8 @@ export default function CommunityPage() {
             ) : filteredItems.length === 0 ? (
               <div className="text-center py-12">
                 <Image
-                  src="/brand/verso-thinking-clean.svg"
-                  alt="Verso mascot thinking"
+                  src="/brand/verso-empty-clean.svg"
+                  alt="Verso mascot — empty state"
                   width={100}
                   height={100}
                   className="mx-auto mb-5 drop-shadow-sm"

@@ -85,8 +85,8 @@ function EmptyState() {
   return (
     <div className="flex flex-col items-center justify-center py-10 text-center">
       <Image
-        src="/brand/verso-thinking-clean.svg"
-        alt="Verso mascot"
+        src="/brand/verso-empty-clean.svg"
+        alt="Verso mascot — empty state"
         width={72}
         height={72}
         className="mb-4 drop-shadow-sm"

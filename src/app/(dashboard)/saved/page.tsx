@@ -187,8 +187,8 @@ export default function SavedMaterialsPage() {
             ) : filteredItems.length === 0 ? (
               <div className="text-center py-10">
                 <Image
-                  src="/brand/verso-happy-clean.svg"
-                  alt="Verso mascot"
+                  src="/brand/verso-empty-clean.svg"
+                  alt="Verso mascot — empty state"
                   width={120}
                   height={120}
                   className="mx-auto mb-6 drop-shadow-sm"
