@@ -854,6 +854,15 @@ body {
   }
 }
 
+@keyframes doodle-float {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-14px);
+  }
+}
+
 /* Dot grid background variation */
 .dot-grid-bg {
   position: relative;
