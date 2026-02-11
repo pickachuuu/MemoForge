@@ -276,41 +276,19 @@ export default function EditorPage() {
   const [mobileDrawerOpen, setMobileDrawerOpen] = useState(false);
 
   const callAI = useCallback(async (systemPrompt: string, userContent: string): Promise<string> => {
-    const geminiKey = process.env.NEXT_PUBLIC_GEMINI_API_KEY;
-    if (geminiKey) {
-      const res = await fetch(
-        'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-lite:generateContent',
-        {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json', 'x-goog-api-key': geminiKey },
-          body: JSON.stringify({
-            contents: [{ parts: [{ text: `${systemPrompt}\n\n${userContent}` }] }],
-            generationConfig: { temperature: 0.5, maxOutputTokens: 2048 },
-          }),
-        }
-      );
-      if (!res.ok) throw new Error(`Gemini error: ${res.status}`);
-      const data = await res.json();
-      return data?.candidates?.[0]?.content?.parts?.[0]?.text || '';
+    const res = await fetch('/api/ai/editor', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ systemPrompt, userContent }),
+    });
+
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({ error: 'AI request failed' }));
+      throw new Error(err.error || `AI error: ${res.status}`);
     }
 
-    const perplexityKey = process.env.NEXT_PUBLIC_PERPLEXITY_API_KEY;
-    if (!perplexityKey) throw new Error('No API key configured');
-    const res = await fetch('https://api.perplexity.ai/chat/completions', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${perplexityKey}` },
-      body: JSON.stringify({
-        model: 'sonar',
-        messages: [
-          { role: 'system', content: systemPrompt },
-          { role: 'user', content: userContent },
-        ],
-        max_tokens: 2048,
-      }),
-    });
-    if (!res.ok) throw new Error(`Perplexity error: ${res.status}`);
     const data = await res.json();
-    return data?.choices?.[0]?.message?.content || '';
+    return data?.text || '';
   }, []);
 
   const handleAIAction = useCallback(async (action: string) => {

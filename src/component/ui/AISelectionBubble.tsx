@@ -120,57 +120,22 @@ const AI_ACTIONS: Record<AIAction, AIActionConfig> = {
 // Gemini API call (reuses existing pattern)
 // ============================================
 async function callGeminiAPI(systemPrompt: string, selectedText: string): Promise<string> {
-  const apiKey = process.env.NEXT_PUBLIC_GEMINI_API_KEY;
-
-  if (apiKey) {
-    // Use Gemini directly
-    const response = await fetch(
-      'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-lite:generateContent',
-      {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'x-goog-api-key': apiKey,
-        },
-        body: JSON.stringify({
-          contents: [
-            {
-              parts: [{ text: `${systemPrompt}\n\nText:\n${selectedText}` }],
-            },
-          ],
-          generationConfig: { temperature: 0.4, maxOutputTokens: 2048 },
-        }),
-      }
-    );
-
-    if (!response.ok) throw new Error(`Gemini API error: ${response.status}`);
-    const data = await response.json();
-    return data?.candidates?.[0]?.content?.parts?.[0]?.text || '';
-  }
-
-  // Fallback to Perplexity
-  const perplexityKey = process.env.NEXT_PUBLIC_PERPLEXITY_API_KEY;
-  if (!perplexityKey) throw new Error('No API key configured');
-
-  const response = await fetch('https://api.perplexity.ai/chat/completions', {
+  const res = await fetch('/api/ai/editor', {
     method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${perplexityKey}`,
-    },
+    headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
-      model: 'sonar',
-      messages: [
-        { role: 'system', content: systemPrompt },
-        { role: 'user', content: selectedText },
-      ],
-      max_tokens: 2048,
+      systemPrompt,
+      userContent: `Text:\n${selectedText}`,
     }),
   });
 
-  if (!response.ok) throw new Error(`Perplexity API error: ${response.status}`);
-  const data = await response.json();
-  return data?.choices?.[0]?.message?.content || '';
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({ error: 'AI request failed' }));
+    throw new Error(err.error || `AI error: ${res.status}`);
+  }
+
+  const data = await res.json();
+  return data?.text || '';
 }
 
 // ============================================

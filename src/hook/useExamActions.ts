@@ -3,7 +3,7 @@
 
 import { useMemo, useCallback } from 'react';
 import { createClient } from '@/utils/supabase/client';
-import { createGeminiService, ExamQuestionGenerated, ExamGenerationResponse, ExamGenerationConfig } from '@/lib/gemini';
+import { ExamQuestionGenerated, ExamGenerationResponse, ExamGenerationConfig } from '@/lib/gemini';
 import {
   ExamSet,
   ExamQuestion,
@@ -434,20 +434,24 @@ export function useExamActions() {
       if (essays.length > 0) {
         console.log(`[Grading] Processing ${essays.length} essays`);
 
-        const perplexityKey = process.env.NEXT_PUBLIC_PERPLEXITY_API_KEY;
-        const geminiKey = process.env.NEXT_PUBLIC_GEMINI_API_KEY;
-
-        if (perplexityKey || geminiKey) {
-          console.log('[Grading] Using', geminiKey ? 'Gemini' : 'Perplexity', 'API');
-          const geminiService = createGeminiService(perplexityKey || '', geminiKey);
-
+        try {
           console.log('[Grading] Sending batch request for', essays.length, 'essays...');
-          const essayGrades = await geminiService.gradeAllEssays(essays);
-          console.log('[Grading] API returned', essayGrades.size, 'grades');
+          const res = await fetch('/api/ai/grade', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ essays }),
+          });
+
+          if (!res.ok) {
+            throw new Error('Grade API request failed');
+          }
+
+          const { results: essayGrades } = await res.json();
+          console.log('[Grading] API returned', Object.keys(essayGrades).length, 'grades');
 
           let apiGraded = 0, fallbackGraded = 0;
           for (const essay of essays) {
-            const grade = essayGrades.get(essay.id);
+            const grade = essayGrades[essay.id];
             if (grade) {
               // Check if this is a fallback grade (exactly 50% with specific feedback)
               const isFallback = grade.feedback.includes('Unable to grade') ||
@@ -472,9 +476,9 @@ export function useExamActions() {
           if (fallbackGraded > 0 && apiGraded === 0) {
             console.error('[Grading] ALL essays got fallback grades! API call likely failed.');
           }
-        } else {
-          console.log('[Grading] No API key - awarding partial credit');
-          // No API key - give partial credit to all essays
+        } catch (gradeError) {
+          console.error('[Grading] API error - awarding partial credit:', gradeError);
+          // API error - give partial credit to all essays
           for (const essay of essays) {
             gradedResponses.push({
               id: essay.responseId,

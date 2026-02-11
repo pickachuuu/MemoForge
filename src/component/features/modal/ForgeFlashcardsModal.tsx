@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { useUserNotes, Note } from '@/hooks/useNotes';
-import { createGeminiService, GeminiResponse } from '@/lib/gemini';
+import { GeminiResponse } from '@/lib/gemini';
 import { ClayCard, ClayButton, ClayBadge } from '@/component/ui/Clay';
 import Modal from '@/component/ui/Modal';
 import {
@@ -280,27 +280,31 @@ export default function ForgeFlashcardsModal({
     setError(null);
 
     try {
-      const apiKey = process.env.NEXT_PUBLIC_PERPLEXITY_API_KEY;
-      if (!apiKey) {
-        throw new Error('Perplexity API key not configured');
-      }
-
       // Combine content from all selected notes
       const selectedNoteObjects = notes.filter((n) => selectedNotes.includes(n.id));
       const combinedContent = selectedNoteObjects
         .map((note) => `# ${note.title || 'Untitled'}\n\n${note.content}`)
         .join('\n\n---\n\n');
 
-      const geminiService = createGeminiService(apiKey);
       const apiDifficulty = difficulty === 'all' ? 'medium' : difficulty;
 
-      const response = await geminiService.generateFlashcards(
-        combinedContent,
-        flashcardCount,
-        apiDifficulty,
-        watch('customPrompt') ? `Additional Instructions: ${watch('customPrompt')}` : undefined
-      );
+      const res = await fetch('/api/ai/flashcards', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          noteContent: combinedContent,
+          count: flashcardCount,
+          difficulty: apiDifficulty,
+          context: watch('customPrompt') ? `Additional Instructions: ${watch('customPrompt')}` : undefined,
+        }),
+      });
 
+      if (!res.ok) {
+        const err = await res.json();
+        throw new Error(err.error || 'Failed to generate flashcards');
+      }
+
+      const response: GeminiResponse = await res.json();
       setGeneratedFlashcards(response);
     } catch (err) {
       console.error('Error generating flashcards:', err);

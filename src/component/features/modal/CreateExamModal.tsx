@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { useUserNotes, Note } from '@/hooks/useNotes';
-import { createGeminiService, ExamGenerationResponse, ExamGenerationConfig } from '@/lib/gemini';
+import { ExamGenerationResponse, ExamGenerationConfig } from '@/lib/gemini';
 import { ClayCard, ClayButton, ClayBadge } from '@/component/ui/Clay';
 import Modal from '@/component/ui/Modal';
 import {
@@ -374,18 +374,11 @@ export default function CreateExamModal({
     setError(null);
 
     try {
-      const apiKey = process.env.NEXT_PUBLIC_PERPLEXITY_API_KEY;
-      if (!apiKey) {
-        throw new Error('Perplexity API key not configured');
-      }
-
       // Combine content from all selected notes
       const selectedNoteObjects = notes.filter((n) => selectedNotes.includes(n.id));
       const combinedContent = selectedNoteObjects
         .map((note) => `# ${note.title || 'Untitled'}\n\n${note.content}`)
         .join('\n\n---\n\n');
-
-      const geminiService = createGeminiService(apiKey);
 
       const generationConfig: ExamGenerationConfig = {
         multipleChoiceCount: config.includeMultipleChoice ? config.multipleChoiceCount : 0,
@@ -395,7 +388,21 @@ export default function CreateExamModal({
         customInstructions: config.customInstructions || undefined,
       };
 
-      const response = await geminiService.generateExamQuestions(combinedContent, generationConfig);
+      const res = await fetch('/api/ai/exam', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          noteContent: combinedContent,
+          config: generationConfig,
+        }),
+      });
+
+      if (!res.ok) {
+        const err = await res.json();
+        throw new Error(err.error || 'Failed to generate exam');
+      }
+
+      const response: ExamGenerationResponse = await res.json();
       setGeneratedExam(response);
     } catch (err) {
       console.error('Error generating exam:', err);

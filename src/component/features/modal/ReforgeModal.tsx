@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
-import { createGeminiService, GeminiFlashcard, GeminiResponse } from '@/lib/gemini';
+import { GeminiFlashcard, GeminiResponse } from '@/lib/gemini';
 import Button from '@/component/ui/Button';
 import Card from '@/component/ui/Card';
 import Modal from '@/component/ui/Modal';
@@ -106,18 +106,11 @@ export default function ReforgeModal({
     setSuccess(null);
 
     try {
-      const apiKey = process.env.NEXT_PUBLIC_PERPLEXITY_API_KEY;
-      if (!apiKey) {
-        throw new Error('Perplexity API key not configured. Please set NEXT_PUBLIC_PERPLEXITY_API_KEY in your environment variables.');
-      }
-
-      const geminiService = createGeminiService(apiKey);
-
       const apiDifficulty = settings.difficulty === 'all' ? 'medium' : settings.difficulty;
 
       // Create context about existing flashcards to avoid duplicates
       const existingQuestions = existingFlashcards.map(fc => fc.question).join('\n');
-      let context = settings.action === 'add_more'
+      let context: string | undefined = settings.action === 'add_more'
         ? `Existing flashcards:\n${existingQuestions}\n\nPlease generate ${settings.minCount} new flashcards that are different from the existing ones. Focus on topics in the note that haven't been covered yet. Analyze the note content thoroughly to identify important concepts, facts, or relationships that are missing from the existing flashcards.`
         : undefined;
 
@@ -127,12 +120,23 @@ export default function ReforgeModal({
         context = context ? context + customInstruction : customInstruction;
       }
 
-      const response = await geminiService.generateFlashcards(
-        noteContent,
-        settings.minCount,
-        apiDifficulty,
-        context
-      );
+      const res = await fetch('/api/ai/flashcards', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          noteContent,
+          count: settings.minCount,
+          difficulty: apiDifficulty,
+          context,
+        }),
+      });
+
+      if (!res.ok) {
+        const err = await res.json();
+        throw new Error(err.error || 'Failed to generate flashcards');
+      }
+
+      const response: GeminiResponse = await res.json();
 
       setGeneratedFlashcards(response.flashcards);
       setSuccess(`Successfully generated ${response.flashcards.length} new flashcards!`);

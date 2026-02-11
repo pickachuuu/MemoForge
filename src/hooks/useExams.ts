@@ -1,7 +1,7 @@
 // @ts-nocheck
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { createClient } from '@/utils/supabase/client';
-import { createGeminiService, ExamQuestionGenerated } from '@/lib/gemini';
+import { ExamQuestionGenerated } from '@/lib/gemini';
 import {
   ExamSet,
   ExamQuestion,
@@ -544,20 +544,24 @@ async function submitExam({ attemptId, timeSpentSeconds }: SubmitExamParams): Pr
   if (essays.length > 0) {
     console.log(`[Grading] Processing ${essays.length} essays`);
 
-    const perplexityKey = process.env.NEXT_PUBLIC_PERPLEXITY_API_KEY;
-    const geminiKey = process.env.NEXT_PUBLIC_GEMINI_API_KEY;
-
-    if (perplexityKey || geminiKey) {
-      console.log('[Grading] Using', geminiKey ? 'Gemini' : 'Perplexity', 'API');
-      const geminiService = createGeminiService(perplexityKey || '', geminiKey);
-
+    try {
       console.log('[Grading] Sending batch request for', essays.length, 'essays...');
-      const essayGrades = await geminiService.gradeAllEssays(essays);
-      console.log('[Grading] API returned', essayGrades.size, 'grades');
+      const res = await fetch('/api/ai/grade', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ essays }),
+      });
+
+      if (!res.ok) {
+        throw new Error('Grade API request failed');
+      }
+
+      const { results: essayGrades } = await res.json();
+      console.log('[Grading] API returned', Object.keys(essayGrades).length, 'grades');
 
       let apiGraded = 0, fallbackGraded = 0;
       for (const essay of essays) {
-        const grade = essayGrades.get(essay.id);
+        const grade = essayGrades[essay.id];
         if (grade) {
           const isFallback = grade.feedback.includes('Unable to grade') ||
                              grade.feedback.includes('Partial credit') ||
@@ -578,8 +582,8 @@ async function submitExam({ attemptId, timeSpentSeconds }: SubmitExamParams): Pr
         }
       }
       console.log(`[Grading] Summary: ${apiGraded} AI graded, ${fallbackGraded} fallback`);
-    } else {
-      console.log('[Grading] No API key - awarding partial credit');
+    } catch (gradeError) {
+      console.error('[Grading] API error - awarding partial credit:', gradeError);
       for (const essay of essays) {
         gradedResponses.push({
           id: essay.responseId,
