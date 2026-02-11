@@ -1,441 +1,454 @@
 'use client';
 
+import Image from 'next/image';
 import Link from 'next/link';
-import { LazyMotion, domAnimation } from 'motion/react';
-import * as m from 'motion/react-m';
-import {
-  Note01Icon,
-  FlashIcon,
-  AiMagicIcon,
-  Share01Icon,
-  CheckmarkCircle02Icon,
-  ArrowRight01Icon,
-  SparklesIcon,
-  Target01Icon,
-  Clock01Icon,
-  Idea01Icon,
-} from 'hugeicons-react';
-import { ClayCard, ClayButton, ClayBadge, ClayIconBox, ClaySection } from '@/component/ui/Clay';
-import { FlashcardIcon } from '@/component/icons';
-import { MultipleChoicePreview, EssayPreview } from '@/component/ui/ExamPreviewCards';
-import {
-  fadeIn,
-  fadeInUp,
-  fadeInRight,
-  scaleIn,
-  staggerContainer,
-  viewportOnce,
-  hoverScale,
-  tapScale,
-} from '@/lib/animations';
+import { ClayButton } from '@/component/ui/Clay';
+import { motion } from 'framer-motion';
+import { PencilEdit01Icon, TextIcon, CheckmarkCircle01Icon, FireIcon, LeftToRightListNumberIcon, Tag01Icon } from 'hugeicons-react';
+import { NotebookIcon, FlashcardIcon, ExamIcon } from '@/component/icons';
+
+const fadeUp = {
+  hidden: { opacity: 0, y: 32 },
+  visible: { opacity: 1, y: 0 },
+};
+
+const fadeLeft = {
+  hidden: { opacity: 0, x: -40 },
+  visible: { opacity: 1, x: 0 },
+};
+
+const fadeRight = {
+  hidden: { opacity: 0, x: 40 },
+  visible: { opacity: 1, x: 0 },
+};
+
+const staggerContainer = {
+  hidden: {},
+  visible: { transition: { staggerChildren: 0.1 } },
+};
+
+const staggerItem = {
+  hidden: { opacity: 0, y: 16 },
+  visible: { opacity: 1, y: 0 },
+};
 
 export default function LandingPage() {
   return (
-    <LazyMotion features={domAnimation}>
-      <div className="min-h-screen bg-background">
-        {/* Navigation */}
-        <m.nav
-          className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-md"
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.4 }}
-        >
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="flex items-center justify-between h-16">
-              <Link href="/" className="text-2xl font-bold text-foreground hover:text-accent transition-colors">
+    <div className="min-h-screen flex flex-col bg-background">
+      <nav className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-md border-b border-border/40">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="h-16 flex items-center justify-between">
+            <Link href="/" className="flex items-center gap-3 group">
+              <Image
+                src="/brand/verso-mark.png"
+                alt="Verso logo"
+                width={40}
+                height={40}
+                className="w-10 h-10 shrink-0 group-hover:scale-105 transition-transform"
+                priority
+              />
+              <span className="text-xl font-bold text-foreground group-hover:text-accent transition-colors">
                 Verso
+              </span>
+            </Link>
+            <div className="flex items-center gap-3">
+              <Link href="/auth">
+                <ClayButton variant="ghost" size="sm">Sign In</ClayButton>
               </Link>
-              <div className="flex items-center gap-4">
-                <Link href="/auth">
-                  <ClayButton variant="ghost" size="sm">Sign In</ClayButton>
-                </Link>
-                <Link href="/auth">
-                  <ClayButton variant="primary" size="sm">Get Started</ClayButton>
-                </Link>
-              </div>
+              <Link href="/auth">
+                <ClayButton variant="primary" size="sm">Get Started</ClayButton>
+              </Link>
             </div>
           </div>
-        </m.nav>
+        </div>
+      </nav>
 
-        {/* Hero Section with Academic Background */}
-        <section className="pt-32 pb-20 px-4 sm:px-6 lg:px-8 academic-bg">
-          <div className="max-w-7xl mx-auto relative z-10">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-              {/* Left Content */}
-              <m.div
+      <main className="flex-1 pt-16">
+        {/* ===== HERO ===== */}
+        <section className="relative overflow-hidden">
+          <div className="absolute inset-0 pointer-events-none">
+            <div className="absolute -top-32 -left-32 h-[420px] w-[420px] rounded-full bg-accent/20 blur-[100px]" />
+            <div className="absolute -bottom-40 -right-20 h-[480px] w-[480px] rounded-full bg-primary/20 blur-[120px]" />
+            <div className="absolute top-1/3 left-1/2 -translate-x-1/2 h-[300px] w-[600px] rounded-full bg-accent/8 blur-[80px]" />
+            <div className="absolute top-0 right-1/4 h-[200px] w-[200px] rounded-full bg-primary/10 blur-[60px]" />
+          </div>
+
+          <div
+            className="absolute inset-0 pointer-events-none opacity-[0.03]"
+            style={{
+              backgroundImage: 'radial-gradient(circle, currentColor 1px, transparent 1px)',
+              backgroundSize: '32px 32px',
+            }}
+          />
+
+          <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 md:py-28">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-12 items-center">
+              <motion.div
+                className="space-y-6"
+                initial="hidden"
+                animate="visible"
                 variants={staggerContainer}
-                initial="hidden"
-                animate="visible"
               >
-                <m.div variants={fadeInUp}>
-                  <ClayBadge variant="accent" className="mb-6">
-                    <SparklesIcon className="w-4 h-4" />
-                    Powered by Google Gemini AI
-                  </ClayBadge>
-                </m.div>
-
-                <m.h1
-                  variants={fadeInUp}
-                  className="text-4xl sm:text-5xl lg:text-6xl font-bold text-foreground mb-6 leading-tight"
+                <motion.h1
+                  className="text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight text-foreground leading-[1.05]"
+                  variants={fadeUp}
+                  transition={{ duration: 0.6 }}
                 >
-                  Study Smarter,
-                  <br />
-                  <span className="text-accent">Not Harder</span>
-                </m.h1>
+                  Study smarter with <span className="text-accent">Verso</span>
+                </motion.h1>
 
-                <m.p
-                  variants={fadeInUp}
-                  className="text-lg text-foreground-muted mb-8 max-w-lg"
+                <motion.p
+                  className="max-w-xl text-base sm:text-lg text-foreground-muted leading-relaxed"
+                  variants={fadeUp}
+                  transition={{ duration: 0.6 }}
                 >
-                  Transform your notes into interactive flashcards instantly with AI.
-                  Verso analyzes your content and creates personalized study materials
-                  that help you retain information 3x faster than traditional methods.
-                </m.p>
+                  Draft notes, generate flashcards, and practice with mock exams in one flow.
+                </motion.p>
 
-                <m.div variants={fadeInUp} className="flex flex-wrap gap-4 mb-8">
+                <motion.div
+                  className="flex flex-wrap items-center gap-3 pt-2"
+                  variants={fadeUp}
+                  transition={{ duration: 0.6 }}
+                >
                   <Link href="/auth">
-                    <m.div whileHover={hoverScale} whileTap={tapScale}>
-                      <ClayButton variant="primary" size="lg" className="flex items-center gap-2">
-                        Start Learning Free
-                        <ArrowRight01Icon className="w-5 h-5" />
-                      </ClayButton>
-                    </m.div>
+                    <ClayButton variant="primary" size="lg">Start Studying</ClayButton>
                   </Link>
-                  <Link href="#how-it-works">
-                    <m.div whileHover={hoverScale} whileTap={tapScale}>
-                      <ClayButton variant="secondary" size="lg">
-                        See How It Works
-                      </ClayButton>
-                    </m.div>
-                  </Link>
-                </m.div>
+                </motion.div>
+              </motion.div>
 
-              </m.div>
-
-              {/* Right - Hero Visual */}
-              <m.div
-                className="relative"
-                variants={fadeInRight}
-                initial="hidden"
-                animate="visible"
+              <motion.div
+                className="relative min-h-[360px] md:min-h-[440px] flex items-center justify-center"
+                initial={{ opacity: 0, scale: 0.85 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.7, delay: 0.2 }}
               >
-                <ClayCard variant="elevated" padding="lg" className="relative z-10">
-                  <div className="flex items-center gap-3 mb-6">
-                    <ClayIconBox size="sm" variant="accent">
-                      <Note01Icon className="w-5 h-5 text-accent" />
-                    </ClayIconBox>
-                    <span className="font-semibold text-foreground">Your Study Notes</span>
-                  </div>
-                  <div className="space-y-3 mb-6">
-                    <div className="h-3 bg-background-muted rounded-full w-full" />
-                    <div className="h-3 bg-background-muted rounded-full w-4/5" />
-                    <div className="h-3 bg-background-muted rounded-full w-3/5" />
-                  </div>
-                  <div className="flex justify-center my-4">
-                    <ClayIconBox variant="accent" size="md">
-                      <AiMagicIcon className="w-6 h-6 text-accent" />
-                    </ClayIconBox>
-                  </div>
-                  <ClayCard variant="pressed" padding="md">
-                    <div className="flex items-center gap-3 mb-3">
-                      <FlashIcon className="w-5 h-5 text-accent" />
-                      <span className="font-medium text-foreground">AI Generated Flashcard</span>
-                    </div>
-                    <p className="text-sm text-foreground font-medium mb-2">
-                      Q: What is photosynthesis?
-                    </p>
-                    <p className="text-xs text-foreground-muted">
-                      Click to reveal answer...
-                    </p>
-                  </ClayCard>
-                </ClayCard>
-
-                {/* Static Decorative Elements */}
-                <div className="absolute -top-4 -right-4 w-24 h-24 bg-accent-muted rounded-3xl -z-10 opacity-60" />
-                <div className="absolute -bottom-4 -left-4 w-32 h-32 bg-accent-muted rounded-3xl -z-10 opacity-40" />
-              </m.div>
+                <div className="pointer-events-none absolute inset-0">
+                  <div className="absolute top-10 left-10 h-24 w-24 rounded-full bg-accent/10 blur-2xl animate-pulse [animation-duration:4s]" />
+                  <div className="absolute bottom-16 right-8 h-20 w-20 rounded-full bg-primary/12 blur-2xl animate-pulse [animation-duration:5s] [animation-delay:1s]" />
+                  <div className="absolute top-1/3 right-1/4 h-16 w-16 rounded-full bg-accent/8 blur-xl animate-pulse [animation-duration:6s] [animation-delay:2s]" />
+                </div>
+                <Image
+                  src="/brand/verso-happy-clean.png"
+                  alt="Verso mascot"
+                  width={520}
+                  height={520}
+                  className="relative z-10 w-[280px] sm:w-[360px] md:w-[420px] lg:w-[460px] h-auto animate-bounce [animation-duration:1.4s]"
+                  priority
+                />
+              </motion.div>
             </div>
           </div>
         </section>
 
-{/* Features Section - Notion-style layout with floating cards */}
-        <ClaySection variant="muted" id="features" className="forge-bg overflow-hidden">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16 items-center relative z-10">
-            {/* Left - Text Content */}
-            <m.div
-              variants={staggerContainer}
-              initial="hidden"
-              whileInView="visible"
-              viewport={viewportOnce}
-            >
-              <m.div variants={fadeInUp}>
-                <ClayBadge variant="accent" className="mb-4">AI-Powered</ClayBadge>
-              </m.div>
-              <m.h2 variants={fadeInUp} className="text-3xl sm:text-4xl font-bold text-foreground mb-4">
-                Generate flashcards instantly.
-              </m.h2>
-              <m.p variants={fadeInUp} className="text-lg text-foreground-muted mb-6">
-                Paste your notes, click generate, and watch AI create study-ready flashcards in seconds.
-              </m.p>
-              <m.ul variants={fadeInUp} className="space-y-3 mb-8">
-                <li className="flex items-center gap-3">
-                  <ClayIconBox size="sm" variant="accent">
-                    <AiMagicIcon className="w-4 h-4 text-accent" />
-                  </ClayIconBox>
-                  <span className="text-foreground">50+ cards from a single note</span>
-                </li>
-                <li className="flex items-center gap-3">
-                  <ClayIconBox size="sm" variant="accent">
-                    <Target01Icon className="w-4 h-4 text-accent" />
-                  </ClayIconBox>
-                  <span className="text-foreground">Easy, Medium, Hard difficulty</span>
-                </li>
-                <li className="flex items-center gap-3">
-                  <ClayIconBox size="sm" variant="accent">
-                    <CheckmarkCircle02Icon className="w-4 h-4 text-accent" />
-                  </ClayIconBox>
-                  <span className="text-foreground">Multiple choice or open-ended</span>
-                </li>
-              </m.ul>
-            </m.div>
-
-{/* Right - Floating Note Cards + Flashcards */}
-            <m.div
-              className="relative h-[400px] lg:h-[500px]"
-              initial="hidden"
-              whileInView="visible"
-              viewport={viewportOnce}
-            >
-              {/* Main note card - center */}
-              <m.div
-                className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-56 z-50"
-                variants={scaleIn}
-              >
-                <ClayCard variant="elevated" padding="md" className="cursor-pointer hover:translate-y-[-2px] transition-transform">
-                  <div className="flex items-center justify-between mb-2">
-                    <div className="flex items-center gap-2">
-                      <Note01Icon className="w-5 h-5 text-accent" />
-                      <span className="font-semibold text-foreground text-sm">Biology 101</span>
-                    </div>
-                    <span className="text-[10px] px-2 py-0.5 rounded-full bg-yellow-100 text-yellow-700 font-medium">Medium</span>
-                  </div>
-                  <div className="flex items-center gap-1 text-xs text-foreground-muted mb-2">
-                    <FlashIcon className="w-3 h-3" />
-                    <span>24 flashcards</span>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-xs text-foreground-muted">Best score</span>
-                    <span className="text-sm font-bold text-accent">92%</span>
-                  </div>
-                </ClayCard>
-              </m.div>
-
-{/* Flashcard 1 - top left */}
-              <m.div
-                className="absolute top-20 left-0 w-48 -rotate-3 z-20"
-                variants={fadeInUp}
-              >
-                <ClayCard padding="lg" className="cursor-pointer hover:translate-y-[-2px] transition-transform min-h-[140px] flex flex-col">
-                  <div className="flex items-center gap-2 mb-4">
-                    <FlashIcon className="w-5 h-5 text-accent" />
-                    <span className="text-xs text-foreground-muted font-medium">Flashcard</span>
-                  </div>
-                  <p className="text-sm font-semibold text-foreground flex-grow">What is the powerhouse of the cell?</p>
-                  <p className="text-xs text-accent text-center border-t border-border pt-3 mt-4">Click to reveal answer</p>
-                </ClayCard>
-              </m.div>
-
-{/* Note card - top right */}
-              <m.div
-                className="absolute top-0 right-0 w-44 rotate-3 z-10"
-                variants={fadeInUp}
-              >
-                <ClayCard padding="sm" className="cursor-pointer hover:translate-y-[-2px] transition-transform">
-                  <div className="flex items-center justify-between mb-1">
-                    <div className="flex items-center gap-1">
-                      <Note01Icon className="w-3 h-3 text-accent" />
-                      <span className="text-[11px] font-semibold text-foreground">Organic Chem</span>
-                    </div>
-                    <span className="text-[8px] px-1.5 py-0.5 rounded-full bg-red-100 text-red-700 font-medium">Hard</span>
-                  </div>
-                  <div className="text-[10px] text-foreground-muted mb-1">18 flashcards</div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-[10px] text-foreground-muted">Best score</span>
-                    <span className="text-xs font-bold text-accent">87%</span>
-                  </div>
-                </ClayCard>
-              </m.div>
-
-{/* Flashcard 2 - right middle */}
-              <m.div
-                className="absolute top-1/2 -translate-y-1/2 right-0 w-44 rotate-2 z-10"
-                variants={fadeInUp}
-              >
-                <ClayCard padding="lg" className="cursor-pointer hover:translate-y-[-2px] transition-transform min-h-[140px] flex flex-col">
-                  <div className="flex items-center gap-2 mb-4">
-                    <FlashIcon className="w-5 h-5 text-accent" />
-                    <span className="text-xs text-foreground-muted font-medium">Flashcard</span>
-                  </div>
-                  <p className="text-sm font-semibold text-foreground flex-grow">What year did WW2 end?</p>
-                  <p className="text-xs text-accent text-center border-t border-border pt-3 mt-4">Click to reveal answer</p>
-                </ClayCard>
-              </m.div>
-
-{/* Note card - bottom left */}
-              <m.div
-                className="absolute bottom-0 left-4 w-44 -rotate-3 z-10"
-                variants={fadeInUp}
-              >
-                <ClayCard padding="sm" className="cursor-pointer hover:translate-y-[-2px] transition-transform">
-                  <div className="flex items-center justify-between mb-1">
-                    <div className="flex items-center gap-1">
-                      <Note01Icon className="w-3 h-3 text-accent" />
-                      <span className="text-[11px] font-semibold text-foreground">World History</span>
-                    </div>
-                    <span className="text-[8px] px-1.5 py-0.5 rounded-full bg-green-100 text-green-700 font-medium">Easy</span>
-                  </div>
-                  <div className="text-[10px] text-foreground-muted mb-1">31 flashcards</div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-[10px] text-foreground-muted">Best score</span>
-                    <span className="text-xs font-bold text-accent">95%</span>
-                  </div>
-                </ClayCard>
-              </m.div>
-
-{/* Note card - top center-left */}
-              <m.div
-                className="absolute top-8 left-1/3 -translate-x-1/2 w-40 -rotate-6 z-0"
-                variants={fadeInUp}
-              >
-                <ClayCard padding="sm" className="cursor-pointer hover:translate-y-[-2px] transition-transform">
-                  <div className="flex items-center justify-between mb-1">
-                    <div className="flex items-center gap-1">
-                      <Note01Icon className="w-3 h-3 text-accent" />
-                      <span className="text-[11px] font-semibold text-foreground">Calculus II</span>
-                    </div>
-                    <span className="text-[8px] px-1.5 py-0.5 rounded-full bg-red-100 text-red-700 font-medium">Hard</span>
-                  </div>
-                  <div className="text-[10px] text-foreground-muted mb-1">42 flashcards</div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-[10px] text-foreground-muted">Best score</span>
-                    <span className="text-xs font-bold text-accent">78%</span>
-                  </div>
-                </ClayCard>
-              </m.div>
-
-{/* Note card - bottom right */}
-              <m.div
-                className="absolute bottom-0 right-4 w-40 rotate-4 z-0"
-                variants={fadeInUp}
-              >
-                <ClayCard padding="sm" className="cursor-pointer hover:translate-y-[-2px] transition-transform">
-                  <div className="flex items-center justify-between mb-1">
-                    <div className="flex items-center gap-1">
-                      <Note01Icon className="w-3 h-3 text-accent" />
-                      <span className="text-[11px] font-semibold text-foreground">Psychology</span>
-                    </div>
-                    <span className="text-[8px] px-1.5 py-0.5 rounded-full bg-yellow-100 text-yellow-700 font-medium">Medium</span>
-                  </div>
-                  <div className="text-[10px] text-foreground-muted mb-1">28 flashcards</div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-[10px] text-foreground-muted">Best score</span>
-                    <span className="text-xs font-bold text-accent">100%</span>
-                  </div>
-                </ClayCard>
-              </m.div>
-            </m.div>
+        {/* ===== NOTE WRITING ===== */}
+        <section className="relative border-t border-border/60 bg-background overflow-x-clip">
+          <div className="pointer-events-none absolute inset-0">
+            <div className="absolute -top-24 left-10 h-52 w-52 rounded-full bg-accent/8 blur-3xl" />
+            <div className="absolute -bottom-20 right-8 h-60 w-60 rounded-full bg-primary/8 blur-3xl" />
           </div>
-        </ClaySection>
-
-{/* Mock Exam Section */}
-        <ClaySection id="how-it-works" className="notebook-bg">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16 items-center relative z-10">
-{/* Left - Mock Exam Visual - Two stacked cards */}
-            <m.div
-              className="relative h-[520px]"
-              initial="hidden"
-              whileInView="visible"
-              viewport={viewportOnce}
-            >
-              {/* Multiple Choice Card - Behind, on the left side */}
-              <m.div
-                className="absolute top-0 left-0 w-[75%] -rotate-3 z-10"
-                variants={fadeInUp}
+          <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-24">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-14 items-center">
+              <motion.div
+                className="flex justify-center lg:justify-start"
+                initial="hidden"
+                whileInView="visible"
+                viewport={{ once: true, amount: 0.3 }}
+                variants={fadeLeft}
+                transition={{ duration: 0.6 }}
               >
-                <MultipleChoicePreview />
-              </m.div>
+                <Image
+                  src="/brand/earth-science-preview.png"
+                  alt="Earth science notes preview"
+                  width={991}
+                  height={768}
+                  className="w-full max-w-[520px] xl:max-w-[560px] h-auto rounded-2xl border border-border/70 ring-1 ring-black/5 shadow-[0_30px_65px_-24px_rgba(15,23,42,0.48)] drop-shadow-[0_16px_22px_rgba(0,0,0,0.2)]"
+                />
+              </motion.div>
 
-              {/* Essay Card - On top, offset to the right */}
-              <m.div
-                className="absolute top-8 right-0 w-[75%] rotate-2 z-20"
-                variants={scaleIn}
+              <motion.div
+                className="relative"
+                initial="hidden"
+                whileInView="visible"
+                viewport={{ once: true, amount: 0.3 }}
+                variants={staggerContainer}
               >
-                <EssayPreview />
-              </m.div>
-            </m.div>
+                <Image
+                  src="/brand/verso-writing-notes-clean.svg"
+                  alt="Verso writing notes mascot"
+                  width={265}
+                  height={265}
+                  className="pointer-events-none absolute -top-[4.75rem] -right-8 sm:-top-[5.75rem] sm:-right-10 lg:-top-[6.75rem] lg:-right-12 z-0 w-[180px] sm:w-[220px] lg:w-[265px] h-auto -rotate-6 opacity-95 drop-shadow-[0_18px_28px_rgba(0,0,0,0.24)]"
+                />
+                <motion.div className="relative mb-4 pr-24 sm:pr-32 lg:pr-40" variants={fadeUp} transition={{ duration: 0.5 }}>
+                  <h2 className="relative z-10 max-w-xl text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight text-foreground leading-tight">
+                    AI-Assisted <span className="text-accent">Note Writing</span>
+                  </h2>
+                </motion.div>
 
-            {/* Right - Text Content */}
-            <m.div
-              variants={staggerContainer}
-              initial="hidden"
-              whileInView="visible"
-              viewport={viewportOnce}
-            >
-              <m.div variants={fadeInUp}>
-                <ClayBadge variant="accent" className="mb-4">Test Yourself</ClayBadge>
-              </m.div>
-              <m.h2 variants={fadeInUp} className="text-3xl sm:text-4xl font-bold text-foreground mb-4">
-                Take mock exams your way.
-              </m.h2>
-              <m.p variants={fadeInUp} className="text-lg text-foreground-muted mb-6">
-                Choose your exam format and test your knowledge before the real thing. AI generates questions based on your notes.
-              </m.p>
-              <m.ul variants={fadeInUp} className="space-y-4 mb-8">
-                <li className="flex items-start gap-3">
-                  <ClayIconBox size="sm" variant="accent" className="mt-0.5">
-                    <CheckmarkCircle02Icon className="w-4 h-4 text-accent" />
-                  </ClayIconBox>
-                  <div>
-                    <span className="font-medium text-foreground">Multiple Choice</span>
-                    <p className="text-sm text-foreground-muted">Quick assessments with instant feedback and scoring</p>
-                  </div>
-                </li>
-                <li className="flex items-start gap-3">
-                  <ClayIconBox size="sm" variant="accent" className="mt-0.5">
-                    <FlashcardIcon className="w-4 h-4 text-accent" />
-                  </ClayIconBox>
-                  <div>
-                    <span className="font-medium text-foreground">Essay Questions</span>
-                    <p className="text-sm text-foreground-muted">Practice written responses with AI-powered evaluation</p>
-                  </div>
-                </li>
-                <li className="flex items-start gap-3">
-                  <ClayIconBox size="sm" variant="accent" className="mt-0.5">
-                    <Clock01Icon className="w-4 h-4 text-accent" />
-                  </ClayIconBox>
-                  <div>
-                    <span className="font-medium text-foreground">Timed Exams</span>
-                    <p className="text-sm text-foreground-muted">Simulate real exam conditions with countdown timer</p>
-                  </div>
-                </li>
-              </m.ul>
-            </m.div>
+                <motion.p
+                  className="relative z-10 max-w-lg text-base sm:text-lg text-foreground-muted leading-relaxed"
+                  variants={fadeUp}
+                  transition={{ duration: 0.5 }}
+                >
+                  Write naturally while AI helps structure ideas, tighten wording, and prepare
+                  your notes for review-ready studying.
+                </motion.p>
+
+                <motion.div
+                  className="relative z-10 mt-6 space-y-4"
+                  variants={staggerContainer}
+                >
+                  {[
+                    { icon: PencilEdit01Icon, title: 'Structure ideas', desc: 'Turn rough thoughts into clear, organized study notes.' },
+                    { icon: TextIcon, title: 'Refine wording', desc: 'Rephrase sections instantly for clarity, tone, and grammar.' },
+                    { icon: CheckmarkCircle01Icon, title: 'Exam-ready', desc: 'Keep everything polished without breaking your writing flow.' },
+                  ].map((item) => (
+                    <motion.div key={item.title} className="flex items-start gap-3" variants={staggerItem} transition={{ duration: 0.4 }}>
+                      <item.icon className="w-5 h-5 text-accent shrink-0 mt-0.5" />
+                      <div>
+                        <p className="text-sm sm:text-base font-semibold text-foreground">{item.title}</p>
+                        <p className="text-sm text-foreground-muted leading-relaxed">{item.desc}</p>
+                      </div>
+                    </motion.div>
+                  ))}
+                </motion.div>
+              </motion.div>
+            </div>
           </div>
+        </section>
 
-        </ClaySection>
+        {/* ===== FLASHCARDS ===== */}
+        <section className="relative border-t border-border/60 bg-background-muted/60 overflow-x-clip">
+          <div className="pointer-events-none absolute inset-0">
+            <div className="absolute -top-24 left-10 h-52 w-52 rounded-full bg-accent/12 blur-3xl" />
+            <div className="absolute -bottom-20 right-8 h-60 w-60 rounded-full bg-primary/12 blur-3xl" />
+          </div>
+          <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-24">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-14 items-center">
+              <motion.div
+                className="relative"
+                initial="hidden"
+                whileInView="visible"
+                viewport={{ once: true, amount: 0.3 }}
+                variants={staggerContainer}
+              >
+                <div className="relative mb-4 pr-24 sm:pr-32 lg:pr-40">
+                  <Image
+                    src="/brand/verso-flashcards-clean.svg"
+                    alt="Verso flashcards mascot"
+                    width={265}
+                    height={265}
+                    className="pointer-events-none absolute -top-[4.75rem] -right-8 sm:-top-[5.75rem] sm:-right-10 lg:-top-[6.75rem] lg:-right-12 z-30 w-[180px] sm:w-[220px] lg:w-[265px] h-auto opacity-100 drop-shadow-[0_18px_28px_rgba(0,0,0,0.24)] [transform:scaleX(-1)]"
+                  />
+                  <motion.h2
+                    className="relative z-10 max-w-xl text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight text-foreground leading-tight"
+                    variants={fadeUp}
+                    transition={{ duration: 0.5 }}
+                  >
+                    AI-Powered <span className="text-accent">Flashcards</span>
+                  </motion.h2>
+                </div>
 
-        {/* Footer */}
-        <footer className="py-8 px-4 sm:px-6 lg:px-8 border-t border-border">
-          <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
-            <Link href="/" className="text-xl font-bold text-foreground hover:text-accent transition-colors">
+                <motion.p
+                  className="relative z-10 max-w-lg text-base sm:text-lg text-foreground-muted leading-relaxed"
+                  variants={fadeUp}
+                  transition={{ duration: 0.5 }}
+                >
+                  Turn your notes into smart flashcards with AI in seconds, then study them with
+                  active recall for stronger long-term memory.
+                </motion.p>
+
+                <motion.div
+                  className="relative z-10 mt-6"
+                  variants={staggerContainer}
+                >
+                  {[
+                    { step: 1, icon: NotebookIcon, label: 'Pick your notes', desc: 'Select any notebook — AI reads your content and extracts key concepts.' },
+                    { step: 2, icon: FlashcardIcon, label: 'Generate cards', desc: 'Instantly create Q&A flashcards, then flip through and test yourself.' },
+                    { step: 3, icon: FireIcon, label: 'Master it', desc: 'Keep practicing with spaced repetition until it sticks for good.' },
+                  ].map((item, i) => (
+                    <motion.div key={item.step} className="flex items-start gap-4" variants={staggerItem} transition={{ duration: 0.4 }}>
+                      <div className="flex flex-col items-center">
+                        <div className="w-8 h-8 rounded-full border-2 border-accent text-accent flex items-center justify-center text-sm font-bold shrink-0">
+                          {item.step}
+                        </div>
+                        {i < 2 && <div className="w-px h-8 bg-border" />}
+                      </div>
+                      <div className="pb-4">
+                        <div className="flex items-center gap-2 mb-0.5">
+                          <item.icon className="w-4 h-4 text-accent" />
+                          <p className="text-sm sm:text-base font-semibold text-foreground">{item.label}</p>
+                        </div>
+                        <p className="text-sm text-foreground-muted leading-relaxed">{item.desc}</p>
+                      </div>
+                    </motion.div>
+                  ))}
+                </motion.div>
+              </motion.div>
+
+              <motion.div
+                className="flex justify-center lg:justify-end"
+                initial="hidden"
+                whileInView="visible"
+                viewport={{ once: true, amount: 0.3 }}
+                variants={fadeRight}
+                transition={{ duration: 0.6, delay: 0.15 }}
+              >
+                <Image
+                  src="/brand/flashcard-session-preview.png"
+                  alt="Flashcard study session preview"
+                  width={1030}
+                  height={618}
+                  className="w-full max-w-[520px] xl:max-w-[560px] h-auto rounded-2xl border border-border/70 ring-1 ring-black/5 shadow-[0_30px_65px_-24px_rgba(15,23,42,0.48)] drop-shadow-[0_16px_22px_rgba(0,0,0,0.2)]"
+                />
+              </motion.div>
+            </div>
+          </div>
+        </section>
+
+        {/* ===== MOCK EXAMS ===== */}
+        <section className="relative border-t border-border/60 bg-background overflow-visible">
+          <div className="pointer-events-none absolute inset-0 overflow-hidden">
+            <div className="absolute -top-24 left-1/3 h-52 w-52 rounded-full bg-primary/8 blur-3xl" />
+            <div className="absolute -bottom-20 right-1/4 h-60 w-60 rounded-full bg-accent/8 blur-3xl" />
+          </div>
+          <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-24">
+            {/* Centered text block with mascot positioned relative to this wide wrapper */}
+            <div className="relative">
+              {/* Mascot - positioned from the wide max-w-7xl wrapper so it won't clip */}
+              <motion.div
+                className="pointer-events-none absolute -top-8 right-[2%] sm:right-[4%] lg:right-[8%] z-20"
+                initial={{ opacity: 0, y: 20, rotate: 0 }}
+                whileInView={{ opacity: 1, y: 0, rotate: 6 }}
+                viewport={{ once: true, amount: 0.3 }}
+                transition={{ duration: 0.6, delay: 0.2 }}
+              >
+                <Image
+                  src="/brand/verso-thinking-clean.svg"
+                  alt="Verso thinking mascot"
+                  width={265}
+                  height={265}
+                  className="w-[160px] sm:w-[200px] lg:w-[240px] h-auto opacity-95 drop-shadow-[0_18px_28px_rgba(0,0,0,0.24)]"
+                />
+              </motion.div>
+
+              <motion.div
+                className="max-w-2xl mx-auto text-center mb-12 md:mb-16 pt-16 sm:pt-20 lg:pt-24"
+                initial="hidden"
+                whileInView="visible"
+                viewport={{ once: true, amount: 0.3 }}
+                variants={staggerContainer}
+              >
+                <motion.h2
+                  className="relative z-10 text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight text-foreground leading-tight mb-4"
+                  variants={fadeUp}
+                  transition={{ duration: 0.5 }}
+                >
+                  AI-Generated <span className="text-accent">Mock Exams</span>
+                </motion.h2>
+
+                <motion.p
+                  className="relative z-10 max-w-xl mx-auto text-base sm:text-lg text-foreground-muted leading-relaxed mb-10"
+                  variants={fadeUp}
+                  transition={{ duration: 0.5 }}
+                >
+                  Put your knowledge to the test with AI-crafted practice exams that mirror real
+                  questions, so you walk into exam day fully prepared.
+                </motion.p>
+
+                <motion.div
+                  className="relative z-10 grid grid-cols-1 sm:grid-cols-3 gap-6 sm:gap-8"
+                  variants={staggerContainer}
+                >
+                  {[
+                    { icon: LeftToRightListNumberIcon, title: 'Multiple Choice', desc: 'Test your knowledge with AI-generated options — instant feedback on every pick.' },
+                    { icon: Tag01Icon, title: 'Identification', desc: 'Fill in the blanks and prove you know the key terms and concepts.' },
+                    { icon: PencilEdit01Icon, title: 'Essays', desc: 'Practice long-form answers and build the writing skills exams demand.' },
+                  ].map((item) => (
+                    <motion.div key={item.title} className="flex flex-col items-center text-center" variants={staggerItem} transition={{ duration: 0.4 }}>
+                      <item.icon className="w-7 h-7 text-accent mb-3" />
+                      <p className="text-sm sm:text-base font-semibold text-foreground mb-1">{item.title}</p>
+                      <p className="text-sm text-foreground-muted leading-relaxed max-w-[220px]">{item.desc}</p>
+                    </motion.div>
+                  ))}
+                </motion.div>
+              </motion.div>
+            </div>
+
+            {/* Exam cards centered below */}
+            <motion.div
+              className="flex justify-center"
+              initial={{ opacity: 0, y: 40 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, amount: 0.2 }}
+              transition={{ duration: 0.7, delay: 0.2 }}
+            >
+              <style>{`
+                @keyframes examShuffle {
+                  0%, 27% {
+                    transform: translate(0px, 0px) rotate(0deg) scale(1);
+                    z-index: 3;
+                    box-shadow: 0 25px 50px -12px rgba(15,23,42,0.35);
+                  }
+                  33%, 60% {
+                    transform: translate(28px, 14px) rotate(3.5deg) scale(0.95);
+                    z-index: 1;
+                    box-shadow: 0 10px 25px -8px rgba(15,23,42,0.2);
+                  }
+                  66%, 93% {
+                    transform: translate(-18px, 8px) rotate(-2.5deg) scale(0.97);
+                    z-index: 2;
+                    box-shadow: 0 15px 35px -10px rgba(15,23,42,0.25);
+                  }
+                  100% {
+                    transform: translate(0px, 0px) rotate(0deg) scale(1);
+                    z-index: 3;
+                    box-shadow: 0 25px 50px -12px rgba(15,23,42,0.35);
+                  }
+                }
+              `}</style>
+              <div className="relative w-full max-w-[600px] xl:max-w-[660px] aspect-[4/3]">
+                {['/brand/exam-preview-1.png', '/brand/exam-preview-2.png', '/brand/exam-preview-3.png'].map((src, i) => (
+                  <div
+                    key={src}
+                    className="absolute inset-0 rounded-2xl border border-border/70 ring-1 ring-black/5 overflow-hidden bg-background"
+                    style={{
+                      animation: 'examShuffle 9s cubic-bezier(0.4, 0, 0.2, 1) infinite',
+                      animationDelay: `${i * -3}s`,
+                    }}
+                  >
+                    <Image
+                      src={src}
+                      alt={`Exam question type preview ${i + 1}`}
+                      width={750}
+                      height={563}
+                      className="w-full h-full object-cover object-top"
+                    />
+                  </div>
+                ))}
+              </div>
+            </motion.div>
+          </div>
+        </section>
+      </main>
+
+      <footer className="py-8 px-4 sm:px-6 lg:px-8 border-t border-border">
+        <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
+          <Link href="/" className="flex items-center gap-2 group">
+            <Image
+              src="/brand/verso-mark.png"
+              alt="Verso logo"
+              width={32}
+              height={32}
+              className="w-8 h-8 group-hover:scale-105 transition-transform"
+            />
+            <span className="text-xl font-bold text-foreground group-hover:text-accent transition-colors">
               Verso
-            </Link>
-            <p className="text-foreground-muted text-sm">
-              © 2025 Verso. AI-Powered Study Assistant.
-            </p>
-          </div>
-        </footer>
-      </div>
-    </LazyMotion>
+            </span>
+          </Link>
+          <p className="text-foreground-muted text-sm">© 2025 Verso. AI-Powered Study Assistant.</p>
+        </div>
+      </footer>
+    </div>
   );
 }
