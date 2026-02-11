@@ -53,64 +53,94 @@ export class GeminiService {
     this.geminiApiKey = geminiApiKey || null;
   }
 
+  // Unified helper: call Gemini or Perplexity depending on available keys
+  private async callAI(systemPrompt: string, userPrompt: string, maxTokens: number = 4096): Promise<{ text: string; totalTokens: number }> {
+    // Try Gemini first if key is available
+    if (this.geminiApiKey) {
+      try {
+        const response = await fetch(this.geminiUrl, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'x-goog-api-key': this.geminiApiKey,
+          },
+          body: JSON.stringify({
+            contents: [{ parts: [{ text: `${systemPrompt}\n\n${userPrompt}` }] }],
+            generationConfig: { temperature: 0.3, maxOutputTokens: maxTokens },
+          }),
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          const text = data?.candidates?.[0]?.content?.parts?.[0]?.text || '';
+          if (text) {
+            return { text, totalTokens: this.estimateTokenUsage(systemPrompt + userPrompt + text) };
+          }
+        }
+        console.warn('[GeminiService] Gemini call failed, trying Perplexity fallback...');
+      } catch (e) {
+        console.warn('[GeminiService] Gemini error, trying Perplexity fallback...', e);
+      }
+    }
+
+    // Fallback to Perplexity
+    if (!this.apiKey || this.apiKey.trim() === '') {
+      throw new Error('No AI API key configured');
+    }
+
+    const response = await fetch(this.baseUrl, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${this.apiKey}`,
+      },
+      body: JSON.stringify({
+        model: 'sonar',
+        messages: [
+          { role: 'system', content: systemPrompt },
+          { role: 'user', content: userPrompt },
+        ],
+        max_tokens: maxTokens,
+      }),
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(`Perplexity API error: ${response.status} ${response.statusText} - ${errorText}`);
+    }
+
+    const data = await response.json();
+    if (!data.choices?.[0]?.message) {
+      throw new Error('Unexpected response structure from Perplexity API');
+    }
+
+    return {
+      text: data.choices[0].message.content,
+      totalTokens: data.usage?.total_tokens || this.estimateTokenUsage(systemPrompt + userPrompt + data.choices[0].message.content),
+    };
+  }
+
   async generateFlashcards(
     noteContent: string,
     count: number = 10,
     difficulty: 'easy' | 'medium' | 'hard' = 'medium',
     context?: string
   ): Promise<GeminiResponse> {
-    if (!this.apiKey || this.apiKey.trim() === '') {
+    if ((!this.apiKey || this.apiKey.trim() === '') && !this.geminiApiKey) {
       throw new Error('API key is required');
     }
 
     const prompt = this.buildFlashcardPrompt(noteContent, count, difficulty, context);
 
     try {
-      const response = await fetch(this.baseUrl, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${this.apiKey}`,
-        },
-        body: JSON.stringify({
-          model: 'sonar',
-          messages: [
-            {
-              role: 'system',
-              content: 'You are an expert educator creating flashcards from study notes. Always respond with valid JSON only, no markdown formatting.'
-            },
-            {
-              role: 'user',
-              content: prompt
-            }
-          ],
-          max_tokens: 4096,
-        })
-      });
+      const { text: generatedText, totalTokens } = await this.callAI(
+        'You are an expert educator creating flashcards from study notes. Always respond with valid JSON only, no markdown formatting.',
+        prompt,
+        4096
+      );
 
-      if (!response.ok) {
-        const errorText = await response.text();
-        console.error('Perplexity API error response:', errorText);
-        throw new Error(`Perplexity API error: ${response.status} ${response.statusText} - ${errorText}`);
-      }
-
-      const data = await response.json();
-
-      if (!data.choices || !data.choices[0] || !data.choices[0].message) {
-        console.error('Unexpected Perplexity API response structure:', data);
-        throw new Error('Unexpected response structure from Perplexity API');
-      }
-
-      const generatedText = data.choices[0].message.content;
-
-      // Parse the response to extract flashcards
       const flashcards = this.parseFlashcardResponse(generatedText);
-
-      // Get token usage from response or estimate
-      const totalTokens = data.usage?.total_tokens || this.estimateTokenUsage(prompt + generatedText);
-      const costCents = data.usage?.cost?.total_cost
-        ? Math.round(data.usage.cost.total_cost * 100)
-        : this.calculateCost(totalTokens);
+      const costCents = this.calculateCost(totalTokens);
 
       return {
         flashcards,
@@ -118,7 +148,7 @@ export class GeminiService {
         cost_cents: costCents
       };
     } catch (error) {
-      console.error('Perplexity API error:', error);
+      console.error('AI API error (flashcards):', error);
       throw error;
     }
   }
@@ -261,55 +291,21 @@ Do not include any additional text outside the JSON array.`;
     noteContent: string,
     config: ExamGenerationConfig
   ): Promise<ExamGenerationResponse> {
-    if (!this.apiKey || this.apiKey.trim() === '') {
+    if ((!this.apiKey || this.apiKey.trim() === '') && !this.geminiApiKey) {
       throw new Error('API key is required');
     }
 
     const prompt = this.buildExamPrompt(noteContent, config);
 
     try {
-      const response = await fetch(this.baseUrl, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${this.apiKey}`,
-        },
-        body: JSON.stringify({
-          model: 'sonar',
-          messages: [
-            {
-              role: 'system',
-              content: 'You are an expert educator creating exam questions from study notes. Always respond with valid JSON only, no markdown formatting.'
-            },
-            {
-              role: 'user',
-              content: prompt
-            }
-          ],
-          max_tokens: 8192,
-        })
-      });
+      const { text: generatedText, totalTokens } = await this.callAI(
+        'You are an expert educator creating exam questions from study notes. Always respond with valid JSON only, no markdown formatting.',
+        prompt,
+        8192
+      );
 
-      if (!response.ok) {
-        const errorText = await response.text();
-        console.error('Perplexity API error response:', errorText);
-        throw new Error(`Perplexity API error: ${response.status} ${response.statusText} - ${errorText}`);
-      }
-
-      const data = await response.json();
-
-      if (!data.choices || !data.choices[0] || !data.choices[0].message) {
-        console.error('Unexpected Perplexity API response structure:', data);
-        throw new Error('Unexpected response structure from Perplexity API');
-      }
-
-      const generatedText = data.choices[0].message.content;
       const questions = this.parseExamResponse(generatedText, config);
-
-      const totalTokens = data.usage?.total_tokens || this.estimateTokenUsage(prompt + generatedText);
-      const costCents = data.usage?.cost?.total_cost
-        ? Math.round(data.usage.cost.total_cost * 100)
-        : this.calculateCost(totalTokens);
+      const costCents = this.calculateCost(totalTokens);
 
       return {
         questions,
@@ -317,7 +313,7 @@ Do not include any additional text outside the JSON array.`;
         cost_cents: costCents
       };
     } catch (error) {
-      console.error('Perplexity API error:', error);
+      console.error('AI API error (exam):', error);
       throw error;
     }
   }

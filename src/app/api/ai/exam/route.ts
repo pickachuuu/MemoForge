@@ -14,11 +14,13 @@ export async function POST(req: NextRequest) {
     }
 
     const perplexityKey = process.env.PERPLEXITY_API_KEY;
-    if (!perplexityKey) {
+    const geminiKey = process.env.GEMINI_API_KEY;
+
+    if (!perplexityKey && !geminiKey) {
       return NextResponse.json({ error: 'AI service not configured' }, { status: 500 });
     }
 
-    const geminiService = createGeminiService(perplexityKey);
+    const geminiService = createGeminiService(perplexityKey || '', geminiKey);
     const response = await geminiService.generateExamQuestions(noteContent, config);
 
     return NextResponse.json(response);
