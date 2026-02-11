@@ -165,21 +165,26 @@ function MobileWeeklySnapshot() {
           <Target01Icon className="w-3.5 h-3.5" />
           Activity
         </div>
-        <div className="flex items-end gap-1 h-12">
+        <div className="flex items-end gap-1.5 h-20">
           {data.map((day, index) => {
             const isToday = index === data.length - 1;
             const hasActivity = day.cardsStudied > 0 || day.sessions > 0;
             const heightPercent = maxCards > 0 ? (day.cardsStudied / maxCards) * 100 : 0;
             return (
-              <div key={day.date} className="flex-1 flex flex-col items-center justify-end">
-                <div
-                  className={`w-full rounded-md ${
-                    hasActivity
-                      ? `bg-primary/40 ${isToday ? 'ring-2 ring-primary/30 ring-offset-1 ring-offset-background' : ''}`
-                      : 'bg-background-muted border border-border'
-                  }`}
-                  style={{ height: hasActivity ? `${Math.max(heightPercent, 18)}%` : '6px' }}
-                />
+              <div key={day.date} className="flex-1 h-full flex flex-col items-center justify-end">
+                <div className="w-full h-full flex items-end">
+                  <div
+                    className={`w-full rounded-lg transition-all duration-500 ${
+                      hasActivity
+                        ? `bg-primary/45 ${isToday ? 'ring-2 ring-primary/30 ring-offset-1 ring-offset-background' : ''}`
+                        : 'bg-background-muted border border-border'
+                    }`}
+                    style={{
+                      height: hasActivity ? `${Math.max(heightPercent, 22)}%` : '8px',
+                      minHeight: hasActivity ? '14px' : '8px',
+                    }}
+                  />
+                </div>
                 <span className={`mt-1 text-[9px] ${isToday ? 'text-primary font-semibold' : 'text-foreground-muted'}`}>
                   {day.shortDay.slice(0, 1)}
                 </span>
