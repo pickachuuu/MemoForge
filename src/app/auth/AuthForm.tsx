@@ -176,7 +176,7 @@ export default function AuthForm() {
           {/* Image side — stacks on top on small screens, fills remaining width on md+ */}
           <div className="relative w-full h-48 sm:h-64 md:h-auto md:flex-1 order-first md:order-last">
             <Image
-              src="https://pub-5d0fe94a3da5458ca88e4e79220a6798.r2.dev/Verso/9b1afcb0-846d-45ea-b422-25cf1f9af990.png"
+              src="https://pub-5d0fe94a3da5458ca88e4e79220a6798.r2.dev/Verso/ChatGPT%20Image%20Feb%2011%2C%202026%2C%2008_47_29%20PM.png"
               alt="Focused study workspace"
               fill
               sizes="(min-width: 768px) 45vw, 100vw"
