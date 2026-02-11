@@ -6,10 +6,11 @@ import Link from "next/link";
 import Image from "next/image";
 import { Logout01Icon, Menu01Icon, Cancel01Icon } from "hugeicons-react";
 import { AnimatePresence, motion } from "framer-motion";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { signOut } from '@/hook/useAuthActions';
 import { useUserProfile } from '@/hooks/useAuth';
 import { NotebookIcon, FlashcardIcon, ExamIcon, DashboardIcon, SavedIcon, CommunityIcon, NotificationIcon } from '@/component/icons';
+import { useCardsDue, useClearNotifications, useNotificationDismissals, useStudyStreak } from '@/hooks';
 
 const getNavIcon = (href: string) => {
   switch (href) {
@@ -41,7 +42,54 @@ export default function Navbar() {
     { name: 'Saved Materials', href: '/saved', icon: <SavedIcon className="w-6 h-6" /> },
     { name: 'Community', href: '/community', icon: <CommunityIcon className="w-6 h-6" /> },
   ];
-  const notifications = [] as { id: string; title: string; detail: string }[];
+  const { data: cardsDue, isLoading: cardsDueLoading } = useCardsDue();
+  const { data: streakData, isLoading: streakLoading } = useStudyStreak();
+  const { data: dismissals = [], isLoading: dismissalsLoading } = useNotificationDismissals();
+  const clearNotifications = useClearNotifications();
+
+  const dismissedToday = useMemo(() => {
+    const todayKey = new Date().toISOString().split('T')[0];
+    const set = new Set<string>();
+    dismissals.forEach((dismissal) => {
+      if (dismissal.dismissed_on === todayKey) {
+        set.add(dismissal.notification_key);
+      }
+    });
+    return set;
+  }, [dismissals]);
+
+  const notifications = useMemo(() => {
+    const items: { id: string; title: string; detail: string }[] = [];
+    const dueToday = cardsDue?.dueToday ?? 0;
+    if (!cardsDueLoading && dueToday > 0) {
+      items.push({
+        id: 'due-cards',
+        title: 'Due cards today',
+        detail: `You have ${dueToday} card${dueToday === 1 ? '' : 's'} due today.`,
+      });
+    }
+
+    if (!streakLoading && streakData?.studiedToday) {
+      items.push({
+        id: 'streak',
+        title: 'Streak preserved',
+        detail: 'Streak preserved—1 day left to keep it going.',
+      });
+    }
+
+    return items.filter((item) => !dismissedToday.has(item.id));
+  }, [cardsDue, cardsDueLoading, dismissedToday, streakData, streakLoading]);
+
+  const hasNotifications = notifications.length > 0;
+  const isLoadingNotifications = cardsDueLoading || streakLoading || dismissalsLoading;
+  const notificationStatusLabel = isLoadingNotifications
+    ? 'Checking...'
+    : hasNotifications ? `${notifications.length} new` : 'No new';
+
+  const handleClearNotifications = () => {
+    if (!hasNotifications || clearNotifications.isPending) return;
+    clearNotifications.mutate(notifications.map((note) => note.id));
+  };
 
   useEffect(() => {
     if (!mobileMenuOpen) {
@@ -145,11 +193,27 @@ export default function Navbar() {
                 <div className="rounded-2xl bg-surface border border-dashed border-pencil/40 shadow-lg p-4">
                   <div className="flex items-center justify-between mb-3">
                     <span className="text-sm font-semibold text-foreground">Notifications</span>
-                    <span className="text-xs text-foreground-muted">
-                      {notifications.length === 0 ? 'No new' : `${notifications.length} new`}
-                    </span>
+                    <div className="flex items-center gap-2">
+                      <span className="text-xs text-foreground-muted">
+                        {notificationStatusLabel}
+                      </span>
+                      {hasNotifications && (
+                        <button
+                          type="button"
+                          onClick={handleClearNotifications}
+                          disabled={clearNotifications.isPending}
+                          className="text-xs text-foreground-muted hover:text-foreground transition-colors disabled:text-foreground-muted/60 disabled:cursor-not-allowed"
+                        >
+                          Clear
+                        </button>
+                      )}
+                    </div>
                   </div>
-                  {notifications.length === 0 ? (
+                  {isLoadingNotifications ? (
+                    <div className="text-xs text-foreground-muted bg-background-muted border border-border rounded-xl px-3 py-3 text-center">
+                      Checking your notifications...
+                    </div>
+                  ) : !hasNotifications ? (
                     <div className="text-xs text-foreground-muted bg-background-muted border border-border rounded-xl px-3 py-3 text-center">
                       You&apos;re all caught up.
                     </div>
@@ -291,11 +355,27 @@ export default function Navbar() {
                 <div className="rounded-2xl bg-surface border border-dashed border-pencil/40 shadow-lg p-3">
                   <div className="flex items-center justify-between mb-2">
                     <span className="text-xs font-semibold text-foreground">Notifications</span>
-                    <span className="text-[10px] text-foreground-muted">
-                      {notifications.length === 0 ? 'No new' : `${notifications.length} new`}
-                    </span>
+                    <div className="flex items-center gap-2">
+                      <span className="text-[10px] text-foreground-muted">
+                        {notificationStatusLabel}
+                      </span>
+                      {hasNotifications && (
+                        <button
+                          type="button"
+                          onClick={handleClearNotifications}
+                          disabled={clearNotifications.isPending}
+                          className="text-[10px] text-foreground-muted hover:text-foreground transition-colors disabled:text-foreground-muted/60 disabled:cursor-not-allowed"
+                        >
+                          Clear
+                        </button>
+                      )}
+                    </div>
                   </div>
-                  {notifications.length === 0 ? (
+                  {isLoadingNotifications ? (
+                    <div className="text-[11px] text-foreground-muted bg-background-muted border border-border rounded-xl px-3 py-2 text-center">
+                      Checking your notifications...
+                    </div>
+                  ) : !hasNotifications ? (
                     <div className="text-[11px] text-foreground-muted bg-background-muted border border-border rounded-xl px-3 py-2 text-center">
                       You&apos;re all caught up.
                     </div>

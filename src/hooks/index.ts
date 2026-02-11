@@ -67,6 +67,14 @@ export {
   type UserProfile,
 } from './useAuth';
 
+// Notification hooks
+export {
+  useNotificationDismissals,
+  useClearNotifications,
+  notificationKeys,
+  type NotificationDismissal,
+} from './useNotifications';
+
 // Flashcard hooks
 export {
   useFlashcardSets,
