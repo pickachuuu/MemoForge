@@ -388,7 +388,7 @@ export default function LibraryPage() {
                     >
                       All
                     </button>
-                    {(Object.keys(NOTEBOOK_COLORS) as NotebookColorKey[]).slice(0, 6).map((color) => (
+                    {(Object.keys(NOTEBOOK_COLORS) as NotebookColorKey[]).map((color) => (
                       <button
                         key={color}
                         onClick={() => setSelectedColor(color)}
