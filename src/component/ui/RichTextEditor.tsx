@@ -65,6 +65,14 @@ const HIGHLIGHT_COLORS = [
   { name: 'Orange', color: '#fed7aa' },
 ];
 
+const fileToDataUrl = (file: File): Promise<string> =>
+  new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result as string);
+    reader.onerror = () => reject(new Error('Failed to read image file'));
+    reader.readAsDataURL(file);
+  });
+
 // Export Editor type for external use
 export type { Editor } from '@tiptap/react';
 
@@ -754,6 +762,7 @@ interface EditorToolbarProps {
 export function EditorToolbar({ editor, fullscreen, leadingSlot }: EditorToolbarProps) {
   const [mounted, setMounted] = useState(false);
   const [theme, setTheme] = useState<"light" | "dark">("light");
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Once mounted on client, get the theme
   useEffect(() => {
@@ -824,6 +833,23 @@ export function EditorToolbar({ editor, fullscreen, leadingSlot }: EditorToolbar
 
   if (!editor) return null;
 
+  const handleImageUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file || !file.type.startsWith('image/')) {
+      return;
+    }
+
+    try {
+      const src = await fileToDataUrl(file);
+      editor.chain().focus().setPolaroidImage({ src, alt: file.name || 'Pasted image' }).run();
+    } finally {
+      // Reset the input so selecting the same file again still fires onChange.
+      if (fileInputRef.current) {
+        fileInputRef.current.value = '';
+      }
+    }
+  };
+
   return (
     <div className={`
       clay-toolbar
@@ -831,6 +857,13 @@ export function EditorToolbar({ editor, fullscreen, leadingSlot }: EditorToolbar
       ${fullscreen ? 'justify-start' : 'justify-center'}
       gap-0 px-2 py-1.5 sm:gap-0.5 sm:px-3 sm:py-2
     `}>
+      <input
+        type="file"
+        ref={fileInputRef}
+        onChange={handleImageUpload}
+        accept="image/*"
+        className="hidden"
+      />
       {leadingSlot && (
         <div className="mr-1 flex items-center">
           {leadingSlot}
@@ -957,6 +990,13 @@ export function EditorToolbar({ editor, fullscreen, leadingSlot }: EditorToolbar
       >
         <MinusSignIcon className="w-4.5 h-4.5 sm:w-5 sm:h-5" />
       </ToolbarButton>
+      <ToolbarButton
+        onClick={() => fileInputRef.current?.click()}
+        isActive={editor.isActive('polaroidImage')}
+        title="Insert Polaroid"
+      >
+        <Image01Icon className="w-4.5 h-4.5 sm:w-5 sm:h-5" />
+      </ToolbarButton>
 
       <ToolbarDivider />
 
@@ -1068,6 +1108,23 @@ export const RichTextEditor = forwardRef<RichTextEditorHandle, RichTextEditorPro
     editorProps: {
       attributes: {
         class: `tiptap-editor prose prose-sm sm:prose lg:prose-lg max-w-none focus:outline-none prose-headings:mt-6 prose-headings:mb-3 prose-p:my-2 prose-ul:my-2 prose-ol:my-2 prose-li:my-0 ${editorClassName}`,
+      },
+      handlePaste: (_view, event) => {
+        if (readOnly) return false;
+
+        const files = Array.from(event.clipboardData?.files ?? []);
+        const imageFile = files.find((file) => file.type.startsWith('image/'));
+        if (!imageFile) {
+          return false;
+        }
+
+        void fileToDataUrl(imageFile).then((src) => {
+          if (!editor?.isDestroyed) {
+            editor.chain().focus().setPolaroidImage({ src, alt: imageFile.name || 'Pasted image' }).run();
+          }
+        });
+
+        return true;
       },
     },
     onUpdate: ({ editor }) => {
