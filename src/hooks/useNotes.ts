@@ -418,6 +418,46 @@ export function useDeletePage() {
 }
 
 // ============================================
+// Content Aggregation
+// ============================================
+
+/**
+ * Fetches all note_pages content for the given note IDs and returns
+ * a map of noteId → combined page content (ordered by page_order).
+ * Falls back to note.content when a note has no pages.
+ */
+export async function fetchNotePagesContent(
+  noteIds: string[]
+): Promise<Map<string, string>> {
+  if (noteIds.length === 0) return new Map();
+
+  const { data, error } = await supabase
+    .from('note_pages')
+    .select('note_id, title, content, page_order')
+    .in('note_id', noteIds)
+    .order('page_order', { ascending: true });
+
+  if (error) {
+    console.error('Error fetching note pages for content:', error);
+    return new Map();
+  }
+
+  const contentMap = new Map<string, string>();
+  for (const page of data || []) {
+    const existing = contentMap.get(page.note_id) || '';
+    const pageContent = page.content || '';
+    if (pageContent.trim()) {
+      contentMap.set(
+        page.note_id,
+        existing ? `${existing}\n\n${pageContent}` : pageContent
+      );
+    }
+  }
+
+  return contentMap;
+}
+
+// ============================================
 // Utility Functions
 // ============================================
 

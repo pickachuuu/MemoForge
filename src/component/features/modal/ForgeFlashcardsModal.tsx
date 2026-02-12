@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { useForm, Controller } from 'react-hook-form';
-import { useUserNotes, Note } from '@/hooks/useNotes';
+import { useUserNotes, Note, fetchNotePagesContent } from '@/hooks/useNotes';
 import { GeminiResponse } from '@/lib/gemini';
 import { ClayCard, ClayButton, ClayBadge } from '@/component/ui/Clay';
 import Modal from '@/component/ui/Modal';
@@ -280,10 +280,17 @@ export default function ForgeFlashcardsModal({
     setError(null);
 
     try {
-      // Combine content from all selected notes
+      // Combine content from all selected notes (using note_pages content)
       const selectedNoteObjects = notes.filter((n) => selectedNotes.includes(n.id));
+      const pagesContentMap = await fetchNotePagesContent(selectedNoteObjects.map((n) => n.id));
+
       const combinedContent = selectedNoteObjects
-        .map((note) => `# ${note.title || 'Untitled'}\n\n${note.content}`)
+        .map((note) => {
+          // Prefer note_pages content; fall back to legacy note.content
+          const pageContent = pagesContentMap.get(note.id);
+          const content = pageContent || note.content || '';
+          return `# ${note.title || 'Untitled'}\n\n${content}`;
+        })
         .join('\n\n---\n\n');
 
       const apiDifficulty = difficulty === 'all' ? 'medium' : difficulty;
