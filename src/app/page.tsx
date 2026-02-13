@@ -62,22 +62,11 @@ export default function LandingPage() {
                 Verso
               </span>
             </Link>
-            <div className="flex items-center gap-2 sm:gap-3">
-              {isLoggedIn ? (
-                <Link href="/dashboard">
-                  <ClayButton variant="primary" size="sm">Dashboard</ClayButton>
-                </Link>
-              ) : (
-                <>
-                  <Link href="/auth" className="hidden sm:block">
-                    <ClayButton variant="ghost" size="sm">Sign In</ClayButton>
-                  </Link>
-                  <Link href="/auth">
-                    <ClayButton variant="primary" size="sm">Get Started</ClayButton>
-                  </Link>
-                </>
-              )}
-            </div>
+            <Link href={isLoggedIn ? '/dashboard' : '/auth'}>
+              <ClayButton variant="primary" size="sm">
+                {isLoggedIn ? 'Dashboard' : 'Get Started'}
+              </ClayButton>
+            </Link>
           </div>
         </div>
       </nav>
