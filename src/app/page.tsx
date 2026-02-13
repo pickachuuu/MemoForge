@@ -416,7 +416,7 @@ export default function LandingPage() {
         </section>
 
         {/* ===== MOCK EXAMS ===== */}
-        <section className="relative border-t border-border/60 bg-background overflow-visible">
+        <section className="relative border-t border-border/60 bg-background overflow-x-hidden overflow-y-visible">
           <div className="pointer-events-none absolute inset-0 overflow-hidden">
             <div className="absolute -top-24 left-1/3 h-52 w-52 rounded-full bg-primary/8 blur-3xl" />
             <div className="absolute -bottom-20 right-1/4 h-60 w-60 rounded-full bg-accent/8 blur-3xl" />
@@ -445,6 +445,28 @@ export default function LandingPage() {
                   transform: translate(0px, 0px) rotate(0deg) scale(1);
                   z-index: 3;
                   box-shadow: 0 25px 50px -12px rgba(15,23,42,0.35);
+                }
+              }
+              @keyframes examShuffleMobile {
+                0%, 27% {
+                  transform: translate(0px, 0px) rotate(0deg) scale(1);
+                  z-index: 3;
+                  box-shadow: 0 20px 40px -10px rgba(15,23,42,0.3);
+                }
+                33%, 60% {
+                  transform: translate(12px, 8px) rotate(2.5deg) scale(0.95);
+                  z-index: 1;
+                  box-shadow: 0 8px 20px -6px rgba(15,23,42,0.18);
+                }
+                66%, 93% {
+                  transform: translate(-8px, 5px) rotate(-1.5deg) scale(0.97);
+                  z-index: 2;
+                  box-shadow: 0 12px 28px -8px rgba(15,23,42,0.22);
+                }
+                100% {
+                  transform: translate(0px, 0px) rotate(0deg) scale(1);
+                  z-index: 3;
+                  box-shadow: 0 20px 40px -10px rgba(15,23,42,0.3);
                 }
               }
             `}</style>
@@ -491,13 +513,13 @@ export default function LandingPage() {
                 viewport={{ once: true, amount: 0.2 }}
                 transition={{ duration: 0.6 }}
               >
-                <div className="relative w-full max-w-[400px] sm:max-w-[520px] aspect-[4/3]">
+                <div className="relative w-full max-w-[320px] sm:max-w-[460px] aspect-[4/3]">
                   {['/brand/exam-preview-1.png', '/brand/exam-preview-2.png', '/brand/exam-preview-3.png'].map((src, i) => (
                     <div
                       key={src}
                       className="absolute inset-0 rounded-2xl border border-border/70 ring-1 ring-black/5 overflow-hidden bg-background"
                       style={{
-                        animation: 'examShuffle 9s cubic-bezier(0.4, 0, 0.2, 1) infinite',
+                        animation: 'examShuffleMobile 9s cubic-bezier(0.4, 0, 0.2, 1) infinite',
                         animationDelay: `${i * -3}s`,
                       }}
                     >
